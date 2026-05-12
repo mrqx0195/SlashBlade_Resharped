@@ -41,11 +41,11 @@ public class SlashBladeShapedRecipe extends ShapedRecipe {
         this.outputBlade = outputBlade.orElse(null);
     }
 
-    ShapedRecipePattern getPattern() {
+    public ShapedRecipePattern getPattern() {
         return pattern;
     }
 
-    ItemStack getResultStack() {
+    public ItemStack getResultStack() {
         return resultStack;
     }
 
@@ -69,13 +69,15 @@ public class SlashBladeShapedRecipe extends ShapedRecipe {
 
     @Override
     public @NotNull ItemStack getResultItem(@NotNull HolderLookup.Provider access) {
-        ResourceLocation blade = getOutputBlade();
+        ResourceLocation blade = this.getOutputBlade();
+        
         if (blade == null) {
-            return super.getResultItem(access);
+            return this.getResultStack().copy();
         }
+        
         ItemStack result = SlashBladeShapedRecipe.getResultBlade(blade);
-
-        if (!blade.equals(BuiltInRegistries.ITEM.getKey(result.getItem()))) {
+        var key = BuiltInRegistries.ITEM.getKey(result.getItem());
+        if (!blade.equals(key)) {
             result = access.lookupOrThrow(SlashBladeDefinition.REGISTRY_KEY).getOrThrow(getOutputBladeKey())
                     .value()
                     .getBlade(access);
@@ -86,10 +88,7 @@ public class SlashBladeShapedRecipe extends ShapedRecipe {
 
     @Override
     public @NotNull ItemStack assemble(@NotNull CraftingInput input, @NotNull HolderLookup.Provider access) {
-        var result = this.getResultItem(access);
-        if (!(result.getItem() instanceof ItemSlashBlade)) {
-            result = new ItemStack(SlashBladeItems.SLASHBLADE.get());
-        }
+        var result = this.getResultItem(access).copy();
 
         var resultState = BladeStateAccess.of(result).orElseThrow();
         boolean sumRefine = SlashBladeConfig.DO_CRAFTING_SUM_REFINE.get();

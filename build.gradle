@@ -15,7 +15,7 @@ version = mod_version
 group = mod_group_id
 
 base {
-    archivesName = "SlashBladeResharped-1.21.1"
+    archivesName = "SlashBladeResharped"
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
@@ -221,7 +221,7 @@ publisher {
     setLoaders("neoforge")
     setCurseEnvironment("both")
     setArtifact(jar)
-    setJavaVersions("Java 21", "Java 22", "Java 23", "Java 24")
+    setJavaVersions([JavaVersion.VERSION_21])
     setDisableEmptyJarCheck(true)
 
     curseDepends {

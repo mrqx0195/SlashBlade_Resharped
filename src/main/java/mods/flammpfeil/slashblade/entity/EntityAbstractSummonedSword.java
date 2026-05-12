@@ -343,36 +343,42 @@ public class EntityAbstractSummonedSword extends Projectile implements IShootabl
 
             while (this.isAlive()) {
                 // todo : replace TargetSelector
-                EntityHitResult entityraytraceresult = this.getRayTrace(positionVec, movedVec);
-                if (entityraytraceresult != null) {
-                    raytraceresult = entityraytraceresult;
+                EntityHitResult entityHit = this.getRayTrace(positionVec, movedVec);
+                if (entityHit != null) {
+                    raytraceresult = entityHit;
                 }
-                
-                if(raytraceresult == null)
-                	break;
+
+                if (raytraceresult == null) {
+                    break;
+                }
 
                 boolean impactCheck = !net.neoforged.neoforge.event.EventHooks.onProjectileImpact(this, raytraceresult);
-				if (raytraceresult.getType() == HitResult.Type.ENTITY
-                		&& impactCheck) {
-                    Entity entity = null;
-                    if (raytraceresult instanceof EntityHitResult) {
-                        entity = ((EntityHitResult) raytraceresult).getEntity();
-                    }
-                    Entity entity1 = this.getShooter();
-                    if (entity instanceof LivingEntity && entity1 instanceof LivingEntity) {
-                        if (!TargetSelector.test.test((LivingEntity) entity1, (LivingEntity) entity)) {
+
+                if (raytraceresult.getType() == HitResult.Type.ENTITY && impactCheck) {
+                    Entity target = ((EntityHitResult) raytraceresult).getEntity();
+                    Entity shooter = this.getShooter();
+                    if (target instanceof LivingEntity && shooter instanceof LivingEntity) {
+                        if (!TargetSelector.test.test((LivingEntity) shooter, (LivingEntity) target)) {
                             raytraceresult = null;
-                            entityraytraceresult = null;
+                            entityHit = null;
                         }
                     }
                 }
 
-                if (raytraceresult != null && !(disallowedHitBlock && raytraceresult.getType() == HitResult.Type.BLOCK) && impactCheck) {
+                if (raytraceresult != null
+                        && !(disallowedHitBlock && raytraceresult.getType() == HitResult.Type.BLOCK)
+                        && impactCheck) {
                     this.onHit(raytraceresult);
                     this.hasImpulse = true;
+                } else if (!impactCheck && entityHit != null) {
+                    Entity cancelledTarget = ((EntityHitResult) entityHit).getEntity();
+                    if (this.alreadyHits == null) {
+                        this.alreadyHits = new IntOpenHashSet(5);
+                    }
+                    this.alreadyHits.add(cancelledTarget.getId());
                 }
 
-                if (entityraytraceresult == null || this.getPierce() <= 0) {
+                if (entityHit == null || this.getPierce() <= 0) {
                     break;
                 }
 

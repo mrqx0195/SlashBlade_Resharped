@@ -228,29 +228,27 @@ public class ComboState {
                 return new TimeLineTickAction(timeLine);
             }
         }
-        
-        Map<Integer, Consumer<LivingEntity>> timeLine = Maps.newHashMap();
-        
+
+        private final Map<Integer, Consumer<LivingEntity>> timeLine;
+        private int lastProcessedTick = -1;
+
         TimeLineTickAction(Map<Integer, Consumer<LivingEntity>> timeLine) {
-            this.timeLine.putAll(timeLine);
+            this.timeLine = Maps.newHashMap(timeLine);
         }
         
         @Override
         public void accept(LivingEntity livingEntity) {
-            long elapsed = getElapsed(livingEntity);
-            int adjustElapsed = (int) elapsed;
-            
-            BladeStateAccess.of(livingEntity.getMainHandItem()).ifPresent(state -> {
-                if (state.getLastProcessedComboTick() == adjustElapsed) {
-                    return;
-                }
-                state.setLastProcessedComboTick(adjustElapsed);
-                
-                Consumer<LivingEntity> action = timeLine.get(adjustElapsed);
-                if (action != null) {
-                    action.accept(livingEntity);
-                }
-            });
+            int elapsed = (int) getElapsed(livingEntity);
+
+            if (lastProcessedTick == elapsed) {
+                return;
+            }
+            lastProcessedTick = elapsed;
+
+            Consumer<LivingEntity> action = timeLine.get(elapsed);
+            if (action != null) {
+                action.accept(livingEntity);
+            }
         }
     }
     

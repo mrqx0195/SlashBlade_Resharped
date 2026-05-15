@@ -21,12 +21,11 @@ import java.util.EnumSet;
 
 @EventBusSubscriber(modid = SlashBlade.MODID, value = Dist.CLIENT)
 public class MoveInputHandler {
-
+    
     public static boolean checkFlag(int data, int flags) {
         return (data & flags) == flags;
     }
-
-    @SuppressWarnings("resource")
+    
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent()
     public static void onPlayerPostTick(ClientTickEvent.Post event) {
@@ -34,13 +33,13 @@ public class MoveInputHandler {
         if (player == null) {
             return;
         }
-
+        
         if (player.getMainHandItem().isEmpty() || BladeStateAccess.of(player.getMainHandItem()).isEmpty()) {
             return;
         }
-
+        
         EnumSet<InputCommand> commands = EnumSet.noneOf(InputCommand.class);
-
+        
         if (player.input.up) {
             commands.add(InputCommand.FORWARD);
         }
@@ -53,47 +52,47 @@ public class MoveInputHandler {
         if (player.input.right) {
             commands.add(InputCommand.RIGHT);
         }
-
+        
         if (player.input.shiftKeyDown) {
             commands.add(InputCommand.SNEAK);
         }
-
+        
         if (player.input.jumping) {
             commands.add(InputCommand.JUMP);
         }
-
+        
         final Minecraft minecraftInstance = Minecraft.getInstance();
-
+        
         if (SlashBladeKeyMappings.KEY_SPECIAL_MOVE.isDown()) {
             commands.add(InputCommand.SPRINT);
         }
-
+        
         if (minecraftInstance.options.keyUse.isDown()) {
             commands.add(InputCommand.R_DOWN);
         }
         if (minecraftInstance.options.keyAttack.isDown()) {
             commands.add(InputCommand.L_DOWN);
         }
-
+        
         if (SlashBladeKeyMappings.KEY_SUMMON_BLADE.isDown()) {
             commands.add(InputCommand.M_DOWN);
         }
-
+        
         IInputState state = player.getData(CapabilityInputState.INPUT_STATE.get());
         EnumSet<InputCommand> old = state.getCommands().clone();
         long currentTime = player.level().getGameTime();
         boolean doSend = !old.equals(commands);
-
+        
         if (doSend) {
             commands.forEach(c -> {
                 if (!old.contains(c)) {
                     state.getLastPressTimes().put(c, currentTime);
                 }
             });
-
+            
             state.getCommands().clear();
             state.getCommands().addAll(commands);
-
+            
             PacketDistributor.sendToServer(new MoveCommandMessage(EnumSetConverter.convertToInt(commands)));
         }
     }

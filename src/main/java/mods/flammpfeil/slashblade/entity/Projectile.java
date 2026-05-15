@@ -8,37 +8,39 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+
 public abstract class Projectile extends net.minecraft.world.entity.projectile.Projectile {
     private static final EntityDataAccessor<Integer> OWNERID = SynchedEntityData.defineId(Projectile.class,
-            EntityDataSerializers.INT);
-
+        EntityDataSerializers.INT);
+    
     protected Projectile(EntityType<? extends net.minecraft.world.entity.projectile.Projectile> p_37248_,
                          Level p_37249_) {
         super(p_37248_, p_37249_);
     }
-
+    
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         builder.define(OWNERID, -1);
     }
-
+    
     @Nullable
     @Override
     public Entity getOwner() {
         int id = this.entityData.get(OWNERID);
-
+        
         if (0 <= id) {
             Entity tmp = this.level().getEntity(id);
-            if (super.getOwner() != tmp) {
+            if (!Objects.equals(super.getOwner(), tmp)) {
                 this.setOwner(tmp);
             }
         } else {
             this.setOwner(null);
         }
-
+        
         return super.getOwner();
     }
-
+    
     @Override
     public void setOwner(@Nullable Entity p_37263_) {
         if (p_37263_ != null) {
@@ -46,10 +48,10 @@ public abstract class Projectile extends net.minecraft.world.entity.projectile.P
         } else {
             this.entityData.set(OWNERID, -1);
         }
-
+        
         super.setOwner(p_37263_);
     }
-
+    
     @Override
     public boolean fireImmune() {
         return true;//防火

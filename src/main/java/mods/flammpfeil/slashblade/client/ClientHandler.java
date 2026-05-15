@@ -38,106 +38,107 @@ import net.neoforged.neoforge.client.event.TextureAtlasStitchedEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import org.jetbrains.annotations.NotNull;
 
 @EventBusSubscriber(modid = SlashBlade.MODID, value = Dist.CLIENT)
 @OnlyIn(Dist.CLIENT)
 public class ClientHandler {
-
+    
     @SubscribeEvent
     public static void doClientStuff(final FMLClientSetupEvent event) {
-
+        
         SneakingMotionCanceller.getInstance().register();
         BladeRuntimeSyncer.getInstance().register();
-
+        
         if (ModList.get().isLoaded("playeranimator")) {
             PlayerAnimationOverrider.getInstance().register();
         } else {
             UserPoseOverrider.getInstance().register();
         }
-
+        
         RankRenderer.getInstance().register();
         BlockPickCanceller.getInstance().register();
-
+        
         event.enqueueWork(() -> {
             ItemProperties.register(SlashBladeItems.SLASHBLADE.get(), ResourceLocation.parse("slashblade:user"),
-                    (ClampedItemPropertyFunction) (p_174564_, p_174565_, p_174566_, p_174567_) -> {
-                        BladeModel.user = p_174566_;
-                        return 0;
-                    });
-
+                (ClampedItemPropertyFunction) (p_174564_, p_174565_, p_174566_, p_174567_) -> {
+                    BladeModel.user = p_174566_;
+                    return 0;
+                });
+            
             ItemProperties.register(SlashBladeItems.SLASHBLADE_BAMBOO.get(), ResourceLocation.parse("slashblade:user"),
-                    (ClampedItemPropertyFunction) (p_174564_, p_174565_, p_174566_, p_174567_) -> {
-                        BladeModel.user = p_174566_;
-                        return 0;
-                    });
-
+                (ClampedItemPropertyFunction) (p_174564_, p_174565_, p_174566_, p_174567_) -> {
+                    BladeModel.user = p_174566_;
+                    return 0;
+                });
+            
             ItemProperties.register(SlashBladeItems.SLASHBLADE_SILVERBAMBOO.get(), ResourceLocation.parse("slashblade:user"),
-                    (ClampedItemPropertyFunction) (p_174564_, p_174565_, p_174566_, p_174567_) -> {
-                        BladeModel.user = p_174566_;
-                        return 0;
-                    });
-
+                (ClampedItemPropertyFunction) (p_174564_, p_174565_, p_174566_, p_174567_) -> {
+                    BladeModel.user = p_174566_;
+                    return 0;
+                });
+            
             ItemProperties.register(SlashBladeItems.SLASHBLADE_WHITE.get(), ResourceLocation.parse("slashblade:user"),
-                    (ClampedItemPropertyFunction) (p_174564_, p_174565_, p_174566_, p_174567_) -> {
-                        BladeModel.user = p_174566_;
-                        return 0;
-                    });
-
+                (ClampedItemPropertyFunction) (p_174564_, p_174565_, p_174566_, p_174567_) -> {
+                    BladeModel.user = p_174566_;
+                    return 0;
+                });
+            
             ItemProperties.register(SlashBladeItems.SLASHBLADE_WOOD.get(), ResourceLocation.parse("slashblade:user"),
-                    (ClampedItemPropertyFunction) (p_174564_, p_174565_, p_174566_, p_174567_) -> {
-                        BladeModel.user = p_174566_;
-                        return 0;
-                    });
+                (ClampedItemPropertyFunction) (p_174564_, p_174565_, p_174566_, p_174567_) -> {
+                    BladeModel.user = p_174566_;
+                    return 0;
+                });
         });
-
+        
     }
-
+    
     @SubscribeEvent
     public static void onCreativeTagBuilding(BuildCreativeModeTabContentsEvent event) {
         var registries = event.getParameters().holders();
         SlashBlade.getSlashBladeDefinitionRegistry(registries)
-                .listElements()
-                .sorted(SlashBladeDefinition.COMPARATOR)
-                .forEach(entry -> {
-                    if (!event.getTabKey().location().equals(entry.value().getCreativeGroup())) {
-                        return;
-                    }
-
-                    var blade = entry.value().getBlade(registries);
-                    if (!blade.isEmpty()) {
-                        event.accept(blade);
-                    }
-                });
+            .listElements()
+            .sorted(SlashBladeDefinition.COMPARATOR)
+            .forEach(entry -> {
+                if (!event.getTabKey().location().equals(entry.value().getCreativeGroup())) {
+                    return;
+                }
+                
+                var blade = entry.value().getBlade(registries);
+                if (!blade.isEmpty()) {
+                    event.accept(blade);
+                }
+            });
     }
-
+    
     @SubscribeEvent
     public static void registerKeyMapping(RegisterKeyMappingsEvent event) {
         event.register(SlashBladeKeyMappings.KEY_SPECIAL_MOVE);
         event.register(SlashBladeKeyMappings.KEY_SUMMON_BLADE);
     }
-
+    
     @SubscribeEvent
     public static void onTextureStitched(TextureAtlasStitchedEvent event) {
         BladeMotionManager.getInstance().reload();
     }
-
+    
     @SubscribeEvent
     public static void onRegisterClientExtensions(RegisterClientExtensionsEvent event) {
         var extensions = new IClientItemExtensions() {
             final BlockEntityWithoutLevelRenderer renderer = new SlashBladeTEISR(
-                    Minecraft.getInstance().getBlockEntityRenderDispatcher(),
-                    Minecraft.getInstance().getEntityModels());
-
+                Minecraft.getInstance().getBlockEntityRenderDispatcher(),
+                Minecraft.getInstance().getEntityModels());
+            
             @Override
-            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
+            public @NotNull BlockEntityWithoutLevelRenderer getCustomRenderer() {
                 return renderer;
             }
         };
         event.registerItem(extensions, SlashBladeItems.SLASHBLADE.get(),
-                SlashBladeItems.SLASHBLADE_WOOD.get(), SlashBladeItems.SLASHBLADE_BAMBOO.get(),
-                SlashBladeItems.SLASHBLADE_SILVERBAMBOO.get(), SlashBladeItems.SLASHBLADE_WHITE.get());
+            SlashBladeItems.SLASHBLADE_WOOD.get(), SlashBladeItems.SLASHBLADE_BAMBOO.get(),
+            SlashBladeItems.SLASHBLADE_SILVERBAMBOO.get(), SlashBladeItems.SLASHBLADE_WHITE.get());
     }
-
+    
     @SubscribeEvent
     public static void Baked(final ModelEvent.ModifyBakingResult event) {
         bakeBlade(SlashBladeItems.SLASHBLADE.get(), event);
@@ -146,7 +147,7 @@ public class ClientHandler {
         bakeBlade(SlashBladeItems.SLASHBLADE_SILVERBAMBOO.get(), event);
         bakeBlade(SlashBladeItems.SLASHBLADE_BAMBOO.get(), event);
     }
-
+    
     public static void bakeBlade(Item blade, final ModelEvent.ModifyBakingResult event) {
         ModelResourceLocation loc = ModelResourceLocation.inventory(BuiltInRegistries.ITEM.getKey(blade));
         var bakedModel = event.getModels().get(loc);
@@ -154,31 +155,31 @@ public class ClientHandler {
             event.getModels().put(loc, new BladeModel(bakedModel, event.getModelBakery()));
         }
     }
-
+    
     @SubscribeEvent
     public static void addLayers(EntityRenderersEvent.AddLayers event) {
         addPlayerLayer(event, PlayerSkin.Model.WIDE);
         addPlayerLayer(event, PlayerSkin.Model.SLIM);
-
+        
         for (EntityType<?> entityType : event.getEntityTypes()) {
             addEntityLayer(event, event.getRenderer(entityType));
         }
     }
-
-    @SuppressWarnings({"unchecked"})
+    
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public static void addPlayerLayer(EntityRenderersEvent.AddLayers evt, PlayerSkin.Model skin) {
         var renderer = evt.getSkin(skin);
-
+        
         if (renderer instanceof LivingEntityRenderer livingRenderer) {
             livingRenderer.addLayer(new LayerMainBlade<>(livingRenderer));
         }
     }
-
-    @SuppressWarnings({"unchecked"})
+    
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private static void addEntityLayer(EntityRenderersEvent.AddLayers evt, EntityRenderer<?> renderer) {
         if (renderer instanceof LivingEntityRenderer livingRenderer) {
             livingRenderer.addLayer(new LayerMainBlade<>(livingRenderer));
         }
     }
-
+    
 }

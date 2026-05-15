@@ -29,19 +29,19 @@ import java.util.regex.Matcher;
 
 @Mixin(value = ItemEmiStackSerializer.class, remap = false)
 public abstract class MixinItemEmiStackSerializer implements EmiStackSerializer<ItemEmiStack> {
-
+    
     @Override
     public JsonElement serialize(ItemEmiStack stack) {
         if (stack.getAmount() == 1 && stack.getChance() == 1 &&
-                stack.getRemainder().isEmpty() &&
-                !(stack.getItemStack().getItem() instanceof ItemSlashBlade)) {
+            stack.getRemainder().isEmpty() &&
+            !(stack.getItemStack().getItem() instanceof ItemSlashBlade)) {
             String s = getType() + ":" + stack.getId();
             DataComponentPatch patch = stack.getComponentChanges();
             if (!patch.isEmpty()) {
                 s += DataComponentPatch.CODEC.encodeStart(NbtOps.INSTANCE, patch).getOrThrow().getAsString();
             }
             return new JsonPrimitive(s);
-
+            
         } else {
             JsonObject json = new JsonObject();
             json.addProperty("type", getType());
@@ -61,7 +61,7 @@ public abstract class MixinItemEmiStackSerializer implements EmiStackSerializer<
                 var optional = BladeStateAccess.of(itemStack);
                 if (optional.isPresent()) {
                     json.addProperty("sbCaps", optional.orElseThrow().serializeNBT().getAsString());
-
+                    
                 }
             }
             if (!stack.getRemainder().isEmpty()) {
@@ -79,7 +79,7 @@ public abstract class MixinItemEmiStackSerializer implements EmiStackSerializer<
             return json;
         }
     }
-
+    
     @Override
     public EmiIngredient deserialize(JsonElement element) {
         ResourceLocation id = null;
@@ -122,7 +122,7 @@ public abstract class MixinItemEmiStackSerializer implements EmiStackSerializer<
                     if (holderOpt.isEmpty()) {
                         return EmiStack.EMPTY;
                     }
-                    Holder<Item> holder = (Holder<Item>) holderOpt.get();
+                    Holder<Item> holder = holderOpt.get();
                     CompoundTag capTag = TagParser.parseTag(capNBT);
                     ItemStack itemStack = new ItemStack(holder, (int) amount, nbtPatch);
                     BladeStateAccess.of(itemStack).ifPresent(state -> state.deserializeNBT(capTag));
@@ -143,7 +143,7 @@ public abstract class MixinItemEmiStackSerializer implements EmiStackSerializer<
                 if (!remainder.isEmpty()) {
                     stack.setRemainder(remainder);
                 }
-
+                
                 return stack;
             } catch (Exception e) {
                 EmiLog.error("Error parsing NBT in deserialized stack", e);

@@ -33,192 +33,193 @@ import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class TargetSelector {
     static public final TargetingConditions lockon = new SlashBladeTargetingConditions().range(40.0D)
-            .selector(new AttackablePredicate());
-
+        .selector(new AttackablePredicate());
+    
     static public final TargetingConditions test = new SlashBladeTargetingConditions()
-            .selector(new AttackablePredicate());
-
+        .selector(new AttackablePredicate());
+    
     static final String AttackableTag = "RevengeAttacker";
-
+    
     static boolean isAttackable(Entity revengeTarget, Entity attacker) {
         return revengeTarget != null && attacker != null
-                && (revengeTarget == attacker || revengeTarget.isAlliedTo(attacker));
+            && (revengeTarget.equals(attacker) || revengeTarget.isAlliedTo(attacker));
     }
-
+    
     static public final TargetingConditions areaAttack = new SlashBladeTargetingConditions().range(12.0D)
-            .ignoreInvisibilityTesting().selector(new AttackablePredicate());
-
+        .ignoreInvisibilityTesting().selector(new AttackablePredicate());
+    
     static public TargetingConditions getAreaAttackPredicate(double reach) {
         return areaAttack.range(reach);
     }
-
+    
     static public class AttackablePredicate implements Predicate<LivingEntity> {
-
+        
         @Override
         public boolean test(LivingEntity livingentity) {
-
+            
             if (!SlashBladeConfig.PVP_ENABLE.get() && livingentity instanceof Player) {
                 return false;
             }
-
+            
             if (livingentity instanceof ArmorStand) {
                 return ((ArmorStand) livingentity).isMarker();
             }
-
+            
             if (livingentity.getTags().contains(AttackableTag)) {
                 livingentity.removeTag(AttackableTag);
                 return true;
             }
-
+            
             if (!SlashBladeConfig.FRIENDLY_ENABLE.get() && !(livingentity instanceof Enemy)) {
                 return false;
             }
-
+            
             if (livingentity.hasPassenger(entity -> entity instanceof Player)) {
                 return false;
             }
-
+            
             if (livingentity.isCurrentlyGlowing()) {
                 return true;
             }
-
+            
             if (livingentity.getTeam() != null) {
                 return true;
             }
-
+            
             return !livingentity.getType().is(EntityTypeTags.ATTACKABLE_BLACKLIST);
         }
     }
-
+    
     static public List<Entity> getReflectableEntitiesWithinAABB(LivingEntity attacker) {
         double reach = TargetSelector.getResolvedReach(attacker);
-
+        
         AABB aabb = getResolvedAxisAligned(attacker.getBoundingBox(), attacker.getLookAngle(), reach);
         Level world = attacker.level();
         return world.getEntitiesOfClass(Projectile.class, aabb).stream()
-                        .filter(e -> ((e.getOwner() == null || e.getOwner() != attacker)
-                                && (!(e instanceof IShootable) || ((IShootable) e).getShooter() != attacker)))
-                .filter(e -> (e.distanceToSqr(attacker) < (reach * reach)))
-                .collect(Collectors.toList());
+            .filter(e -> ((e.getOwner() == null || !e.getOwner().equals(attacker))
+                && (!(e instanceof IShootable) || !((IShootable) e).getShooter().equals(attacker))))
+            .filter(e -> (e.distanceToSqr(attacker) < (reach * reach)))
+            .collect(Collectors.toList());
     }
-
+    
     static public List<Entity> getExtinguishableEntitiesWithinAABB(LivingEntity attacker) {
         double reach = TargetSelector.getResolvedReach(attacker);
-
+        
         AABB aabb = getResolvedAxisAligned(attacker.getBoundingBox(), attacker.getLookAngle(), reach);
         Level world = attacker.level();
         return world.getEntitiesOfClass(PrimedTnt.class, aabb).stream()
-                .filter(e -> (e.distanceToSqr(attacker) < (reach * reach))).collect(Collectors.toList());
+            .filter(e -> (e.distanceToSqr(attacker) < (reach * reach))).collect(Collectors.toList());
     }
-
+    
     static public List<Entity> getTargettableEntitiesWithinAABB(Level world, LivingEntity attacker) {
         return getTargettableEntitiesWithinAABB(world, attacker,
-                getResolvedAxisAligned(attacker.getBoundingBox(), attacker.getLookAngle(), getResolvedReach(attacker)));
+            getResolvedAxisAligned(attacker.getBoundingBox(), attacker.getLookAngle(), getResolvedReach(attacker)));
     }
-
+    
     static public List<Entity> getTargettableEntitiesWithinAABB(Level world, LivingEntity attacker, AABB aabb) {
         double reach = TargetSelector.getResolvedReach(attacker);
-
+        
         return getTargettableEntitiesWithinAABB(world, attacker, aabb, reach);
     }
-
+    
     public static List<Entity> getTargettableEntitiesWithinAABB(Level world, LivingEntity attacker, AABB aabb,
                                                                 double reach) {
         List<Entity> list1 = Lists.newArrayList();
-
+        
         list1.addAll(getReflectableEntitiesWithinAABB(attacker));
         list1.addAll(getExtinguishableEntitiesWithinAABB(attacker));
-
+        
         list1.addAll(world.getEntitiesOfClass(LivingEntity.class, aabb.inflate(5), Entity::isMultipartEntity).stream()
-                .flatMap(e -> (e.isMultipartEntity()) ? Stream.of(e.getParts()) : Stream.of(e)).filter(t -> {
-                    boolean result = false;
-                    var check = new AttackablePredicate();
-                    if (t instanceof LivingEntity living) {
-                        result = check.test(living);
-                    } else if (t instanceof PartEntity<?> part) {
-                        if (part.getParent() instanceof LivingEntity living) {
-                            result = check.test(living) && part.distanceToSqr(attacker) < (reach * reach);
-                        }
+            .flatMap(e -> (e.isMultipartEntity()) ? Stream.of(e.getParts()) : Stream.of(e)).filter(t -> {
+                boolean result = false;
+                var check = new AttackablePredicate();
+                if (t instanceof LivingEntity living) {
+                    result = check.test(living);
+                } else if (t instanceof PartEntity<?> part) {
+                    if (part.getParent() instanceof LivingEntity living) {
+                        result = check.test(living) && part.distanceToSqr(attacker) < (reach * reach);
                     }
-                    return result;
-                }).collect(Collectors.toList()));
-
+                }
+                return result;
+            }).toList());
+        
         TargetingConditions predicate = getAreaAttackPredicate(reach);
-
+        
         list1.addAll(world.getEntitiesOfClass(LivingEntity.class, aabb).stream()
-                .flatMap(e -> (e.isMultipartEntity()) ? Stream.of(e.getParts()) : Stream.of(e)).filter(t -> {
-                    boolean result = false;
-                    if (t instanceof LivingEntity living) {
-                        result = predicate.test(attacker, living);
-                    } else if (t instanceof PartEntity<?> part) {
-                        if (part.getParent() instanceof LivingEntity living) {
-                            result = predicate.test(attacker, living) && part.distanceToSqr(attacker) < (reach * reach);
-                        }
+            .flatMap(e -> (e.isMultipartEntity()) ? Stream.of(e.getParts()) : Stream.of(e)).filter(t -> {
+                boolean result = false;
+                if (t instanceof LivingEntity living) {
+                    result = predicate.test(attacker, living);
+                } else if (t instanceof PartEntity<?> part) {
+                    if (part.getParent() instanceof LivingEntity living) {
+                        result = predicate.test(attacker, living) && part.distanceToSqr(attacker) < (reach * reach);
                     }
-                    return result;
-                }).collect(Collectors.toList()));
-
+                }
+                return result;
+            }).toList());
+        
         return list1;
     }
-
+    
     static public <E extends Entity & IShootable> List<Entity> getTargettableEntitiesWithinAABB(Level world,
                                                                                                 double reach, E owner) {
         AABB aabb = owner.getBoundingBox().inflate(reach);
-
+        
         List<Entity> list1 = Lists.newArrayList();
-
+        
         list1.addAll(world.getEntitiesOfClass(EnderDragon.class, aabb.inflate(5)).stream()
-                .flatMap(d -> Arrays.stream(d.getSubEntities())).filter(e -> (e.distanceToSqr(owner) < (reach * reach)))
-                .toList());
-
+            .flatMap(d -> Arrays.stream(d.getSubEntities())).filter(e -> (e.distanceToSqr(owner) < (reach * reach)))
+            .toList());
+        
         LivingEntity user;
         if (owner.getShooter() instanceof LivingEntity) {
             user = (LivingEntity) owner.getShooter();
         } else {
             user = null;
         }
-
+        
         list1.addAll(getReflectableEntitiesWithinAABB(world, reach, owner));
-
+        
         TargetingConditions predicate = getAreaAttackPredicate(0); // reach check has already been completed
-
+        
         list1.addAll(world.getEntitiesOfClass(LivingEntity.class, aabb, (e) -> true).stream()
-                .filter(t -> predicate.test(user, t)).toList());
-
+            .filter(t -> predicate.test(user, t)).toList());
+        
         return list1;
     }
-
+    
     static public <E extends Entity & IShootable> List<Entity> getReflectableEntitiesWithinAABB(Level world,
                                                                                                 double reach, E owner) {
         AABB aabb = owner.getBoundingBox().inflate(reach);
-
+        
         return world.getEntitiesOfClass(Projectile.class, aabb).stream()
-                        .filter(e -> (e.getOwner() == null
-                                || e.getOwner() != owner.getShooter()))
-                .filter(e -> (e.distanceToSqr(owner) < (reach * reach)) && e != owner)
-                .collect(Collectors.toList());
+            .filter(e -> (e.getOwner() == null
+                || !e.getOwner().equals(owner.getShooter())))
+            .filter(e -> (e.distanceToSqr(owner) < (reach * reach)) && !e.equals(owner))
+            .collect(Collectors.toList());
     }
-
+    
     static public AABB getResolvedAxisAligned(AABB bb, Vec3 dir, double reach) {
         final double padding = 1.0;
-
-        if (dir == Vec3.ZERO) {
+        
+        if (dir.equals(Vec3.ZERO)) {
             bb = bb.inflate(reach * 2);
         } else {
             bb = bb.move(dir.scale(reach * 0.5)).inflate(reach);
         }
-
+        
         bb = bb.inflate(padding);
-
+        
         return bb;
     }
-
+    
     static public double getResolvedReach(LivingEntity user) {
         double reach = 4.0D; /* 4 block */
         AttributeInstance attrib = user.getAttribute(Attributes.ENTITY_INTERACTION_RANGE);
@@ -227,15 +228,15 @@ public class TargetSelector {
         }
         return reach;
     }
-
+    
     @SubscribeEvent
     public static void onInputChange(InputCommandEvent event) {
-
+        
         EnumSet<InputCommand> old = event.getOld();
         EnumSet<InputCommand> current = event.getCurrent();
         ServerPlayer sender = event.getEntity();
-
-
+        
+        
         ItemStack stack = sender.getMainHandItem();
         if (stack.isEmpty()) {
             return;
@@ -243,13 +244,13 @@ public class TargetSelector {
         if (!(stack.getItem() instanceof ItemSlashBlade)) {
             return;
         }
-
+        
         // SneakHold & Middle Click
         if (!(!old.contains(InputCommand.M_DOWN) && current.contains(InputCommand.M_DOWN)
-                && current.contains(InputCommand.SNEAK))) {
+            && current.contains(InputCommand.SNEAK))) {
             return;
         }
-
+        
         BladeStateAccess.of(stack).ifPresent(s -> {
             Entity tmp = s.getTargetEntity(sender.level());
             if (tmp == null) {
@@ -258,44 +259,44 @@ public class TargetSelector {
             if (!(tmp instanceof LivingEntity target)) {
                 return;
             }
-
-            if (target.getLastHurtByMob() == sender) {
+            
+            if (Objects.equals(target.getLastHurtByMob(), sender)) {
                 return;
             }
-
+            
             target.setLastHurtByMob(sender);
-
+            
             if (target.level() instanceof ServerLevel sw) {
-
+                
                 sw.sendParticles(sender, ParticleTypes.ANGRY_VILLAGER, false, target.getX(),
-                        target.getY() + target.getEyeHeight(), target.getZ(), 5, target.getBbWidth() * 1.5,
-                        target.getBbHeight(), target.getBbWidth() * 1.5, 0.02D);
+                    target.getY() + target.getEyeHeight(), target.getZ(), 5, target.getBbWidth() * 1.5,
+                    target.getBbHeight(), target.getBbWidth() * 1.5, 0.02D);
             }
         });
     }
-
+    
     public static class SlashBladeTargetingConditions extends TargetingConditions {
-
+        
         public SlashBladeTargetingConditions() {
             super(true);
         }
-
+        
         @Override
         public boolean test(@Nullable LivingEntity attacker, LivingEntity target) {
             boolean isAttackable = false;
-
+            
             isAttackable |= isAttackable(target.getLastHurtByMob(), attacker);
-
+            
             if (!isAttackable && target instanceof Mob) {
                 isAttackable = isAttackable(((Mob) target).getTarget(), attacker);
             }
-
+            
             if (isAttackable) {
                 target.addTag(AttackableTag);
             }
-
+            
             return super.test(attacker, target);
         }
     }
-
+    
 }

@@ -57,56 +57,56 @@ import static mods.flammpfeil.slashblade.SlashBladeConfig.SLASHBLADE_DAMAGE_MULT
 
 public class EntityAbstractSummonedSword extends Projectile implements IShootable {
     private static final EntityDataAccessor<Integer> COLOR = SynchedEntityData
-            .defineId(EntityAbstractSummonedSword.class, EntityDataSerializers.INT);
+        .defineId(EntityAbstractSummonedSword.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> FLAGS = SynchedEntityData
-            .defineId(EntityAbstractSummonedSword.class, EntityDataSerializers.INT);
+        .defineId(EntityAbstractSummonedSword.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> HIT_ENTITY_ID = SynchedEntityData
-            .defineId(EntityAbstractSummonedSword.class, EntityDataSerializers.INT);
+        .defineId(EntityAbstractSummonedSword.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Float> OFFSET_YAW = SynchedEntityData
-            .defineId(EntityAbstractSummonedSword.class, EntityDataSerializers.FLOAT);
+        .defineId(EntityAbstractSummonedSword.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Float> ROLL = SynchedEntityData
-            .defineId(EntityAbstractSummonedSword.class, EntityDataSerializers.FLOAT);
+        .defineId(EntityAbstractSummonedSword.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Byte> PIERCE = SynchedEntityData.defineId(EntityAbstractSummonedSword.class,
-            EntityDataSerializers.BYTE);
+        EntityDataSerializers.BYTE);
     private static final EntityDataAccessor<String> MODEL = SynchedEntityData
-            .defineId(EntityAbstractSummonedSword.class, EntityDataSerializers.STRING);
+        .defineId(EntityAbstractSummonedSword.class, EntityDataSerializers.STRING);
     private static final EntityDataAccessor<Integer> DELAY = SynchedEntityData
-            .defineId(EntityAbstractSummonedSword.class, EntityDataSerializers.INT);
-
+        .defineId(EntityAbstractSummonedSword.class, EntityDataSerializers.INT);
+    
     private int ticksInGround;
     private boolean inGround;
     private BlockState inBlockState;
     private int ticksInAir;
     private double damage = 1.0D;
-
+    
     private IntOpenHashSet alreadyHits;
-
+    
     private Entity hitEntity = null;
-
+    
     static final int ON_GROUND_LIFE_TIME = 20 * 5;
-
+    
     private final SoundEvent hitEntitySound = SoundEvents.TRIDENT_HIT;
     private final SoundEvent hitEntityPlayerSound = SoundEvents.TRIDENT_HIT;
     private final SoundEvent hitGroundSound = SoundEvents.TRIDENT_HIT_GROUND;
-
+    
     protected SoundEvent getHitEntitySound() {
         return this.hitEntitySound;
     }
-
+    
     protected SoundEvent getHitEntityPlayerSound() {
         return this.hitEntityPlayerSound;
     }
-
+    
     protected SoundEvent getHitGroundSound() {
         return this.hitGroundSound;
     }
-
+    
     public EntityAbstractSummonedSword(EntityType<? extends Projectile> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);
         this.setNoGravity(true);
         // this.setGlowing(true);
     }
-
+    
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
@@ -119,45 +119,45 @@ public class EntityAbstractSummonedSword extends Projectile implements IShootabl
         builder.define(MODEL, "");
         builder.define(DELAY, 10);
     }
-
+    
     @Override
     public void addAdditionalSaveData(@NotNull CompoundTag compound) {
         super.addAdditionalSaveData(compound);
-
+        
         NBTHelper.getNBTCoupler(compound).put("Color", this.getColor()).put("life", (short) this.ticksInGround)
-                .put("inBlockState", (this.inBlockState != null ? NbtUtils.writeBlockState(this.inBlockState) : null))
-                .put("inGround", this.inGround).put("damage", this.damage).put("crit", this.getIsCritical())
-                .put("clip", this.isNoClip()).put("PierceLevel", this.getPierce()).put("model", this.getModelName())
-                .put("Delay", this.getDelay());
+            .put("inBlockState", (this.inBlockState != null ? NbtUtils.writeBlockState(this.inBlockState) : null))
+            .put("inGround", this.inGround).put("damage", this.damage).put("crit", this.getIsCritical())
+            .put("clip", this.isNoClip()).put("PierceLevel", this.getPierce()).put("model", this.getModelName())
+            .put("Delay", this.getDelay());
     }
-
+    
     @Override
     public void readAdditionalSaveData(@NotNull CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-
+        
         NBTHelper.getNBTCoupler(compound).get("Color", this::setColor)
-                .get("life", ((Integer v) -> this.ticksInGround = v))
-                .get("inBlockState",
-                        ((CompoundTag v) -> this.inBlockState = NbtUtils
-                                .readBlockState(this.level().holderLookup(Registries.BLOCK), v)))
-                .get("inGround", ((Boolean v) -> this.inGround = v))
-                .get("damage", ((Double v) -> this.damage = v), this.damage).get("crit", this::setIsCritical)
-                .get("clip", this::setNoClip).get("PierceLevel", this::setPierce).get("model", this::setModelName)
-                .get("Delay", this::setDelay);
+            .get("life", ((Integer v) -> this.ticksInGround = v))
+            .get("inBlockState",
+                ((CompoundTag v) -> this.inBlockState = NbtUtils
+                    .readBlockState(this.level().holderLookup(Registries.BLOCK), v)))
+            .get("inGround", ((Boolean v) -> this.inGround = v))
+            .get("damage", ((Double v) -> this.damage = v), this.damage).get("crit", this::setIsCritical)
+            .get("clip", this::setNoClip).get("PierceLevel", this::setPierce).get("model", this::setModelName)
+            .get("Delay", this::setDelay);
     }
-
+    
     @Override
-    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket(ServerEntity entity) {
+    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket(@NotNull ServerEntity entity) {
         return super.getAddEntityPacket(entity);
     }
-
+    
     @Override
     public void shoot(double x, double y, double z, float velocity, float inaccuracy) {
         Vec3 vec3d = (new Vec3(x, y, z)).normalize()
-                .add(this.random.nextGaussian() * (double) 0.0075F * (double) inaccuracy,
-                        this.random.nextGaussian() * (double) 0.0075F * (double) inaccuracy,
-                        this.random.nextGaussian() * (double) 0.0075F * (double) inaccuracy)
-                .scale(velocity);
+            .add(this.random.nextGaussian() * (double) 0.0075F * (double) inaccuracy,
+                this.random.nextGaussian() * (double) 0.0075F * (double) inaccuracy,
+                this.random.nextGaussian() * (double) 0.0075F * (double) inaccuracy)
+            .scale(velocity);
         this.setDeltaMovement(vec3d);
         float f = Mth.sqrt((float) vec3d.horizontalDistanceSqr());
         this.setPos(this.position());
@@ -167,7 +167,7 @@ public class EntityAbstractSummonedSword extends Projectile implements IShootabl
         this.xRotO = this.getXRot();
         this.ticksInGround = 0;
     }
-
+    
     @Override
     @OnlyIn(Dist.CLIENT)
     public boolean shouldRenderAtSqrDistance(double distance) {
@@ -175,18 +175,18 @@ public class EntityAbstractSummonedSword extends Projectile implements IShootabl
         if (Double.isNaN(d0)) {
             d0 = 1.0D;
         }
-
+        
         d0 = d0 * 64.0D * getViewScale();
         return distance < d0 * d0;
     }
-
+    
     @Override
     @OnlyIn(Dist.CLIENT)
     public void lerpTo(double x, double y, double z, float yaw, float pitch, int steps) {
         this.setPos(x, y, z);
         this.setRot(yaw, pitch);
     }
-
+    
     @Override
     @OnlyIn(Dist.CLIENT)
     public void lerpMotion(double x, double y, double z) {
@@ -200,26 +200,26 @@ public class EntityAbstractSummonedSword extends Projectile implements IShootabl
             this.moveTo(this.getX(), this.getY(), this.getZ(), this.getYRot(), this.getXRot());
             this.ticksInGround = 0;
         }
-
+        
     }
-
+    
     public enum FlagsState {
         Critical, NoClip,
     }
-
+    
     protected EnumSet<FlagsState> flags = EnumSet.noneOf(FlagsState.class);
     protected int intFlags = 0;
-
+    
     protected void setFlags(FlagsState value) {
         this.flags.add(value);
         refreshFlags();
     }
-
+    
     protected void removeFlags(FlagsState value) {
         this.flags.remove(value);
         refreshFlags();
     }
-
+    
     private void refreshFlags() {
         if (this.level().isClientSide()) {
             int newValue = this.entityData.get(FLAGS);
@@ -235,7 +235,7 @@ public class EntityAbstractSummonedSword extends Projectile implements IShootabl
             }
         }
     }
-
+    
     public void setIsCritical(boolean value) {
         if (value) {
             setFlags(FlagsState.Critical);
@@ -243,12 +243,12 @@ public class EntityAbstractSummonedSword extends Projectile implements IShootabl
             removeFlags(FlagsState.Critical);
         }
     }
-
+    
     public boolean getIsCritical() {
         refreshFlags();
         return flags.contains(FlagsState.Critical);
     }
-
+    
     public void setNoClip(boolean value) {
         this.noPhysics = value;
         if (value) {
@@ -257,7 +257,7 @@ public class EntityAbstractSummonedSword extends Projectile implements IShootabl
             removeFlags(FlagsState.NoClip);
         }
     }
-
+    
     // disallowedHitBlock
     public boolean isNoClip() {
         if (!this.level().isClientSide()) {
@@ -267,33 +267,33 @@ public class EntityAbstractSummonedSword extends Projectile implements IShootabl
             return flags.contains(FlagsState.NoClip);
         }
     }
-
+    
     @Override
     public void tick() {
         super.tick();
-
+        
         if (getHitEntity() != null) {
             Entity hits = getHitEntity();
-
+            
             if (!hits.isAlive()) {
                 this.burst();
             } else {
                 this.setPos(hits.getX(), hits.getY() + hits.getEyeHeight() * 0.5f, hits.getZ());
-
+                
                 int delay = getDelay();
                 delay--;
                 setDelay(delay);
-
+                
                 if (!this.level().isClientSide() && delay < 0) {
                     this.burst();
                 }
             }
-
+            
             return;
         }
-
+        
         boolean disallowedHitBlock = this.isNoClip();
-
+        
         BlockPos blockpos = this.getOnPos();
         BlockState blockstate = this.level().getBlockState(blockpos);
         if (!blockstate.isAir() && !disallowedHitBlock) {
@@ -307,13 +307,13 @@ public class EntityAbstractSummonedSword extends Projectile implements IShootabl
                 }
             }
         }
-
+        
         if (this.isInWaterOrRain()) {
             this.clearFire();
         }
-
+        
         if (this.inGround && !disallowedHitBlock) {
-            if (this.inBlockState != blockstate && this.level().noCollision(this.getBoundingBox().inflate(0.06D))) {
+            if (!this.inBlockState.equals(blockstate) && this.level().noCollision(this.getBoundingBox().inflate(0.06D))) {
                 // block breaked
                 this.burst();
             } else if (!this.level().isClientSide()) {
@@ -330,17 +330,17 @@ public class EntityAbstractSummonedSword extends Projectile implements IShootabl
                 this.yRotO = this.getYRot();
                 this.xRotO = this.getXRot();
             }
-
+            
             // process inAir
             ++this.ticksInAir;
             Vec3 positionVec = this.position();
             Vec3 movedVec = positionVec.add(motionVec);
             HitResult raytraceresult = this.level().clip(
-                    new ClipContext(positionVec, movedVec, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
+                new ClipContext(positionVec, movedVec, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
             if (raytraceresult.getType() != HitResult.Type.MISS) {
                 movedVec = raytraceresult.getLocation();
             }
-
+            
             while (this.isAlive()) {
                 // todo : replace TargetSelector
                 EntityHitResult entityraytraceresult = this.getRayTrace(positionVec, movedVec);
@@ -348,12 +348,13 @@ public class EntityAbstractSummonedSword extends Projectile implements IShootabl
                     raytraceresult = entityraytraceresult;
                 }
                 
-                if(raytraceresult == null)
-                	break;
-
+                if (raytraceresult == null) {
+                    break;
+                }
+                
                 boolean impactCheck = !net.neoforged.neoforge.event.EventHooks.onProjectileImpact(this, raytraceresult);
-				if (raytraceresult.getType() == HitResult.Type.ENTITY
-                		&& impactCheck) {
+                if (raytraceresult.getType() == HitResult.Type.ENTITY
+                    && impactCheck) {
                     Entity entity = null;
                     if (raytraceresult instanceof EntityHitResult) {
                         entity = ((EntityHitResult) raytraceresult).getEntity();
@@ -366,19 +367,19 @@ public class EntityAbstractSummonedSword extends Projectile implements IShootabl
                         }
                     }
                 }
-
+                
                 if (raytraceresult != null && !(disallowedHitBlock && raytraceresult.getType() == HitResult.Type.BLOCK) && impactCheck) {
                     this.onHit(raytraceresult);
                     this.hasImpulse = true;
                 }
-
+                
                 if (entityraytraceresult == null || this.getPierce() <= 0) {
                     break;
                 }
-
+                
                 raytraceresult = null;
             }
-
+            
             motionVec = this.getDeltaMovement();
             double mx = motionVec.x;
             double my = motionVec.y;
@@ -386,11 +387,11 @@ public class EntityAbstractSummonedSword extends Projectile implements IShootabl
             if (this.getIsCritical()) {
                 for (int i = 0; i < 4; ++i) {
                     this.level().addParticle(ParticleTypes.CRIT, this.getX() + mx * (double) i / 4.0D,
-                            this.getY() + my * (double) i / 4.0D, this.getZ() + mz * (double) i / 4.0D, -mx, -my + 0.2D,
-                            -mz);
+                        this.getY() + my * (double) i / 4.0D, this.getZ() + mz * (double) i / 4.0D, -mx, -my + 0.2D,
+                        -mz);
                 }
             }
-
+            
             this.setPos(this.getX() + mx, this.getY() + my, this.getZ() + mz);
             float f4 = Mth.sqrt((float) motionVec.horizontalDistanceSqr());
             if (disallowedHitBlock) {
@@ -398,57 +399,57 @@ public class EntityAbstractSummonedSword extends Projectile implements IShootabl
             } else {
                 this.setYRot((float) (Mth.atan2(mx, mz) * (double) (180F / (float) Math.PI)));
             }
-
+            
             for (this.setXRot((float) (Mth.atan2(my, f4) * (double) (180F / (float) Math.PI))); this.getXRot()
-                    - this.xRotO < -180.0F; this.xRotO -= 360.0F) {
+                - this.xRotO < -180.0F; this.xRotO -= 360.0F) {
             }
-
+            
             while (this.getXRot() - this.xRotO >= 180.0F) {
                 this.xRotO += 360.0F;
             }
-
+            
             while (this.getYRot() - this.yRotO < -180.0F) {
                 this.yRotO -= 360.0F;
             }
-
+            
             while (this.getYRot() - this.yRotO >= 180.0F) {
                 this.yRotO += 360.0F;
             }
-
+            
             this.setXRot(Mth.lerp(0.2F, this.xRotO, this.getXRot()));
             this.setYRot(Mth.lerp(0.2F, this.yRotO, this.getYRot()));
             float f1 = 0.99F;
             if (this.isInWater()) {
                 for (int j = 0; j < 4; ++j) {
                     this.level().addParticle(ParticleTypes.BUBBLE, this.getX() - mx * 0.25D, this.getY() - my * 0.25D,
-                            this.getZ() - mz * 0.25D, mx, my, mz);
+                        this.getZ() - mz * 0.25D, mx, my, mz);
                 }
             }
-
+            
             this.setDeltaMovement(motionVec.scale(f1));
             if (!this.isNoGravity() && !disallowedHitBlock) {
                 Vec3 vec3d3 = this.getDeltaMovement();
                 this.setDeltaMovement(vec3d3.x, vec3d3.y - (double) 0.05F, vec3d3.z);
             }
-
+            
             // this.setPosition(this.getPosX(), this.getPosY(), this.getPosZ());
             this.checkInsideBlocks();
         }
-
+        
         if (!this.level().isClientSide() && ticksInGround <= 0 && 100 < this.tickCount) {
             this.remove(RemovalReason.DISCARDED);
         }
-
+        
     }
-
+    
     protected void tryDespawn() {
         ++this.ticksInGround;
         if (ON_GROUND_LIFE_TIME <= this.ticksInGround) {
             this.burst();
         }
-
+        
     }
-
+    
     @Override
     protected void onHit(HitResult raytraceResultIn) {
         HitResult.Type type = raytraceResultIn.getType();
@@ -463,7 +464,7 @@ public class EntityAbstractSummonedSword extends Projectile implements IShootabl
                 break;
         }
     }
-
+    
     @Override
     protected void onHitBlock(BlockHitResult blockraytraceresult) {
         BlockState blockstate = this.level().getBlockState(blockraytraceresult.getBlockPos());
@@ -479,36 +480,36 @@ public class EntityAbstractSummonedSword extends Projectile implements IShootabl
         this.resetAlreadyHits();
         blockstate.onProjectileHit(this.level(), blockstate, blockraytraceresult, this);
     }
-
+    
     public void doForceHitEntity(Entity target) {
         onHitEntity(new EntityHitResult(target));
     }
-
+    
     @Override
     protected void onHitEntity(EntityHitResult entityHitResult) {
         Entity targetEntity = entityHitResult.getEntity();
-
+        
         SlashBladeEvent.SummonedSwordOnHitEntityEvent event = new SlashBladeEvent.SummonedSwordOnHitEntityEvent(this, targetEntity);
         NeoForge.EVENT_BUS.post(event);
-
+        
         int i = Mth.ceil(this.getDamage());
         if (this.getPierce() > 0) {
             if (this.alreadyHits == null) {
                 this.alreadyHits = new IntOpenHashSet(5);
             }
-
+            
             if (this.alreadyHits.size() >= this.getPierce() + 1) {
                 this.burst();
                 return;
             }
-
+            
             this.alreadyHits.add(targetEntity.getId());
         }
-
+        
         if (this.getIsCritical()) {
             i += this.random.nextInt(i / 2 + 2);
         }
-
+        
         Entity shooter = this.getShooter();
         DamageSource damagesource;
         if (shooter == null) {
@@ -523,12 +524,12 @@ public class EntityAbstractSummonedSword extends Projectile implements IShootabl
                 ((LivingEntity) shooter).setLastHurtMob(hits);
             }
         }
-
+        
         int fireTime = targetEntity.getRemainingFireTicks();
         if (this.isOnFire() && !(targetEntity instanceof EnderMan)) {
             targetEntity.setRemainingFireTicks(5 * 20);
         }
-
+        
         // todo: attack manager
         targetEntity.invulnerableTime = 0;
         float scale = 1f;
@@ -541,30 +542,30 @@ public class EntityAbstractSummonedSword extends Projectile implements IShootabl
             if (targetEntity instanceof PartEntity) {
                 hits = ((PartEntity<?>) targetEntity).getParent();
             }
-
+            
             if (hits instanceof LivingEntity targetLivingEntity) {
-
+                
                 StunManager.setStun(targetLivingEntity);
-
+                
                 if (!this.level().isClientSide() && this.getPierce() <= 0) {
                     setHitEntity(hits);
                 }
-
+                
                 if (!this.level().isClientSide() && shooter instanceof LivingEntity) {
                     EnchantmentHelper.doPostAttackEffects((ServerLevel) this.level(), targetLivingEntity, damagesource);
                 }
-
+                
                 // this.arrowHit(targetLivingEntity);
-
+                
                 affectEntity(targetLivingEntity, getPotionEffects(), 1.0f);
-
-                if (targetLivingEntity != shooter && targetLivingEntity instanceof Player
-                        && shooter instanceof ServerPlayer) {
+                
+                if (!targetLivingEntity.equals(shooter) && targetLivingEntity instanceof Player
+                    && shooter instanceof ServerPlayer) {
                     ((ServerPlayer) shooter).playNotifySound(this.getHitEntityPlayerSound(), SoundSource.PLAYERS, 0.18F,
-                            0.45F);
+                        0.45F);
                 }
             }
-
+            
             this.playSound(this.getHitEntitySound(), 1.0F, 1.2F / (this.random.nextFloat() * 0.2F + 0.9F));
             if (this.getPierce() <= 0 && (getHitEntity() == null || !getHitEntity().isAlive())) {
                 this.burst();
@@ -583,52 +584,52 @@ public class EntityAbstractSummonedSword extends Projectile implements IShootabl
                 }
             }
         }
-
+        
     }
-
+    
     public int getColor() {
         return this.getEntityData().get(COLOR);
     }
-
+    
     public void setColor(int value) {
         this.getEntityData().set(COLOR, value);
     }
-
+    
     public byte getPierce() {
         return this.getEntityData().get(PIERCE);
     }
-
+    
     public void setPierce(byte value) {
         this.getEntityData().set(PIERCE, value);
     }
-
+    
     public int getDelay() {
         return this.getEntityData().get(DELAY);
     }
-
+    
     public void setDelay(int value) {
         this.getEntityData().set(DELAY, value);
     }
-
+    
     @Nullable
     protected EntityHitResult getRayTrace(Vec3 p_213866_1_, Vec3 p_213866_2_) {
         return ProjectileUtil.getEntityHitResult(this.level(), this, p_213866_1_, p_213866_2_,
-                this.getBoundingBox().expandTowards(this.getDeltaMovement()).inflate(1.0D), (entity) -> entity.canBeHitByProjectile() && !entity.isSpectator()
-                        && (entity != this.getShooter() || this.ticksInAir >= 5)
-                        && (this.alreadyHits == null || !this.alreadyHits.contains(entity.getId())));
+            this.getBoundingBox().expandTowards(this.getDeltaMovement()).inflate(1.0D), (entity) -> entity.canBeHitByProjectile() && !entity.isSpectator()
+                && (!entity.equals(this.getShooter()) || this.ticksInAir >= 5)
+                && (this.alreadyHits == null || !this.alreadyHits.contains(entity.getId())));
     }
-
+    
     @Nullable
     @Override
     public Entity getShooter() {
         return this.getOwner();
     }
-
+    
     @Override
     public void setShooter(Entity shooter) {
         setOwner(shooter);
     }
-
+    
     public List<MobEffectInstance> getPotionEffects() {
         List<MobEffectInstance> effects = new ArrayList<>();
         CompoundTag data = this.getPersistentData();
@@ -638,79 +639,79 @@ public class EntityAbstractSummonedSword extends Projectile implements IShootabl
                 effects.add(MobEffectInstance.load(list.getCompound(i)));
             }
         }
-
+        
         if (effects.isEmpty()) {
             effects.add(new MobEffectInstance(MobEffects.POISON, 1, 1));
         }
-
+        
         return effects;
     }
-
+    
     public void burst() {
         this.playSound(SoundEvents.GLASS_BREAK, 1.0F, 1.2F / (this.random.nextFloat() * 0.2F + 0.9F));
-
+        
         if (!this.level().isClientSide()) {
             if (this.level() instanceof ServerLevel) {
                 ((ServerLevel) this.level()).sendParticles(ParticleTypes.CRIT, this.getX(), this.getY(), this.getZ(),
-                        16, 0.5, 0.5, 0.5, 0.25f);
+                    16, 0.5, 0.5, 0.5, 0.25f);
             }
-
+            
             this.burst(getPotionEffects(), null);
         }
-
+        
         super.remove(RemovalReason.DISCARDED);
     }
-
+    
     public void burst(List<MobEffectInstance> effects, @Nullable Entity focusEntity) {
         // AABB axisalignedbb = this.getBoundingBox().inflate(4.0D, 2.0D, 4.0D);
         List<Entity> list = TargetSelector.getTargettableEntitiesWithinAABB(this.level(), 2, this);
         // this.world.getEntitiesWithinAABB(LivingEntity.class, axisalignedbb);
-
+        
         list.stream().filter(e -> e instanceof LivingEntity).map(e -> (LivingEntity) e).forEach(e -> {
             double distanceSq = this.distanceToSqr(e);
             if (distanceSq < 9.0D) {
                 double factor = 1.0D - Math.sqrt(distanceSq) / 4.0D;
-                if (e == focusEntity) {
+                if (e.equals(focusEntity)) {
                     factor = 1.0D;
                 }
-
+                
                 affectEntity(e, effects, factor);
             }
         });
     }
-
+    
     public void affectEntity(LivingEntity focusEntity, List<MobEffectInstance> effects, double factor) {
         for (MobEffectInstance effectinstance : getPotionEffects()) {
             var effect = effectinstance.getEffect();
             if (effect.value().isInstantenous()) {
                 effect.value().applyInstantenousEffect(this, this.getShooter(), focusEntity, effectinstance.getAmplifier(),
-                        factor);
+                    factor);
             } else {
                 int duration = (int) (factor * (double) effectinstance.getDuration() + 0.5D);
                 if (duration > 0) {
                     focusEntity.addEffect(new MobEffectInstance(effect, duration, effectinstance.getAmplifier(),
-                            effectinstance.isAmbient(), effectinstance.isVisible()));
+                        effectinstance.isAmbient(), effectinstance.isVisible()));
                 }
             }
         }
     }
-
+    
     public void resetAlreadyHits() {
         if (this.alreadyHits != null) {
             alreadyHits.clear();
         }
     }
-
+    
     public void setHitEntity(Entity hitEntity) {
-        if (hitEntity != this) {
+        if (!hitEntity.equals(this)) {
             this.entityData.set(HIT_ENTITY_ID, hitEntity.getId());
-
+            
             this.entityData.set(OFFSET_YAW, this.random.nextFloat() * 360);
-
+            
             this.setDelay(20 * 5);
         }
     }
-
+    
     @Nullable
     public Entity getHitEntity() {
         if (hitEntity == null) {
@@ -721,34 +722,34 @@ public class EntityAbstractSummonedSword extends Projectile implements IShootabl
         }
         return hitEntity;
     }
-
+    
     public float getOffsetYaw() {
         return this.entityData.get(OFFSET_YAW);
     }
-
+    
     public float getRoll() {
         return this.entityData.get(ROLL);
     }
-
+    
     public void setRoll(float value) {
         this.entityData.set(ROLL, value);
     }
-
+    
     public void setDamage(double damageIn) {
         this.damage = damageIn;
     }
-
+    
     @Override
     public double getDamage() {
         return this.damage;
     }
-
+    
     private static final String defaultModelName = "slashblade:model/util/ss";
-
+    
     public void setModelName(String name) {
         this.entityData.set(MODEL, Optional.ofNullable(name).orElse(defaultModelName));
     }
-
+    
     public String getModelName() {
         String name = this.entityData.get(MODEL);
         if (name.isEmpty()) {
@@ -756,22 +757,22 @@ public class EntityAbstractSummonedSword extends Projectile implements IShootabl
         }
         return name;
     }
-
+    
     public Supplier<ResourceLocation> modelLoc = () -> ResourceLocation.parse(getModelName() + ".obj");
     public Supplier<ResourceLocation> textureLoc = () -> ResourceLocation.parse(getModelName() + ".png");
-
+    
     public ResourceLocation getModelLoc() {
         return modelLoc.get();
     }
-
+    
     public ResourceLocation getTextureLoc() {
         return textureLoc.get();
     }
-
+    
     @Override
     public void push(@NotNull Entity entityIn) {
         // Suppress velocity change due to collision
         // super.applyEntityCollision(entityIn);
     }
-
+    
 }

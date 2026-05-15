@@ -5,6 +5,7 @@ import mods.flammpfeil.slashblade.capability.concentrationrank.IConcentrationRan
 import mods.flammpfeil.slashblade.capability.slashblade.BladeStateAccess;
 import mods.flammpfeil.slashblade.capability.slashblade.ISlashBladeState;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -16,7 +17,6 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -43,29 +43,29 @@ public class AttackHelper {
         if (!target.isAttackable() || target.skipAttackInteraction(attacker)) {
             return;
         }
-
+        
         boolean isCritical = isCriticalHit(attacker, target);
         double baseDamage = calculateTotalDamage(attacker, target, comboRatio, isCritical);
-
+        
         if (baseDamage <= 0.0F) {
             return;
         }
-
+        
         float knockback = calculateKnockback(attacker);
-
+        
         FireAspectResult fireAspectResult = handleFireAspect(attacker, target);
-
+        
         Vec3 originalMotion = target.getDeltaMovement();
-
+        
         DamageSource damageSource;
         if (attacker instanceof Player player) {
             damageSource = attacker.damageSources().playerAttack(player);
         } else {
             damageSource = attacker.damageSources().mobAttack(attacker);
         }
-
+        
         boolean damageSuccess = target.hurt(damageSource, (float) baseDamage);
-
+        
         if (damageSuccess) {
             applyKnockback(attacker, target, knockback);
             restoreTargetMotionIfNeeded(target, originalMotion);
@@ -76,18 +76,18 @@ public class AttackHelper {
             handleFailedAttack(attacker, target, fireAspectResult);
         }
     }
-
+    
     /**
      * 该方法伤害公式=(面板攻击力 + 横扫之刃附魔加成 + 评分等级加成 + 杀手类附魔加成) * 连招伤害系数 * 拔刀伤害系数 * 拔刀剑伤害调整比例 * 暴击倍率
      */
     public static double calculateTotalDamage(LivingEntity attacker, Entity target, float comboRatio, boolean isCritical) {
         double baseDamage = attacker.getAttributeValue(Attributes.ATTACK_DAMAGE);
-
+        
         baseDamage += getSweepingBonus(attacker);
         baseDamage += getRankBonus(attacker);
         baseDamage += getEnchantmentBonus(attacker, target);
         baseDamage *= comboRatio * getSlashBladeDamageScale(attacker) * SLASHBLADE_DAMAGE_MULTIPLIER.get();
-
+        
         if (attacker instanceof Player player) {
             CriticalHitEvent hitResult = CommonHooks.fireCriticalHit(player, target, isCritical, isCritical ? 1.5F : 1.0F);
             isCritical = hitResult.isCriticalHit();
@@ -97,26 +97,24 @@ public class AttackHelper {
         }
         return baseDamage;
     }
-
+    
     /**
      * 横扫之刃附魔加成(三级加成3.25攻击力)
      */
     public static float getSweepingBonus(LivingEntity attacker) {
         return 10 * ((float) attacker.getAttributeValue(Attributes.SWEEPING_DAMAGE_RATIO) * 0.5f);
     }
-
+    
     /**
      * 评分等级加成
      */
     public static float getRankBonus(LivingEntity attacker) {
         IConcentrationRank rankData = attacker.getData(CapabilityConcentrationRank.RANK_POINT.get());
-        IConcentrationRank.ConcentrationRanks rankBonus = rankData != null
-                ? rankData.getRank(attacker.level().getGameTime())
-                : IConcentrationRank.ConcentrationRanks.NONE;
+        IConcentrationRank.ConcentrationRanks rankBonus = rankData.getRank(attacker.level().getGameTime());
         double rankDamageBonus = rankBonus.level / 2.0;
         if (IConcentrationRank.ConcentrationRanks.S.level <= rankBonus.level) {
             int refine = BladeStateAccess.of(attacker.getMainHandItem())
-                    .map(ISlashBladeState::getRefine).orElse(0);
+                .map(ISlashBladeState::getRefine).orElse(0);
             int level = 0;
             if (attacker instanceof Player player) {
                 level = player.experienceLevel;
@@ -125,7 +123,7 @@ public class AttackHelper {
         }
         return (float) rankDamageBonus;
     }
-
+    
     /**
      * 杀手类附魔加成(杀死类附魔攻击对应的生物加成2.5 * 附魔等级)
      */
@@ -143,7 +141,7 @@ public class AttackHelper {
         }
         return bonus;
     }
-
+    
     /**
      * 计算击退
      */
@@ -158,17 +156,17 @@ public class AttackHelper {
         }
         return knockback;
     }
-
+    
     /**
      * 判断是否暴击
      */
     public static boolean isCriticalHit(LivingEntity attacker, Entity target) {
         return attacker.fallDistance > 0.0F && !attacker.onGround() &&
-                !attacker.onClimbable() && !attacker.isInWater() &&
-                !attacker.hasEffect(MobEffects.BLINDNESS) &&
-                !attacker.isPassenger() && target instanceof LivingEntity && !attacker.isSprinting();
+            !attacker.onClimbable() && !attacker.isInWater() &&
+            !attacker.hasEffect(MobEffects.BLINDNESS) &&
+            !attacker.isPassenger() && target instanceof LivingEntity && !attacker.isSprinting();
     }
-
+    
     /**
      * 火焰附加处理
      */
@@ -176,14 +174,14 @@ public class AttackHelper {
         final float preAttackHealth;
         final boolean shouldSetFire;
         final int fireAspectLevel;
-
+        
         FireAspectResult(float preAttackHealth, boolean shouldSetFire, int fireAspectLevel) {
             this.preAttackHealth = preAttackHealth;
             this.shouldSetFire = shouldSetFire;
             this.fireAspectLevel = fireAspectLevel;
         }
     }
-
+    
     public static FireAspectResult handleFireAspect(LivingEntity attacker, Entity target) {
         float preAttackHealth = 0.0F;
         boolean shouldSetFire = false;
@@ -198,7 +196,7 @@ public class AttackHelper {
         }
         return new FireAspectResult(preAttackHealth, shouldSetFire, fireAspectLevel);
     }
-
+    
     /**
      * 应用击退
      */
@@ -213,7 +211,7 @@ public class AttackHelper {
             attacker.setSprinting(false);
         }
     }
-
+    
     /**
      * 恢复目标原有速度（用于ServerPlayer）
      */
@@ -224,7 +222,7 @@ public class AttackHelper {
             target.hurtMarked = false;
         }
     }
-
+    
     /**
      * 播放攻击音效与暴击效果
      */
@@ -238,13 +236,13 @@ public class AttackHelper {
             attacker.level().playSound(null, attacker.getX(), attacker.getY(), attacker.getZ(), SoundEvents.PLAYER_ATTACK_STRONG, attacker.getSoundSource(), 1.0F, 1.0F);
         }
     }
-
+    
     /**
      * 处理附魔后置效果与耐久
      */
     public static void handleEnchantmentsAndDurability(LivingEntity attacker, Entity target) {
         attacker.setLastHurtMob(target);
-
+        
         ItemStack itemStack = attacker.getMainHandItem();
         Entity entity = target;
         if (target instanceof PartEntity<?> partEntity) {
@@ -265,7 +263,7 @@ public class AttackHelper {
             }
         }
     }
-
+    
     /**
      * 处理攻击后效果（统计、火焰、粒子、饱食度）
      */
@@ -291,7 +289,7 @@ public class AttackHelper {
             player.causeFoodExhaustion(0.1F);
         }
     }
-
+    
     /**
      * 处理攻击未成功的情况
      */

@@ -20,50 +20,50 @@ import org.jetbrains.annotations.NotNull;
 
 @OnlyIn(Dist.CLIENT)
 public class SummonedSwordRenderer<T extends EntityAbstractSummonedSword> extends EntityRenderer<T> {
-
+    
     @Override
     public @NotNull ResourceLocation getTextureLocation(T entity) {
         return entity.getTextureLoc();
     }
-
+    
     public SummonedSwordRenderer(EntityRendererProvider.Context context) {
         super(context);
     }
-
+    
     @Override
     public void render(T entity, float entityYaw, float partialTicks, @NotNull PoseStack matrixStack, @NotNull MultiBufferSource bufferIn,
                        int packedLightIn) {
-
-        try (MSAutoCloser msac = MSAutoCloser.pushMatrix(matrixStack)) {
+        
+        try (MSAutoCloser ignored = MSAutoCloser.pushMatrix(matrixStack)) {
             Entity hits = entity.getHitEntity();
             boolean hasHitEntity = hits != null;
-
+            
             if (hasHitEntity) {
                 matrixStack
-                        .mulPose(Axis.YN.rotationDegrees(Mth.rotLerp(partialTicks, hits.yRotO, hits.getYRot()) - 90));
+                    .mulPose(Axis.YN.rotationDegrees(Mth.rotLerp(partialTicks, hits.yRotO, hits.getYRot()) - 90));
                 matrixStack.mulPose(Axis.YN.rotationDegrees(entity.getOffsetYaw()));
             } else {
                 matrixStack.mulPose(
-                        Axis.YP.rotationDegrees(Mth.rotLerp(partialTicks, entity.yRotO, entity.getYRot()) - 90.0F));
+                    Axis.YP.rotationDegrees(Mth.rotLerp(partialTicks, entity.yRotO, entity.getYRot()) - 90.0F));
             }
-
+            
             matrixStack.mulPose(Axis.ZP.rotationDegrees(Mth.rotLerp(partialTicks, entity.xRotO, entity.getXRot())));
-
+            
             matrixStack.mulPose(Axis.XP.rotationDegrees(entity.getRoll()));
-
+            
             float scale = 0.0075f;
             matrixStack.scale(scale, scale, scale);
             matrixStack.mulPose(Axis.YP.rotationDegrees(90.0F));
-
+            
             if (hasHitEntity) {
                 matrixStack.translate(0, 0, -100);
             }
-
+            
             // matrixStack.blendEquation(GL14.GL_FUNC_REVERSE_SUBTRACT);
             WavefrontObject model = BladeModelManager.getInstance().getModel(entity.getModelLoc());
             BladeRenderState.setCol(entity.getColor(), false);
             BladeRenderState.renderOverridedLuminous(ItemStack.EMPTY, model, "ss", getTextureLocation(entity),
-                    matrixStack, bufferIn, packedLightIn);
+                matrixStack, bufferIn, packedLightIn);
         }
     }
 }

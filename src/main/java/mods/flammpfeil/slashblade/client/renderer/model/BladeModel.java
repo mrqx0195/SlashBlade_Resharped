@@ -18,47 +18,47 @@ import java.util.List;
  * Created by Furia on 2016/02/07.
  */
 public class BladeModel implements BakedModel {
-
+    
     BakedModel original;
-
+    
     public BladeModel(BakedModel original, ModelBakery loader) {
         this.original = original;
     }
-
+    
     public static LivingEntity user = null;
-
+    
     @Override
     public @NotNull ItemOverrides getOverrides() {
         return this.original.getOverrides();
     }
-
+    
     @SuppressWarnings("deprecation")
     @Override
     public @NotNull List<BakedQuad> getQuads(@org.jetbrains.annotations.Nullable BlockState p_235039_,
                                              @org.jetbrains.annotations.Nullable Direction p_235040_, @NotNull RandomSource p_235041_) {
         return original.getQuads(p_235039_, p_235040_, p_235041_);
     }
-
+    
     @Override
     public boolean useAmbientOcclusion() {
         return original.useAmbientOcclusion();
     }
-
+    
     @Override
     public boolean isGui3d() {
         return original.isGui3d();
     }
-
+    
     @Override
     public boolean usesBlockLight() {
         return false;
     }
-
+    
     @Override
     public boolean isCustomRenderer() {
         return true;
     }
-
+    
     @SuppressWarnings("deprecation")
     @Override
     public @NotNull TextureAtlasSprite getParticleIcon() {
@@ -66,12 +66,13 @@ public class BladeModel implements BakedModel {
         // return
         // Minecraft.getInstance().getItemRenderer().getItemModelMesher().getParticleIcon(SlashBlade.proudSoul);
     }
-
+    
+    @SuppressWarnings("deprecation")
     @Override
     public @NotNull ItemTransforms getTransforms() {
         return ItemTransforms.NO_TRANSFORMS;
     }
-
+    
     /*
      * ItemCameraTransforms tf = new
      * ItemCameraTransforms(ItemCameraTransforms.DEFAULT){
@@ -82,7 +83,7 @@ public class BladeModel implements BakedModel {
      * @Override public ItemCameraTransforms getItemCameraTransforms() { return tf;
      * }
      */
-
+    
     /*
      * @Override public IBakedModel
      * handlePerspective(ItemCameraTransforms.TransformType cameraTransformType,

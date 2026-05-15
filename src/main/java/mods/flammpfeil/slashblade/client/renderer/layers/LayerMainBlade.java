@@ -32,6 +32,7 @@ import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffectUtil;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
@@ -49,14 +50,14 @@ import java.util.Map;
 import java.util.Objects;
 
 public class LayerMainBlade<T extends LivingEntity, M extends EntityModel<T>> extends RenderLayer<T, M> {
-
+    
     public LayerMainBlade(RenderLayerParent<T, M> entityRendererIn) {
         super(entityRendererIn);
     }
-
+    
     private MmdPmdModelMc cachedBladeholder;
     private MmdMotionPlayerGL2 cachedMotionPlayer;
-
+    
     private MmdPmdModelMc getBladeholder() {
         if (cachedBladeholder == null) {
             try {
@@ -67,7 +68,7 @@ public class LayerMainBlade<T extends LivingEntity, M extends EntityModel<T>> ex
         }
         return cachedBladeholder;
     }
-
+    
     private MmdMotionPlayerGL2 getMotionPlayer() {
         if (cachedMotionPlayer == null) {
             cachedMotionPlayer = new MmdMotionPlayerGL2();
@@ -82,57 +83,60 @@ public class LayerMainBlade<T extends LivingEntity, M extends EntityModel<T>> ex
         }
         return cachedMotionPlayer;
     }
-
+    
     public float modifiedSpeed(float baseSpeed, LivingEntity entity) {
         float modif = 6.0f;
         if (MobEffectUtil.hasDigSpeed(entity)) {
             modif = 6 - (1 + MobEffectUtil.getDigSpeedAmplification(entity));
-        } else if (entity.hasEffect(MobEffects.DIG_SLOWDOWN)) {
-            modif = 6 + (1 + Objects.requireNonNull(entity.getEffect(MobEffects.DIG_SLOWDOWN)).getAmplifier()) * 2;
+        } else {
+            MobEffectInstance effect = entity.getEffect(MobEffects.DIG_SLOWDOWN);
+            if (effect != null) {
+                modif = 6 + (1 + effect.getAmplifier()) * 2;
+            }
         }
-
+        
         modif /= 6.0f;
-
+        
         return baseSpeed / modif;
     }
-
+    
     public void renderOffhandItem(PoseStack matrixStack, MultiBufferSource bufferIn, int lightIn, T entity) {
-
+        
         ItemStack offhandStack = entity.getItemInHand(InteractionHand.OFF_HAND);
-        if (offhandStack.isEmpty() || !BladeStateAccess.of(offhandStack).isPresent()) {
+        if (offhandStack.isEmpty() || BladeStateAccess.of(offhandStack).isEmpty()) {
             renderHotbarItem(matrixStack, bufferIn, lightIn, entity);
             return;
         }
-
+        
         renderStandbyBlade(matrixStack, bufferIn, lightIn, offhandStack, entity);
     }
-
+    
     public void renderHotbarItem(PoseStack matrixStack, MultiBufferSource bufferIn, int lightIn, T entity) {
         if (entity instanceof Player player) {
             if (player.getInventory().selected == 0) {
                 return;
             }
-
+            
             ItemStack blade = player.getInventory().getItem(0);
             if (blade.isEmpty()) {
                 return;
             }
-
+            
             renderStandbyBlade(matrixStack, bufferIn, lightIn, blade, entity);
         }
     }
-
+    
     public void renderStandbyBlade(PoseStack matrixStack, MultiBufferSource bufferIn, int lightIn, ItemStack blade, T entity) {
         var state = BladeStateAccess.of(blade);
         state.ifPresent(s -> {
             double modelScaleBase = 0.0078125F; // 0.5^7
             double motionScale = 1.5 / 12.0;
             ResourceLocation textureLocation = s.getTexture().orElse(DefaultResources.resourceDefaultTexture);
-
+            
             WavefrontObject obj = BladeModelManager.getInstance()
-                    .getModel(s.getModel().orElse(DefaultResources.resourceDefaultModel));
+                .getModel(s.getModel().orElse(DefaultResources.resourceDefaultModel));
             String part;
-            try (MSAutoCloser msacA = MSAutoCloser.pushMatrix(matrixStack)) {
+            try (MSAutoCloser ignored = MSAutoCloser.pushMatrix(matrixStack)) {
                 // minecraft model neckPoint height = 1.5f
                 // mmd model neckPoint height = 12.0f
                 matrixStack.translate(0, 1.5f, 0);
@@ -143,107 +147,109 @@ public class LayerMainBlade<T extends LivingEntity, M extends EntityModel<T>> ex
                         matrixStack.translate(1F, -1.125f, 0.20f);
                         matrixStack.mulPose(new Quaternionf().rotateZYX(-0.122173F, 0, 0));
                         if (mcinstance.options.getCameraType() == CameraType.FIRST_PERSON
-                                && entity == mcinstance.player) {
+                            && entity.equals(mcinstance.player)) {
                             return;
                         }
                         break;
-
+                    
                     case KATANA:
                         matrixStack.translate(0.25F, -0.875f, -0.55f);
                         matrixStack.mulPose(new Quaternionf().rotateZYX(3.1415927F, 1.570796f, 0.261799F));
                         break;
-
+                    
                     case DEFAULT:
                         matrixStack.translate(0.25F, -0.875f, -0.55f);
                         matrixStack.mulPose(new Quaternionf().rotateZYX(0F, 1.570796f, 0.261799F));
                         break;
-
+                    
                     case NINJA:
                         matrixStack.translate(-0.5F, -2f, 0.20f);
                         matrixStack.mulPose(new Quaternionf().rotateZYX(-2.094395F, 0f, 3.1415927F));
                         if (mcinstance.options.getCameraType() == CameraType.FIRST_PERSON
-                                && entity == mcinstance.player) {
+                            && entity.equals(mcinstance.player)) {
                             return;
                         }
                         break;
-
+                    
                     case RNINJA:
                         matrixStack.translate(0.5F, -2f, 0.20f);
                         matrixStack.mulPose(new Quaternionf().rotateZYX(-1.047198F, 0, 0));
                         if (mcinstance.options.getCameraType() == CameraType.FIRST_PERSON
-                                && entity == mcinstance.player) {
+                            && entity.equals(mcinstance.player)) {
                             return;
                         }
                         break;
-
+                    
                     default:
                         return;
                 }
-
+                
                 float modelScale = (float) (modelScaleBase * (1.0f / motionScale));
                 matrixStack.scale((float) motionScale, (float) motionScale, (float) motionScale);
                 matrixStack.scale(modelScale, modelScale, modelScale);
-
-                try (MSAutoCloser msac = MSAutoCloser.pushMatrix(matrixStack)) {
+                
+                try (MSAutoCloser ignored1 = MSAutoCloser.pushMatrix(matrixStack)) {
                     if (s.isBroken()) {
                         part = "blade_damaged";
                     } else {
                         part = "blade";
                     }
-
+                    
                     BladeRenderState.renderOverrided(blade, obj, part, textureLocation, matrixStack, bufferIn,
-                            lightIn);
+                        lightIn);
                     BladeRenderState.renderOverridedLuminous(blade, obj, part + "_luminous", textureLocation,
-                            matrixStack, bufferIn, lightIn);
+                        matrixStack, bufferIn, lightIn);
                     BladeRenderState.renderOverrided(blade, obj, "sheath", textureLocation, matrixStack, bufferIn,
-                            lightIn);
+                        lightIn);
                     BladeRenderState.renderOverridedLuminous(blade, obj, "sheath_luminous", textureLocation,
-                            matrixStack, bufferIn, lightIn);
+                        matrixStack, bufferIn, lightIn);
                 }
             }
         });
     }
-
+    
     @Override
     public void render(@NotNull PoseStack matrixStack, @NotNull MultiBufferSource bufferIn, int lightIn, @NotNull T entity, float limbSwing,
                        float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
-
+        
         this.renderOffhandItem(matrixStack, bufferIn, lightIn, entity);
-
+        
         float motionYOffset = 1.5f;
         double motionScale = 1.5 / 12.0;
         double modelScaleBase = 0.0078125F; // 0.5^7
-
+        
         ItemStack stack = entity.getItemInHand(InteractionHand.MAIN_HAND);
-
+        
         if (stack.isEmpty()) {
             return;
         }
-
+        
         if (entity.getType().is(EntityTypeTags.RENDER_LAYER_BLACKLIST)) {
             return;
         }
-
+        
         var state = BladeStateAccess.of(stack);
         state.ifPresent(s -> {
             MmdMotionPlayerGL2 mmp = getMotionPlayer();
-            if (mmp == null) return;
+            if (mmp == null) {
+                return;
+            }
             Map.Entry<Integer, ResourceLocation> comboStateTicks = s.peekCurrentComboStateTicks(entity);
             ComboState combo = Objects.requireNonNullElse(
-                    ComboStateRegistry.REGISTRY.get(comboStateTicks.getValue()),
-                    ComboStateRegistry.NONE.get());
+                ComboStateRegistry.REGISTRY.get(comboStateTicks.getValue()),
+                ComboStateRegistry.NONE.get());
             double time = TimeValueHelper.getMSecFromTicks(comboStateTicks.getKey() + partialTicks);
             if (combo == ComboStateRegistry.NONE.get()) {
-                    combo = ComboStateRegistry.REGISTRY.get(s.getComboRoot()) != null
-                        ? ComboStateRegistry.REGISTRY.get(s.getComboRoot())
-                        : ComboStateRegistry.STANDBY.get();
+                combo = ComboStateRegistry.REGISTRY.get(s.getComboRoot()) != null
+                    ? ComboStateRegistry.REGISTRY.get(s.getComboRoot())
+                    : ComboStateRegistry.STANDBY.get();
             }
-
+            
             MmdVmdMotionMc motion = null;
             if (combo != null) {
                 motion = BladeMotionManager.getInstance().getMotion(combo.getMotionLoc());
             }
-
+            
             double maxSeconds = 0;
             try {
                 mmp.setVmd(motion);
@@ -253,7 +259,7 @@ public class LayerMainBlade<T extends LivingEntity, M extends EntityModel<T>> ex
             } catch (Exception e) {
                 SlashBlade.LOGGER.warn(e);
             }
-
+            
             double start = 0;
             if (combo != null) {
                 start = TimeValueHelper.getMSecFromFrames(combo.getStartFrame());
@@ -263,109 +269,109 @@ public class LayerMainBlade<T extends LivingEntity, M extends EntityModel<T>> ex
                 end = TimeValueHelper.getMSecFromFrames(combo.getEndFrame());
             }
             double span = Math.abs(end - start);
-
+            
             span = Math.min(maxSeconds, span);
-
-            if (combo.getLoop()) {
+            
+            if (combo != null && combo.getLoop()) {
                 time = time % span;
             }
             time = Math.min(span, time);
-
+            
             time = start + time;
-
+            
             try {
                 mmp.updateMotion((float) time);
             } catch (MmdException e) {
                 SlashBlade.LOGGER.warn(e);
             }
-
-            try (MSAutoCloser msacA = MSAutoCloser.pushMatrix(matrixStack)) {
-
+            
+            try (MSAutoCloser ignored = MSAutoCloser.pushMatrix(matrixStack)) {
+                
                 setUserPose(matrixStack, entity, partialTicks);
-
+                
                 // minecraft model neckPoint height = 1.5f
                 // mmd model neckPoint height = 12.0f
                 matrixStack.translate(0, motionYOffset, 0);
-
+                
                 matrixStack.scale((float) motionScale, (float) motionScale, (float) motionScale);
-
+                
                 // transpoze mmd to mc
                 matrixStack.mulPose(Axis.ZP.rotationDegrees(180));
-
+                
                 ResourceLocation textureLocation = s.getTexture().orElse(DefaultResources.resourceDefaultTexture);
-
+                
                 WavefrontObject obj = BladeModelManager.getInstance()
-                        .getModel(s.getModel().orElse(DefaultResources.resourceDefaultModel));
-
-                try (MSAutoCloser msac = MSAutoCloser.pushMatrix(matrixStack)) {
+                    .getModel(s.getModel().orElse(DefaultResources.resourceDefaultModel));
+                
+                try (MSAutoCloser ignored1 = MSAutoCloser.pushMatrix(matrixStack)) {
                     int idx = mmp.getBoneIndexByName("hardpointA");
-
+                    
                     if (0 <= idx) {
                         float[] buf = new float[16];
                         mmp._skinning_mat[idx].getValue(buf);
-
+                        
                         Matrix4f mat = VectorHelper.matrix4fFromArray(buf);
-
+                        
                         matrixStack.scale(-1, 1, 1);
                         PoseStack.Pose entry = matrixStack.last();
                         entry.pose().mul(mat);
                         entry.normal().mul(new Matrix3f(mat).invert().transpose());
                         matrixStack.scale(-1, 1, 1);
                     }
-
+                    
                     float modelScale = (float) (modelScaleBase * (1.0f / motionScale));
                     matrixStack.scale(modelScale, modelScale, modelScale);
-
+                    
                     String part;
                     if (s.isBroken()) {
                         part = "blade_damaged";
                     } else {
                         part = "blade";
                     }
-
+                    
                     BladeRenderState.renderOverrided(stack, obj, part, textureLocation, matrixStack, bufferIn,
-                            lightIn);
+                        lightIn);
                     BladeRenderState.renderOverridedLuminous(stack, obj, part + "_luminous", textureLocation,
-                            matrixStack, bufferIn, lightIn);
+                        matrixStack, bufferIn, lightIn);
                 }
-
-                try (MSAutoCloser msac = MSAutoCloser.pushMatrix(matrixStack)) {
+                
+                try (MSAutoCloser ignored1 = MSAutoCloser.pushMatrix(matrixStack)) {
                     int idx = mmp.getBoneIndexByName("hardpointB");
-
+                    
                     if (0 <= idx) {
                         float[] buf = new float[16];
                         mmp._skinning_mat[idx].getValue(buf);
-
+                        
                         Matrix4f mat = VectorHelper.matrix4fFromArray(buf);
-
+                        
                         matrixStack.scale(-1, 1, 1);
                         PoseStack.Pose entry = matrixStack.last();
                         entry.pose().mul(mat);
                         entry.normal().mul(new Matrix3f(mat).invert().transpose());
                         matrixStack.scale(-1, 1, 1);
                     }
-
+                    
                     float modelScale = (float) (modelScaleBase * (1.0f / motionScale));
                     matrixStack.scale(modelScale, modelScale, modelScale);
                     BladeRenderState.renderOverrided(stack, obj, "sheath", textureLocation, matrixStack, bufferIn,
-                            lightIn);
+                        lightIn);
                     BladeRenderState.renderOverridedLuminous(stack, obj, "sheath_luminous", textureLocation,
-                            matrixStack, bufferIn, lightIn);
-
+                        matrixStack, bufferIn, lightIn);
+                    
                     if (s.isCharged(entity)) {
                         float f = (float) entity.tickCount + partialTicks;
                         BladeRenderState.renderChargeEffect(stack, f, obj, "effect",
-                                ResourceLocation.parse("textures/entity/creeper/creeper_armor.png"), matrixStack,
-                                bufferIn, lightIn);
+                            ResourceLocation.parse("textures/entity/creeper/creeper_armor.png"), matrixStack,
+                            bufferIn, lightIn);
                     }
-
+                    
                 }
-
+                
             }
-
+            
         });
     }
-
+    
     public void setUserPose(PoseStack matrixStack, T entity, float partialTicks) {
         if (ModList.get().isLoaded("playeranimator") && entity instanceof AbstractClientPlayer) {
             var animationPlayer = ((IAnimatedPlayer) entity).playerAnimator_getAnimation();
@@ -381,7 +387,7 @@ public class LayerMainBlade<T extends LivingEntity, M extends EntityModel<T>> ex
                 return;
             }
         }
-
+        
         float comboRot = UserPoseOverrider.getInterpolatedComboRotation(entity, partialTicks);
         if (comboRot != 0f) {
             matrixStack.mulPose(Axis.YP.rotationDegrees(comboRot));

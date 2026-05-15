@@ -6,6 +6,7 @@ import mods.flammpfeil.slashblade.capability.inputstate.CapabilityInputState;
 import mods.flammpfeil.slashblade.capability.mobeffect.CapabilityMobEffect;
 import mods.flammpfeil.slashblade.capability.slashblade.SlashBladeDataComponents;
 import mods.flammpfeil.slashblade.client.renderer.model.BladeModelManager;
+import mods.flammpfeil.slashblade.compat.jei.JEICompat;
 import mods.flammpfeil.slashblade.event.BladeMotionEventBroadcaster;
 import mods.flammpfeil.slashblade.event.handler.*;
 import mods.flammpfeil.slashblade.network.NetworkManager;
@@ -23,6 +24,7 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.loading.LoadingModList;
 import net.neoforged.neoforge.common.NeoForge;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,21 +32,21 @@ import org.apache.logging.log4j.Logger;
 @Mod(SlashBlade.MODID)
 public class SlashBlade {
     public static final String MODID = "slashblade";
-
+    
     public static ResourceLocation prefix(String path) {
         return ResourceLocation.fromNamespaceAndPath(SlashBlade.MODID, path);
     }
-
+    
     // Directly reference a log4j logger.
     public static final Logger LOGGER = LogManager.getLogger();
-
+    
     public SlashBlade(IEventBus modEventBus, ModContainer container) {
         container.registerConfig(ModConfig.Type.COMMON, SlashBladeConfig.COMMON_CONFIG);
-
+        
         modEventBus.addListener(this::setup);
         modEventBus.addListener(NetworkManager::register);
         ModAttributes.ATTRIBUTES.register(modEventBus);
-
+        
         SlashBladeItems.ITEMS.register(modEventBus);
         CapabilityInputState.ATTACHMENT_TYPES.register(modEventBus);
         CapabilityMobEffect.ATTACHMENT_TYPES.register(modEventBus);
@@ -57,23 +59,27 @@ public class SlashBlade {
         RecipeSerializerRegistry.INGREDIENT_TYPES.register(modEventBus);
         SpecialEffectsRegistry.SPECIAL_EFFECT.register(modEventBus);
         SlashBladeDataComponents.COMPONENTS.register(modEventBus);
+        
+        if (LoadingModList.get().getModFileById("jei") != null) {
+            modEventBus.addListener(JEICompat::registerClientReloadListener);
+        }
     }
-
+    
     private void setup(final FMLCommonSetupEvent event) {
-
+        
         NeoForge.EVENT_BUS.addListener(KnockBackHandler::onLivingKnockBack);
-
+        
         Guard.getInstance().register();
-
+        
         NeoForge.EVENT_BUS.register(new StunManager());
-
+        
         RefineHandler.getInstance().register();
         AnvilRarityHandler.getInstance().register();
         KillCounter.getInstance().register();
         RankPointHandler.getInstance().register();
         AllowFlightOverrwrite.getInstance().register();
         BladeMotionEventBroadcaster.getInstance().register();
-
+        
         NeoForge.EVENT_BUS.addListener(TargetSelector::onInputChange);
         SummonedSwordArts.getInstance().register();
         SlayerStyleArts.getInstance().register();
@@ -81,18 +87,18 @@ public class SlashBlade {
         EnemyStep.getInstance().register();
         KickJump.getInstance().register();
         SuperSlashArts.getInstance().register();
-
+        
         ComboCommands.initDefaultStandByCommands();
-
+        
     }
-
+    
     public static Registry<SlashBladeDefinition> getSlashBladeDefinitionRegistry(Level level) {
         if (level.isClientSide()) {
             return BladeModelManager.getClientSlashBladeRegistry();
         }
         return level.registryAccess().registryOrThrow(SlashBladeDefinition.REGISTRY_KEY);
     }
-
+    
     public static HolderLookup.RegistryLookup<SlashBladeDefinition> getSlashBladeDefinitionRegistry(HolderLookup.Provider access) {
         return access.lookupOrThrow(SlashBladeDefinition.REGISTRY_KEY);
     }

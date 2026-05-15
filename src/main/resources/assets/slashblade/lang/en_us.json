@@ -198,7 +198,7 @@
   "attribute.name.generic.slashblade_damage": "Slashblade Damage",
 
   "jei.category.slashblade.entity_drop_entry": "SlashBlade Drops",
-  "jei.category.slashblade.entity_drop_entry.chance": "%.2f%%",
+  "jei.category.slashblade.entity_drop_entry.chance": "%s%%",
   "jei.category.slashblade.entity_drop_entry.need_slash_blade": "Need Killed by SlashBlade",
   "jei.category.slashblade.slash_arts": "SA",
   "jei.category.slashblade.special_effect": "SE",

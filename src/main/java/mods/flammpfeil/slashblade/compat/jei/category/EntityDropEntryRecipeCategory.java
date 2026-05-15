@@ -101,7 +101,7 @@ public record EntityDropEntryRecipeCategory(IDrawable icon) implements IRecipeCa
         }
         builder.addRecipeArrow()
             .setPosition(29, 6);
-        builder.addText(Component.translatable("jei.category.slashblade.entity_drop_entry.chance", recipe.dropRate() * 100), getWidth(), 10)
+        builder.addText(Component.translatable("jei.category.slashblade.entity_drop_entry.chance", String.format("%.2f", recipe.dropRate() * 100)), getWidth(), 10)
             .setTextAlignment(HorizontalAlignment.CENTER)
             .setPosition(0, -2);
         if (recipe.requestSlashBladeKill()) {

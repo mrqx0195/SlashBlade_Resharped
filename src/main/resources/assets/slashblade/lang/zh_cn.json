@@ -201,7 +201,7 @@
   "attribute.name.generic.slashblade_damage": "拔刀剑伤害系数",
 
   "jei.category.slashblade.entity_drop_entry": "拔刀剑掉落",
-  "jei.category.slashblade.entity_drop_entry.chance": "%.2f%%",
+  "jei.category.slashblade.entity_drop_entry.chance": "%s%%",
   "jei.category.slashblade.entity_drop_entry.need_slash_blade": "需要拔刀击杀",
   "jei.category.slashblade.slash_arts": "SA",
   "jei.category.slashblade.special_effect": "SE",

@@ -1,5 +1,6 @@
 package mods.flammpfeil.slashblade.compat.jei.drawable;
 
+import com.mojang.blaze3d.platform.Window;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mods.flammpfeil.slashblade.compat.jei.data.ShowEntityListener;
 import net.minecraft.client.Minecraft;
@@ -24,7 +25,6 @@ public class EntityDrawable implements IDrawable {
     public final EntityType<?> entityType;
     @Nullable
     public final LivingEntity renderEntity;
-    public float renderTicks = 0;
     
     public EntityDrawable(EntityType<?> entityType) {
         this.entityType = entityType;
@@ -47,7 +47,7 @@ public class EntityDrawable implements IDrawable {
     }
     
     @Override
-    public void draw(@NotNull GuiGraphics guiGraphics, int i, int i1) {
+    public void draw(@NotNull GuiGraphics guiGraphics, int xOffset, int yOffset) {
         if (renderEntity != null) {
             AABB box = renderEntity.getBoundingBox();
             
@@ -61,21 +61,34 @@ public class EntityDrawable implements IDrawable {
                 scale = (int) Math.min(120 / box.getXsize(), 50 / box.getYsize());
             }
             
-            renderTicks += Minecraft.getInstance().getTimer().getRealtimeDeltaTicks();
-            guiGraphics.pose().translate(0, 0, 40);
-            guiGraphics.pose().mulPose(new Quaternionf().rotateY(renderTicks * 0.0125f));
-            guiGraphics.pose().translate(0, 0, -40);
-            
+            Minecraft minecraft = Minecraft.getInstance();
+            Window window = minecraft.getWindow();
+            float xMouse = (float) minecraft.mouseHandler.xpos() * window.getGuiScaledWidth() / window.getScreenWidth();
+            float yMouse = (float) minecraft.mouseHandler.ypos() * window.getGuiScaledHeight() / window.getScreenHeight();
+            float f2 = (float) Math.atan((window.getGuiScaledWidth() / 2.0 - xMouse) / 40);
+            float f3 = (float) Math.atan((window.getGuiScaledHeight() / 2.0 - yMouse) / 40);
             Quaternionf quaternionf = (new Quaternionf()).rotateZ((float) Math.PI);
-            Quaternionf quaternionf1 = (new Quaternionf()).rotateX(((float) Math.PI / 180F));
+            Quaternionf quaternionf1 = new Quaternionf().rotateX(f3 * 20 * (float) (Math.PI / 180));
             quaternionf.mul(quaternionf1);
-            InventoryScreen.renderEntityInInventory(
-                guiGraphics, 0, 80, scale,
-                new Vector3f(),
-                quaternionf,
-                quaternionf1,
-                renderEntity
-            );
+            float f4 = renderEntity.yBodyRot;
+            float f5 = renderEntity.getYRot();
+            float f6 = renderEntity.getXRot();
+            float f7 = renderEntity.yHeadRotO;
+            float f8 = renderEntity.yHeadRot;
+            renderEntity.yBodyRot = 180.0F + f2 * 20.0F;
+            renderEntity.setYRot(180.0F + f2 * 40.0F);
+            renderEntity.setXRot(-f3 * 20.0F);
+            renderEntity.yHeadRot = renderEntity.getYRot();
+            renderEntity.yHeadRotO = renderEntity.getYRot();
+            float f9 = renderEntity.getScale();
+            Vector3f vector3f = new Vector3f(0.0F, renderEntity.getBbHeight() / 2.0F, 0.0F);
+            float f10 = (float) scale / f9;
+            InventoryScreen.renderEntityInInventory(guiGraphics, 0, 60, f10, vector3f, quaternionf, quaternionf1, renderEntity);
+            renderEntity.yBodyRot = f4;
+            renderEntity.setYRot(f5);
+            renderEntity.setXRot(f6);
+            renderEntity.yHeadRotO = f7;
+            renderEntity.yHeadRot = f8;
         }
     }
 }

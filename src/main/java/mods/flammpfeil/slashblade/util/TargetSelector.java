@@ -56,7 +56,7 @@ public class TargetSelector {
         .ignoreInvisibilityTesting().selector(new AttackablePredicate());
     
     static public TargetingConditions getAreaAttackPredicate(double reach) {
-        return areaAttack.range(reach);
+        return areaAttack.copy().range(reach);
     }
     
     static public class AttackablePredicate implements Predicate<LivingEntity> {
@@ -105,7 +105,7 @@ public class TargetSelector {
         return world.getEntitiesOfClass(Projectile.class, aabb).stream()
             .filter(e -> ((e.getOwner() == null || !e.getOwner().equals(attacker))
                 && (!(e instanceof IShootable) || !((IShootable) e).getShooter().equals(attacker))))
-            .filter(e -> (e.distanceToSqr(attacker) < (reach * reach)))
+            .filter(e -> (distanceSqrBetweenEntity(e, attacker) < (reach * reach)))
             .collect(Collectors.toList());
     }
     
@@ -115,7 +115,7 @@ public class TargetSelector {
         AABB aabb = getResolvedAxisAligned(attacker.getBoundingBox(), attacker.getLookAngle(), reach);
         Level world = attacker.level();
         return world.getEntitiesOfClass(PrimedTnt.class, aabb).stream()
-            .filter(e -> (e.distanceToSqr(attacker) < (reach * reach))).collect(Collectors.toList());
+            .filter(e -> (distanceSqrBetweenEntity(e, attacker) < (reach * reach))).collect(Collectors.toList());
     }
     
     static public List<Entity> getTargettableEntitiesWithinAABB(Level world, LivingEntity attacker) {
@@ -141,25 +141,25 @@ public class TargetSelector {
                 boolean result = false;
                 var check = new AttackablePredicate();
                 if (t instanceof LivingEntity living) {
-                    result = check.test(living);
+                    result = check.test(living) && distanceSqrBetweenEntity(living, attacker) < (reach * reach);
                 } else if (t instanceof PartEntity<?> part) {
                     if (part.getParent() instanceof LivingEntity living) {
-                        result = check.test(living) && part.distanceToSqr(attacker) < (reach * reach);
+                        result = check.test(living) && distanceSqrBetweenEntity(part, attacker) < (reach * reach);
                     }
                 }
                 return result;
             }).toList());
         
-        TargetingConditions predicate = getAreaAttackPredicate(reach);
+        TargetingConditions predicate = getAreaAttackPredicate(reach).range(-1);
         
         list1.addAll(world.getEntitiesOfClass(LivingEntity.class, aabb).stream()
             .flatMap(e -> (e.isMultipartEntity()) ? Stream.of(e.getParts()) : Stream.of(e)).filter(t -> {
                 boolean result = false;
                 if (t instanceof LivingEntity living) {
-                    result = predicate.test(attacker, living);
+                    result = predicate.test(attacker, living) && distanceSqrBetweenEntity(living, attacker) < (reach * reach);
                 } else if (t instanceof PartEntity<?> part) {
                     if (part.getParent() instanceof LivingEntity living) {
-                        result = predicate.test(attacker, living) && part.distanceToSqr(attacker) < (reach * reach);
+                        result = predicate.test(attacker, living) && distanceSqrBetweenEntity(part, attacker) < (reach * reach);
                     }
                 }
                 return result;
@@ -175,7 +175,7 @@ public class TargetSelector {
         List<Entity> list1 = Lists.newArrayList();
         
         list1.addAll(world.getEntitiesOfClass(EnderDragon.class, aabb.inflate(5)).stream()
-            .flatMap(d -> Arrays.stream(d.getSubEntities())).filter(e -> (e.distanceToSqr(owner) < (reach * reach)))
+            .flatMap(d -> Arrays.stream(d.getSubEntities())).filter(e -> (distanceSqrBetweenEntity(e, owner) < (reach * reach)))
             .toList());
         
         LivingEntity user;
@@ -187,7 +187,7 @@ public class TargetSelector {
         
         list1.addAll(getReflectableEntitiesWithinAABB(world, reach, owner));
         
-        TargetingConditions predicate = getAreaAttackPredicate(0); // reach check has already been completed
+        TargetingConditions predicate = getAreaAttackPredicate(-1); // reach check has already been completed
         
         list1.addAll(world.getEntitiesOfClass(LivingEntity.class, aabb, (e) -> true).stream()
             .filter(t -> predicate.test(user, t)).toList());
@@ -202,7 +202,7 @@ public class TargetSelector {
         return world.getEntitiesOfClass(Projectile.class, aabb).stream()
             .filter(e -> (e.getOwner() == null
                 || !e.getOwner().equals(owner.getShooter())))
-            .filter(e -> (e.distanceToSqr(owner) < (reach * reach)) && !e.equals(owner))
+            .filter(e -> (distanceSqrBetweenEntity(e, owner) < (reach * reach)) && !e.equals(owner))
             .collect(Collectors.toList());
     }
     
@@ -227,6 +227,26 @@ public class TargetSelector {
             reach = attrib.getValue() - 1;
         }
         return reach;
+    }
+    
+    public static double distanceBetweenEntity(Entity a, Entity b) {
+        return distanceBetweenAABB(a.getBoundingBox(), b.getBoundingBox());
+    }
+    
+    public static double distanceBetweenAABB(AABB a, AABB b) {
+        return distanceSqrBetweenAABB(a, b);
+    }
+    
+    public static double distanceSqrBetweenEntity(Entity a, Entity b) {
+        return distanceSqrBetweenAABB(a.getBoundingBox(), b.getBoundingBox());
+    }
+    
+    public static double distanceSqrBetweenAABB(AABB a, AABB b) {
+        double dx = Math.max(0.0, Math.max(a.minX - b.maxX, b.minX - a.maxX));
+        double dy = Math.max(0.0, Math.max(a.minY - b.maxY, b.minY - a.maxY));
+        double dz = Math.max(0.0, Math.max(a.minZ - b.maxZ, b.minZ - a.maxZ));
+        
+        return dx * dx + dy * dy + dz * dz;
     }
     
     @SubscribeEvent

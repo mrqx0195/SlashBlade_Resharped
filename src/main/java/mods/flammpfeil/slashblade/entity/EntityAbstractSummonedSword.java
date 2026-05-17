@@ -347,13 +347,13 @@ public class EntityAbstractSummonedSword extends Projectile implements IShootabl
                 if (entityHit != null) {
                     raytraceresult = entityHit;
                 }
-
+                
                 if (raytraceresult == null) {
                     break;
                 }
-
+                
                 boolean impactCheck = !net.neoforged.neoforge.event.EventHooks.onProjectileImpact(this, raytraceresult);
-
+                
                 if (raytraceresult.getType() == HitResult.Type.ENTITY && impactCheck) {
                     Entity target = null;
                     if (raytraceresult instanceof EntityHitResult entityHitResult) {
@@ -367,20 +367,20 @@ public class EntityAbstractSummonedSword extends Projectile implements IShootabl
                         }
                     }
                 }
-
+                
                 if (raytraceresult != null
-                        && !(disallowedHitBlock && raytraceresult.getType() == HitResult.Type.BLOCK)
-                        && impactCheck) {
+                    && !(disallowedHitBlock && raytraceresult.getType() == HitResult.Type.BLOCK)
+                    && impactCheck) {
                     this.onHit(raytraceresult);
                     this.hasImpulse = true;
                 } else if (!impactCheck && entityHit != null) {
-                    Entity cancelledTarget = ((EntityHitResult) entityHit).getEntity();
+                    Entity cancelledTarget = entityHit.getEntity();
                     if (this.alreadyHits == null) {
                         this.alreadyHits = new IntOpenHashSet(5);
                     }
                     this.alreadyHits.add(cancelledTarget.getId());
                 }
-
+                
                 if (entityHit == null || this.getPierce() <= 0) {
                     break;
                 }
@@ -676,7 +676,7 @@ public class EntityAbstractSummonedSword extends Projectile implements IShootabl
         // this.world.getEntitiesWithinAABB(LivingEntity.class, axisalignedbb);
         
         list.stream().filter(e -> e instanceof LivingEntity).map(e -> (LivingEntity) e).forEach(e -> {
-            double distanceSq = this.distanceToSqr(e);
+            double distanceSq = TargetSelector.distanceSqrBetweenEntity(this, e);
             if (distanceSq < 9.0D) {
                 double factor = 1.0D - Math.sqrt(distanceSq) / 4.0D;
                 if (e.equals(focusEntity)) {

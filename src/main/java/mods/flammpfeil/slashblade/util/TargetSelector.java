@@ -234,7 +234,7 @@ public class TargetSelector {
     }
     
     public static double distanceBetweenAABB(AABB a, AABB b) {
-        return distanceSqrBetweenAABB(a, b);
+        return Math.sqrt(distanceSqrBetweenAABB(a, b));
     }
     
     public static double distanceSqrBetweenEntity(Entity a, Entity b) {

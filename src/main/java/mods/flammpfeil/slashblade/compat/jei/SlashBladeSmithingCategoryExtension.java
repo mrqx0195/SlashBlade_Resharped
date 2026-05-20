@@ -11,38 +11,38 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.SmithingRecipeInput;
 import org.jetbrains.annotations.NotNull;
 
+@SuppressWarnings("NonExtendableApiUsage")
 public class SlashBladeSmithingCategoryExtension implements ISmithingCategoryExtension<SlashBladeSmithingRecipe> {
-
     @Override
     public <T extends IIngredientAcceptor<T>> void setTemplate(SlashBladeSmithingRecipe recipe, T ingredientAcceptor) {
         Ingredient ingredient = recipe.getTemplate();
         ingredientAcceptor.addIngredients(ingredient);
     }
-
+    
     @Override
     public <T extends IIngredientAcceptor<T>> void setBase(SlashBladeSmithingRecipe recipe, T ingredientAcceptor) {
         Ingredient ingredient = recipe.getBase();
         ingredientAcceptor.addIngredients(ingredient);
     }
-
+    
     @Override
     public <T extends IIngredientAcceptor<T>> void setAddition(SlashBladeSmithingRecipe recipe, T ingredientAcceptor) {
         Ingredient ingredient = recipe.getAddition();
         ingredientAcceptor.addIngredients(ingredient);
     }
-
+    
     @Override
     public <T extends IIngredientAcceptor<T>> void setOutput(SlashBladeSmithingRecipe recipe, @NotNull T ingredientAcceptor) {
         Ingredient templateIngredient = recipe.getTemplate();
         Ingredient baseIngredient = recipe.getBase();
         Ingredient additionIngredient = recipe.getAddition();
-
+        
         ItemStack[] additions = additionIngredient.getItems();
         if (additions.length == 0) {
             return;
         }
         ItemStack addition = additions[0];
-
+        
         for (ItemStack template : templateIngredient.getItems()) {
             for (ItemStack base : baseIngredient.getItems()) {
                 SmithingRecipeInput recipeInput = createInput(template, base, addition);
@@ -51,7 +51,7 @@ public class SlashBladeSmithingCategoryExtension implements ISmithingCategoryExt
             }
         }
     }
-
+    
     private static ItemStack assembleResultItem(SmithingRecipeInput input, SlashBladeSmithingRecipe recipe) {
         Minecraft minecraft = Minecraft.getInstance();
         ClientLevel level = minecraft.level;
@@ -61,10 +61,10 @@ public class SlashBladeSmithingCategoryExtension implements ISmithingCategoryExt
         HolderLookup.Provider registryAccess = level.registryAccess();
         return recipe.assemble(input, registryAccess);
     }
-
+    
     private static SmithingRecipeInput createInput(ItemStack template, ItemStack base, ItemStack addition) {
         return new SmithingRecipeInput(template, base, addition);
     }
-
-
+    
+    
 }

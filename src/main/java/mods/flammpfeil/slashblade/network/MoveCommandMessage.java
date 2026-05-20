@@ -14,43 +14,44 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumSet;
 
 public record MoveCommandMessage(int command) implements CustomPacketPayload {
     public static final Type<MoveCommandMessage> TYPE = new Type<>(SlashBlade.prefix("move_command"));
     public static final StreamCodec<RegistryFriendlyByteBuf, MoveCommandMessage> STREAM_CODEC = CustomPacketPayload
-            .codec(MoveCommandMessage::write, MoveCommandMessage::new);
-
+        .codec(MoveCommandMessage::write, MoveCommandMessage::new);
+    
     private MoveCommandMessage(RegistryFriendlyByteBuf buf) {
         this(buf.readInt());
     }
-
+    
     private void write(RegistryFriendlyByteBuf buf) {
         buf.writeInt(this.command);
     }
-
+    
     @Override
-    public Type<MoveCommandMessage> type() {
+    public @NotNull Type<MoveCommandMessage> type() {
         return TYPE;
     }
-
+    
     public static void handle(MoveCommandMessage msg, IPayloadContext ctx) {
         if (!(ctx.player() instanceof ServerPlayer sender)) {
             return;
         }
-
+        
         ItemStack stack = sender.getItemInHand(InteractionHand.MAIN_HAND);
         if (stack.isEmpty() || BladeStateAccess.of(stack).isEmpty()) {
             return;
         }
-
+        
         IInputState state = sender.getData(CapabilityInputState.INPUT_STATE.get());
         EnumSet<InputCommand> old = state.getCommands().clone();
-
+        
         state.getCommands().clear();
         state.getCommands().addAll(EnumSetConverter.convertToEnumSet(InputCommand.class, msg.command()));
-
+        
         EnumSet<InputCommand> current = state.getCommands().clone();
         long currentTime = sender.level().getGameTime();
         current.forEach(command -> {
@@ -58,7 +59,7 @@ public record MoveCommandMessage(int command) implements CustomPacketPayload {
                 state.getLastPressTimes().put(command, currentTime);
             }
         });
-
+        
         InputCommandEvent.onInputChange(sender, state, old, current);
     }
 }

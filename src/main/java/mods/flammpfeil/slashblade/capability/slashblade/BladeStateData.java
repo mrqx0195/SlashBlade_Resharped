@@ -36,7 +36,7 @@ public record BladeStateData(
 ) {
     static final ResourceLocation DEFAULT_SLASH_ARTS = ResourceLocation.fromNamespaceAndPath("slashblade", "judgement_cut");
     static final ResourceLocation DEFAULT_COMBO_ROOT = ResourceLocation.fromNamespaceAndPath("slashblade", "standby");
-
+    
     public static final BladeStateData DEFAULT = new BladeStateData(
         "", 4.0F, 0, 0, 0,
         false, false,
@@ -51,15 +51,17 @@ public record BladeStateData(
         Optional.empty(),
         Collections.emptyList()
     );
-
+    
     private static final Codec<Vec3> VEC3_CODEC = Codec.DOUBLE.listOf().comapFlatMap(
         list -> {
-            if (list.size() < 3) return com.mojang.serialization.DataResult.error(() -> "Need 3 doubles");
+            if (list.size() < 3) {
+                return com.mojang.serialization.DataResult.error(() -> "Need 3 doubles");
+            }
             return com.mojang.serialization.DataResult.success(new Vec3(list.get(0), list.get(1), list.get(2)));
         },
         vec -> List.of(vec.x, vec.y, vec.z)
     );
-
+    
     private record CoreFields(
         String translationKey,
         float baseAttackModifier,
@@ -70,8 +72,9 @@ public record BladeStateData(
         boolean sealed,
         ResourceLocation slashArtsKey,
         boolean defaultBewitched
-    ) {}
-
+    ) {
+    }
+    
     private record RenderFields(
         ResourceLocation comboRoot,
         CarryType carryType,
@@ -81,8 +84,9 @@ public record BladeStateData(
         Optional<ResourceLocation> texture,
         Optional<ResourceLocation> model,
         List<ResourceLocation> specialEffects
-    ) {}
-
+    ) {
+    }
+    
     private static final MapCodec<CoreFields> CORE_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
         Codec.STRING.fieldOf("translationKey").forGetter(CoreFields::translationKey),
         Codec.FLOAT.fieldOf("baseAttackModifier").forGetter(CoreFields::baseAttackModifier),
@@ -94,7 +98,7 @@ public record BladeStateData(
         ResourceLocation.CODEC.fieldOf("slashArtsKey").forGetter(CoreFields::slashArtsKey),
         Codec.BOOL.fieldOf("defaultBewitched").forGetter(CoreFields::defaultBewitched)
     ).apply(instance, CoreFields::new));
-
+    
     private static final MapCodec<RenderFields> RENDER_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
         ResourceLocation.CODEC.fieldOf("comboRoot").forGetter(RenderFields::comboRoot),
         CarryType.CODEC.fieldOf("carryType").forGetter(RenderFields::carryType),
@@ -105,7 +109,7 @@ public record BladeStateData(
         ResourceLocation.CODEC.optionalFieldOf("model").forGetter(RenderFields::model),
         ResourceLocation.CODEC.listOf().fieldOf("specialEffects").forGetter(RenderFields::specialEffects)
     ).apply(instance, RenderFields::new));
-
+    
     public static final Codec<BladeStateData> CODEC = Codec.mapPair(CORE_CODEC, RENDER_CODEC)
         .xmap(
             pair -> new BladeStateData(
@@ -152,10 +156,10 @@ public record BladeStateData(
             )
         )
         .codec();
-
+    
     public static final StreamCodec<RegistryFriendlyByteBuf, BladeStateData> STREAM_CODEC =
         ByteBufCodecs.fromCodecWithRegistries(CODEC);
-
+    
     public BladeStateData withSpecialEffects(List<ResourceLocation> effects) {
         return new BladeStateData(translationKey, baseAttackModifier, proudSoul, killCount, refine,
             broken, sealed, slashArtsKey, defaultBewitched, comboRoot, carryType,

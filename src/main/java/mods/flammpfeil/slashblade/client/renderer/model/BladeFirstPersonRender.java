@@ -18,34 +18,34 @@ import net.minecraft.world.item.ItemStack;
 
 public class BladeFirstPersonRender {
     private LayerMainBlade<LocalPlayer, ?> layer = null;
-
+    
     private BladeFirstPersonRender() {
         initLayer();
     }
-
+    
     @SuppressWarnings({"unchecked", "rawtypes"})
     private boolean initLayer() {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null) {
             return false;
         }
-
+        
         EntityRenderer<?> renderer = mc.getEntityRenderDispatcher().getRenderer(mc.player);
         if (renderer instanceof RenderLayerParent) {
             layer = new LayerMainBlade((RenderLayerParent) renderer);
         }
-
+        
         return layer != null;
     }
-
+    
     private static final class SingletonHolder {
         private static final BladeFirstPersonRender instance = new BladeFirstPersonRender();
     }
-
+    
     public static BladeFirstPersonRender getInstance() {
         return SingletonHolder.instance;
     }
-
+    
     public void render(PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLightIn) {
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer player = mc.player;
@@ -55,14 +55,14 @@ public class BladeFirstPersonRender {
         if (layer == null && !initLayer()) {
             return;
         }
-
+        
         boolean flag = mc.getCameraEntity() instanceof LivingEntity
-                && ((LivingEntity) mc.getCameraEntity()).isSleeping();
+            && ((LivingEntity) mc.getCameraEntity()).isSleeping();
         if (mc.gameMode == null || !(mc.options.getCameraType() == CameraType.FIRST_PERSON && !flag && !mc.options.hideGui
-                && !mc.gameMode.isAlwaysFlying())) {
+            && !mc.gameMode.isAlwaysFlying())) {
             return;
         }
-
+        
         ItemStack stack = player.getItemInHand(InteractionHand.MAIN_HAND);
         if (stack.isEmpty()) {
             return;
@@ -70,22 +70,22 @@ public class BladeFirstPersonRender {
         if (BladeStateAccess.of(stack).isEmpty()) {
             return;
         }
-
-        try (MSAutoCloser msac = MSAutoCloser.pushMatrix(matrixStack)) {
+        
+        try (MSAutoCloser ignored = MSAutoCloser.pushMatrix(matrixStack)) {
             PoseStack.Pose me = matrixStack.last();
             me.pose().identity();
             me.normal().identity();
-
+            
             float partialTicks = mc.getTimer().getGameTimeDeltaPartialTick(false);
             matrixStack.mulPose(Axis.YP.rotationDegrees(180.0F - Mth.lerp(partialTicks, player.yRotO, player.getYRot())));
-
+            
             matrixStack.translate(0.0f, 0.0f, -0.5f);
             matrixStack.mulPose(Axis.ZP.rotationDegrees(180.0f));
             matrixStack.scale(1.2F, 1.0F, 1.0F);
-
+            
             // Keep the blade aligned with the camera without swinging through extreme pitch angles.
             matrixStack.mulPose(Axis.XP.rotationDegrees(-Mth.clamp(player.getXRot(), -60.0F, 10.0F)));
-
+            
             // layer.disableOffhandRendering();
             layer.render(matrixStack, bufferIn, combinedLightIn, player, 0, 0, partialTicks, 0, 0, 0);
         }

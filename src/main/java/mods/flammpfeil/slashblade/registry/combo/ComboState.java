@@ -230,7 +230,6 @@ public class ComboState {
         }
 
         private final Map<Integer, Consumer<LivingEntity>> timeLine;
-        private int lastProcessedTick = -1;
 
         TimeLineTickAction(Map<Integer, Consumer<LivingEntity>> timeLine) {
             this.timeLine = Maps.newHashMap(timeLine);
@@ -240,10 +239,19 @@ public class ComboState {
         public void accept(LivingEntity livingEntity) {
             int elapsed = (int) getElapsed(livingEntity);
 
-            if (lastProcessedTick == elapsed) {
-                return;
+            // Fix: Use per-item lastProcessedComboTick instead of the shared
+            // instance field to prevent tick actions being erroneously skipped
+            // when multiple players (potentially in different dimensions) are
+            // using the same ComboState singleton.
+            var bladeState = BladeStateAccess.of(livingEntity.getMainHandItem());
+            if (bladeState.isPresent()) {
+                var state = bladeState.get();
+                long lastProcessed = state.getLastProcessedComboTick();
+                if (lastProcessed == elapsed) {
+                    return;
+                }
+                state.setLastProcessedComboTick(elapsed);
             }
-            lastProcessedTick = elapsed;
 
             Consumer<LivingEntity> action = timeLine.get(elapsed);
             if (action != null) {

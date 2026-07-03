@@ -138,7 +138,7 @@ dependencies {
     compileOnly           "org.projectlombok:lombok:1.18.38"
     annotationProcessor   "org.projectlombok:lombok:1.18.38"
 
-    implementation "maven.modrinth:acceleratedrendering:1.0.8-1.21.1-alpha"
+    implementation "curse.maven:accelerated-rendering-1314021:7342942"
 
     implementation "dev.kosmx.player-anim:player-animation-lib-forge:${project.player_anim}"
 

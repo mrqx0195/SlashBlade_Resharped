@@ -138,7 +138,10 @@ dependencies {
     compileOnly           "org.projectlombok:lombok:1.18.38"
     annotationProcessor   "org.projectlombok:lombok:1.18.38"
 
-    implementation "curse.maven:accelerated-rendering-1314021:7342942"
+    // 1.0.8 加速渲染
+    compileOnly "curse.maven:accelerated-rendering-1314021:7342942"
+    // 1.8.12 iris
+    compileOnly "curse.maven:irisshaders-455508:6661598"
 
     implementation "dev.kosmx.player-anim:player-animation-lib-forge:${project.player_anim}"
 

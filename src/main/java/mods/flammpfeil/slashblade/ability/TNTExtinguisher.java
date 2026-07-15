@@ -16,24 +16,24 @@ public class TNTExtinguisher {
         if (!(target instanceof PrimedTnt)) {
             return;
         }
-
+        
         if (attacker.level().isClientSide()) {
             return;
         }
-
+        
         target.remove(Entity.RemovalReason.KILLED);
-
+        
         ServerLevel world = (ServerLevel) attacker.level();
-
+        
         world.sendParticles(ParticleTypes.SMOKE, target.getX(), target.getY() + target.getBbHeight() * 0.5,
-                target.getZ(), 5, target.getBbWidth() * 1.5, target.getBbHeight(), target.getBbWidth() * 1.5, 0.02D);
-
-        if (target.getType() == EntityType.TNT) {
+            target.getZ(), 5, target.getBbWidth() * 1.5, target.getBbHeight(), target.getBbWidth() * 1.5, 0.02D);
+        
+        if (target.getType().equals(EntityType.TNT)) {
             if (world.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
                 ItemEntity itementity = new ItemEntity(world, target.getX(), target.getY() + target.getBbHeight(),
-                        target.getZ(), new ItemStack(Items.TNT));
+                    target.getZ(), new ItemStack(Items.TNT));
                 itementity.setDefaultPickUpDelay();
-
+                
                 world.addFreshEntity(itementity);
             }
         }

@@ -15,8 +15,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
 
-import java.util.Objects;
-
 @EventBusSubscriber(modid = SlashBlade.MODID)
 public class EntitySpawnEventHandler {
     @SubscribeEvent
@@ -29,31 +27,31 @@ public class EntitySpawnEventHandler {
         if (!entity.getItemBySlot(EquipmentSlot.MAINHAND).isEmpty()) {
             return;
         }
-
+        
         RandomSource random = event.getLevel().getRandom();
         float difficultyMultiplier = event.getDifficulty().getSpecialMultiplier();
-
+        
         Registry<SlashBladeDefinition> bladeRegistry = SlashBlade
-                .getSlashBladeDefinitionRegistry(event.getEntity().level());
+            .getSlashBladeDefinitionRegistry(event.getEntity().level());
         if (!bladeRegistry.containsKey(SlashBladeBuiltInRegistry.SABIGATANA.location())) {
             return;
         }
-
+        
         float rngResult = random.nextFloat();
-
+        
         if (rngResult < SlashBladeConfig.BROKEN_SABIGATANA_SPAWN_CHANCE.get() * difficultyMultiplier) {
+            SlashBladeDefinition slashBladeDefinition;
             if (rngResult < SlashBladeConfig.SABIGATANA_SPAWN_CHANCE.get() * difficultyMultiplier) {
-                entity.setItemSlot(EquipmentSlot.MAINHAND,
-                        Objects.requireNonNull(bladeRegistry.get(SlashBladeBuiltInRegistry.SABIGATANA.location()))
-                        .getBlade(entity.registryAccess()));
+                slashBladeDefinition = bladeRegistry.get(SlashBladeBuiltInRegistry.SABIGATANA.location());
             } else {
-                entity.setItemSlot(EquipmentSlot.MAINHAND,
-                        Objects.requireNonNull(bladeRegistry.get(SlashBladeBuiltInRegistry.SABIGATANA_BROKEN.location()))
-                        .getBlade(entity.registryAccess()));
+                slashBladeDefinition = bladeRegistry.get(SlashBladeBuiltInRegistry.SABIGATANA_BROKEN.location());
+            }
+            if (slashBladeDefinition != null) {
+                entity.setItemSlot(EquipmentSlot.MAINHAND, slashBladeDefinition.getBlade(entity.registryAccess()));
             }
         }
     }
-
+    
     private static boolean isZombie(LivingEntity entity) {
         return entity instanceof Zombie && !(entity instanceof Drowned) && !(entity instanceof ZombifiedPiglin);
     }

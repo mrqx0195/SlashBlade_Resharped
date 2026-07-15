@@ -12,29 +12,30 @@ import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.item.crafting.ShapedRecipePattern;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
 public record SlashBladeShapedRecipeSerializer() implements RecipeSerializer<SlashBladeShapedRecipe> {
-
+    
     public static final MapCodec<SlashBladeShapedRecipe> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
-            Codec.STRING.optionalFieldOf("group", "").forGetter(ShapedRecipe::getGroup),
-            CraftingBookCategory.CODEC.fieldOf("category").forGetter(ShapedRecipe::category),
-            ShapedRecipePattern.MAP_CODEC.forGetter(SlashBladeShapedRecipe::getPattern),
-            ItemStack.CODEC.fieldOf("result").forGetter(SlashBladeShapedRecipe::getResultStack),
-            ResourceLocation.CODEC.optionalFieldOf("blade").forGetter(r -> Optional.ofNullable(r.getOutputBlade()))
+        Codec.STRING.optionalFieldOf("group", "").forGetter(ShapedRecipe::getGroup),
+        CraftingBookCategory.CODEC.fieldOf("category").forGetter(ShapedRecipe::category),
+        ShapedRecipePattern.MAP_CODEC.forGetter(SlashBladeShapedRecipe::getPattern),
+        ItemStack.CODEC.fieldOf("result").forGetter(SlashBladeShapedRecipe::getResultStack),
+        ResourceLocation.CODEC.optionalFieldOf("blade").forGetter(r -> Optional.ofNullable(r.getOutputBlade()))
     ).apply(inst, SlashBladeShapedRecipe::new));
-
+    
     public static final StreamCodec<RegistryFriendlyByteBuf, SlashBladeShapedRecipe> STREAM_CODEC =
-            ByteBufCodecs.fromCodecWithRegistries(CODEC.codec());
-
+        ByteBufCodecs.fromCodecWithRegistries(CODEC.codec());
+    
     @Override
-    public MapCodec<SlashBladeShapedRecipe> codec() {
+    public @NotNull MapCodec<SlashBladeShapedRecipe> codec() {
         return CODEC;
     }
-
+    
     @Override
-    public StreamCodec<RegistryFriendlyByteBuf, SlashBladeShapedRecipe> streamCodec() {
+    public @NotNull StreamCodec<RegistryFriendlyByteBuf, SlashBladeShapedRecipe> streamCodec() {
         return STREAM_CODEC;
     }
 }

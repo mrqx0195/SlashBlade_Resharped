@@ -3,17 +3,17 @@ package mods.flammpfeil.slashblade.util;
 import mods.flammpfeil.slashblade.SlashBlade;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementProgress;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
 
 public class AdvancementHelper {
-
+    
     static public final ResourceLocation ADVANCEMENT_COMBO_A = SlashBlade.prefix("arts/combo_a");
     static public final ResourceLocation ADVANCEMENT_COMBO_A_EX = SlashBlade.prefix("arts/combo_a_ex");
     static public final ResourceLocation ADVANCEMENT_COMBO_B = SlashBlade.prefix("arts/combo_b");
@@ -29,13 +29,13 @@ public class AdvancementHelper {
     static public final ResourceLocation ADVANCEMENT_JUDGEMENT_CUT = SlashBlade.prefix("arts/judgement_cut");
     static public final ResourceLocation ADVANCEMENT_JUDGEMENT_CUT_JUST = SlashBlade.prefix("arts/judgement_cut_just");
     static public final ResourceLocation ADVANCEMENT_QUICK_CHARGE = SlashBlade.prefix("arts/quick_charge");
-
+    
     public static void grantCriterion(LivingEntity entity, ResourceLocation resourcelocation) {
         if (entity instanceof ServerPlayer) {
             grantCriterion((ServerPlayer) entity, resourcelocation);
         }
     }
-
+    
     public static void grantCriterion(ServerPlayer player, ResourceLocation resourcelocation) {
         MinecraftServer server = player.getServer();
         AdvancementHolder adv = null;
@@ -45,30 +45,27 @@ public class AdvancementHelper {
         if (adv == null) {
             return;
         }
-
+        
         AdvancementProgress advancementprogress = player.getAdvancements().getOrStartProgress(adv);
         if (advancementprogress.isDone()) {
             return;
         }
-
+        
         for (String s : advancementprogress.getRemainingCriteria()) {
             player.getAdvancements().award(adv, s);
         }
     }
-
+    
     static final ResourceLocation EXEFFECT_ENCHANTMENT = SlashBlade.prefix("enchantment/");
-
+    
     static public void grantedIf(Enchantment enchantment, LivingEntity owner) {
         var enchRegistry = owner.level().registryAccess().registryOrThrow(Registries.ENCHANTMENT);
         var enchHolder = enchRegistry.getResourceKey(enchantment).flatMap(enchRegistry::getHolder);
         int level = enchHolder.map(h -> EnchantmentHelper.getTagEnchantmentLevel(h, owner.getMainHandItem())).orElse(0);
         if (0 < level) {
             grantCriterion(owner, EXEFFECT_ENCHANTMENT.withSuffix("root"));
-            ResourceLocation enchantmentsKey = enchRegistry.getResourceKey(enchantment).map(ResourceKey::location).orElse(null);
-            if (enchantmentsKey != null) {
-                grantCriterion(owner,
-                        EXEFFECT_ENCHANTMENT.withSuffix(enchantmentsKey.getPath()));
-            }
+            enchRegistry.getResourceKey(enchantment).map(ResourceKey::location).ifPresent(enchantmentsKey -> grantCriterion(owner,
+                EXEFFECT_ENCHANTMENT.withSuffix(enchantmentsKey.getPath())));
         }
     }
 }

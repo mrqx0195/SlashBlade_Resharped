@@ -2,7 +2,6 @@ package mods.flammpfeil.slashblade.slasharts;
 
 import mods.flammpfeil.slashblade.RegistryEvents;
 import mods.flammpfeil.slashblade.capability.concentrationrank.CapabilityConcentrationRank;
-import mods.flammpfeil.slashblade.capability.concentrationrank.IConcentrationRank;
 import mods.flammpfeil.slashblade.capability.slashblade.BladeStateAccess;
 import mods.flammpfeil.slashblade.capability.slashblade.ISlashBladeState;
 import mods.flammpfeil.slashblade.entity.EntitySlashEffect;
@@ -21,28 +20,28 @@ public class CircleSlash {
         if (living.level().isClientSide()) {
             return;
         }
-
+        
         ItemStack blade = living.getMainHandItem();
-        if (!BladeStateAccess.of(blade).isPresent()) {
+        if (BladeStateAccess.of(blade).isEmpty()) {
             return;
         }
         SlashBladeEvent.DoSlashEvent event = new SlashBladeEvent.DoSlashEvent(blade,
-                BladeStateAccess.of(blade).orElseThrow(),
-                living, 0, true, 0.325D, KnockBacks.cancel);
+            BladeStateAccess.of(blade).orElseThrow(),
+            living, 0, true, 0.325D, KnockBacks.cancel);
         event.setYRot(yRot);
         if (NeoForge.EVENT_BUS.post(event).isCanceled()) {
             return;
         }
-
+        
         Vec3 pos = living.position().add(0.0D, (double) living.getEyeHeight() * 0.75D, 0.0D)
-                .add(living.getLookAngle().scale(0.3f));
-
+            .add(living.getLookAngle().scale(0.3f));
+        
         pos = pos.add(VectorHelper.getVectorForRotation(-90.0F, living.getViewYRot(0)).scale(Vec3.ZERO.y))
-                .add(VectorHelper.getVectorForRotation(0, living.getViewYRot(0) + 90).scale(Vec3.ZERO.z))
-                .add(living.getLookAngle().scale(Vec3.ZERO.z));
-
+            .add(VectorHelper.getVectorForRotation(0, living.getViewYRot(0) + 90).scale(Vec3.ZERO.z))
+            .add(living.getLookAngle().scale(Vec3.ZERO.z));
+        
         EntitySlashEffect jc = new EntitySlashEffect(RegistryEvents.SlashEffect, living.level()) {
-
+            
             @Override
             public SoundEvent getSlashSound() {
                 return SoundEvents.EMPTY;
@@ -50,28 +49,25 @@ public class CircleSlash {
         };
         jc.setPos(pos.x, pos.y, pos.z);
         jc.setOwner(event.getUser());
-
+        
         jc.setRotationRoll(0);
         jc.setYRot(living.getYRot() - 22.5F + yRot);
         jc.setXRot(0);
-
+        
         int colorCode = BladeStateAccess.of(living.getMainHandItem())
-                .map(ISlashBladeState::getColorCode).orElse(0xFFFFFF);
+            .map(ISlashBladeState::getColorCode).orElse(0xFFFFFF);
         jc.setColor(colorCode);
-
+        
         jc.setMute(false);
         jc.setIsCritical(event.isCritical());
-
+        
         jc.setDamage(event.getDamage());
-
+        
         jc.setKnockBack(event.getKnockback());
-
-        IConcentrationRank rank = living.getData(CapabilityConcentrationRank.RANK_POINT.get());
-        if (rank != null) {
-            jc.setRank(rank.getRankLevel(living.level().getGameTime()));
-        }
-
+        
+        jc.setRank(living.getData(CapabilityConcentrationRank.RANK_POINT.get()).getRankLevel(living.level().getGameTime()));
+        
         living.level().addFreshEntity(jc);
     }
-
+    
 }

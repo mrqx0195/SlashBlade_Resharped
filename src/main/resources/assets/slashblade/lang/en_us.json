@@ -6,19 +6,18 @@
   "key.slashblade.special_move": "Special Move",
   "key.slashblade.summon_blade": "Summon Mirage Blade",
 
-  "attribute.name.generic.reachDistance":"Reach",
+  "attribute.name.generic.reachDistance": "Reach",
 
   "stat.slashblade.sword_summoned": "Sword Summoned",
 
-  "slashblade.tooltip.proud_soul" :"ProudSoul:%1$s",
-  "slashblade.tooltip.killcount"  :"KillCount:%1$s",
-  "slashblade.tooltip.refine"     :"Refine   :%1$s",
-  "slashblade.tooltip.slash_art"  :"SA       :%1$s",
-  "slashblade.tooltip.special_effect":"%1$s %2$s",
-  
+  "slashblade.tooltip.proud_soul": "ProudSoul:%1$s",
+  "slashblade.tooltip.killcount": "KillCount:%1$s",
+  "slashblade.tooltip.refine": "Refine   :%1$s",
+  "slashblade.tooltip.slash_art": "SA       :%1$s",
+  "slashblade.tooltip.special_effect": "%1$s %2$s",
+
   "se.slashblade.wither_edge": "Wither Edge",
-  
-  
+
   "item.slashblade.slashblade": "Anonymity -Nameless-",
   "item.slashblade.slashblade.desc": "The Beginning\nA pure vessel.",
   "item.slashblade.slashblade_wood": "Anonymity -Wood-",
@@ -32,20 +31,20 @@
 
   "item.slashblade.yamato": "Yamato",
   "item.slashblade.sange": "Sange",
-  
+
   "item.slashblade.yasha": "Yasha",
   "item.slashblade.yasha_true": "Yasha -Kikouku-",
-  
+
   "item.slashblade.sabigatana": "Sabigatana",
   "item.slashblade.doutanuki": "Steel -Doutanuki-",
-  
+
   "item.slashblade.tagayasan": "Ironwood -Tagayasan-",
   "item.slashblade.agito": "-Agito-",
   "item.slashblade.orotiagito_sealed": "-Agito-",
   "item.slashblade.orotiagito": "-Orotiagito-",
   "item.slashblade.agito_rust": "Rust -Agito-",
   "item.slashblade.orotiagito_rust": "Rust -Agito-",
-  
+
   "item.slashblade.rodai_wooden": "-Wooden- Rodai",
   "item.slashblade.rodai_stone": "-Stone- Rodai",
   "item.slashblade.rodai_iron": "Named -Steel- Rodai",
@@ -53,11 +52,9 @@
   "item.slashblade.rodai_diamond": "Named -Diamond- Rodai",
   "item.slashblade.rodai_netherite": "Named -Netherite- Rodai",
 
-  "slashblade.sword_type.bewitched":"Bewitched",
-  "slashblade.sword_type.enchanted":"Enchanted",
-  "slashblade.sword_type.noname":"Sealed",
-  
-
+  "slashblade.sword_type.bewitched": "Bewitched",
+  "slashblade.sword_type.enchanted": "Enchanted",
+  "slashblade.sword_type.noname": "Sealed",
 
   "item.slashblade.ruby": "Sharpness -nameless- Ruby",
   "item.slashblade.ruby.desc": "Superior One",
@@ -75,53 +72,52 @@
   "item.slashblade.muramasa.desc": "One of the lost muramasa swords.",
 
   "item.slashblade.proudsoul": "Proud Soul",
-  "item.slashblade.proudsoul_tiny":"Tiny Proud Soul",
-  "item.slashblade.proudsoul_ingot":"Blade Soul Ingot",
-  "item.slashblade.proudsoul_sphere":"Blade Soul Sphere",
-  "item.slashblade.proudsoul_crystal":"Blade Soul Crystal",
-  "item.slashblade.proudsoul_trapezohedron":"Blade Soul Trapezohedron",
+  "item.slashblade.proudsoul_tiny": "Tiny Proud Soul",
+  "item.slashblade.proudsoul_ingot": "Blade Soul Ingot",
+  "item.slashblade.proudsoul_sphere": "Blade Soul Sphere",
+  "item.slashblade.proudsoul_crystal": "Blade Soul Crystal",
+  "item.slashblade.proudsoul_trapezohedron": "Blade Soul Trapezohedron",
 
   "item.slashblade.bladestand_1": "Blade Stand single",
   "item.slashblade.bladestand_2": "Blade Stand dual",
   "item.slashblade.bladestand_v": "Blade Stand vertical",
   "item.slashblade.bladestand_s": "Blade Stand short",
-  "item.slashblade.bladestand_1w":"Blade Wall Rack single",
-  "item.slashblade.bladestand_2w":"Blade Wall Rack dual",
+  "item.slashblade.bladestand_1w": "Blade Wall Rack single",
+  "item.slashblade.bladestand_2w": "Blade Wall Rack dual",
 
-  "slash_art.slashblade.none":"None",
-  "slash_art.slashblade.judgement_cut":"Judgement Cut",
-  "slash_art.slashblade.sakura_end":"Sakura End",
-  "slash_art.slashblade.void_slash":"Void Slash",
-  "slash_art.slashblade.circle_slash":"Circle Slash",
-  "slash_art.slashblade.drive_horizontal":"Drive",
-  "slash_art.slashblade.drive_vertical":"Vertical Drive",
-  "slash_art.slashblade.wave_edge":"Wave Edge",
-  "slash_art.slashblade.piercing":"Piercing",
+  "slash_art.slashblade.none": "None",
+  "slash_art.slashblade.judgement_cut": "Judgement Cut",
+  "slash_art.slashblade.sakura_end": "Sakura End",
+  "slash_art.slashblade.void_slash": "Void Slash",
+  "slash_art.slashblade.circle_slash": "Circle Slash",
+  "slash_art.slashblade.drive_horizontal": "Drive",
+  "slash_art.slashblade.drive_vertical": "Vertical Drive",
+  "slash_art.slashblade.wave_edge": "Wave Edge",
+  "slash_art.slashblade.piercing": "Piercing",
 
   "adv.slashblade.proudsoul": "Limit of Refine=50\nBlade is Fragile.\nThe soul never wastes.",
-  "adv.slashblade.proudsoul_tiny":"Limit of Refine=10\nMysterious burning soul.",
+  "adv.slashblade.proudsoul_tiny": "Limit of Refine=10\nMysterious burning soul.",
   "adv.slashblade.proudsoul_ingot": "Limit of Refine=100\nSteel forged with a burning soul.",
   "adv.slashblade.proudsoul_sphere": "Limit of Refine=150\nSmelting\nJewel of Steel with a faint flame.",
   "adv.slashblade.proudsoul_crystal": "Limit of Refine=200\nBlasting\nThe core of the blade soul.\nCould get blade's SE.",
-  "adv.slashblade.proudsoul_trapezohedron":"Unlimited Refinement\nMore Blasting\nThe blade soul that arrives at the end.",
-  "adv.slashblade.proudsoul_activated":"HUNGER\nSneak&Use",
-  "adv.slashblade.proudsoul_awakened":"awakened",
+  "adv.slashblade.proudsoul_trapezohedron": "Unlimited Refinement\nMore Blasting\nThe blade soul that arrives at the end.",
+  "adv.slashblade.proudsoul_activated": "HUNGER\nSneak&Use",
+  "adv.slashblade.proudsoul_awakened": "awakened",
 
-  "adv.slashblade.reforge":"Blade Reforge",
-  "adv.slashblade.reforge.desc":"Blades and components are assembled using anvils.",
+  "adv.slashblade.reforge": "Blade Reforge",
+  "adv.slashblade.reforge.desc": "Blades and components are assembled using anvils.",
 
-  "adv.slashblade.refine":"Blade Refine",
-  "adv.slashblade.refine.desc":"Blades increase their potential each time they are refined.",
+  "adv.slashblade.refine": "Blade Refine",
+  "adv.slashblade.refine.desc": "Blades increase their potential each time they are refined.",
 
-  "adv.slashblade.white_broken":"Broken Edge",
-  "adv.slashblade.white_broken.desc":"Reforge!",
+  "adv.slashblade.white_broken": "Broken Edge",
+  "adv.slashblade.white_broken.desc": "Reforge!",
 
-  "adv.slashblade.bladestand":"Blade Stand",
-  "adv.slashblade.bladestand.desc":"A place to rest your blades.",
+  "adv.slashblade.bladestand": "Blade Stand",
+  "adv.slashblade.bladestand.desc": "A place to rest your blades.",
 
-  "adv.slashblade.imitation_broken":"It is fake.",
-  "adv.slashblade.imitation_broken.desc":"That’s the way of fake.",
-
+  "adv.slashblade.imitation_broken": "It is fake.",
+  "adv.slashblade.imitation_broken.desc": "That’s the way of fake.",
 
   "adv.slashblade.movesets": "Blade MoveSets",
   "adv.slashblade.movesets.desc": "Controls",
@@ -161,31 +157,29 @@
   "adv.slashblade.upperslash_jump": "Blade Arts -Jumping Slash-         ",
   "adv.slashblade.upperslash_jump.desc": "Use buttons\nAttack ♠:%s\nAfter executing Upper Slash,\nhold ♠",
 
-
-  "adv.slashblade.air_trick":   "Abilities -Air Trick-            ",
+  "adv.slashblade.air_trick": "Abilities -Air Trick-            ",
   "adv.slashblade.air_trick.desc": "Dash above an locked-on enemy's head and appear in mid-air\nUse buttons\nSpecialMove ♠:%s\nForward ᐃ:%s\nSneak ⚪:%s\npress ⚪+ᐃ+♠",
-  "adv.slashblade.trick_down":  "Abilities -Trick Down-           ",
+  "adv.slashblade.trick_down": "Abilities -Trick Down-           ",
   "adv.slashblade.trick_down.desc": "Dash downward toward an enemy and appear on the ground\nUse buttons\nSpecialMove ♠:%s\nBack ᐁ:%s\nSneak ⚪:%s\npress ⚪+ᐁ+♠",
   "adv.slashblade.trick_dodge": "Abilities -Trick Dodge-          ",
   "adv.slashblade.trick_dodge.desc": "Dash in any direction and evade enemy attacks\nUse buttons\nSpecialMove ♠:%s\nmove in any direction and press ♠",
-  "adv.slashblade.trick_up":    "Abilities -Trick Up-             ",
+  "adv.slashblade.trick_up": "Abilities -Trick Up-             ",
   "adv.slashblade.trick_up.desc": "Dash upward and appear in mid-air\nUse buttons\nSpecialMove ♠:%s\nForward ᐃ:%s\nSneak ⚪:%s\npress ⚪+ᐃ+♠",
-  "adv.slashblade.enemy_step":  "Abilities -Enemy Step-           ",
+  "adv.slashblade.enemy_step": "Abilities -Enemy Step-           ",
   "adv.slashblade.enemy_step.desc": "In mid-air, use an enemy as a stepping stone to execute a double jump\nUse buttons\nJump □:%s\nIn mid-air press □ near an enemy",
-  "adv.slashblade.kick_jump":   "Abilities -Kick Jump-            ",
+  "adv.slashblade.kick_jump": "Abilities -Kick Jump-            ",
   "adv.slashblade.kick_jump.desc": "In mid-air, use an wallblock as a stepping stone to execute a double jump\nUse buttons\nJump □:%s\nIn mid-air press □ near an wallblock",
 
-  "adv.slashblade.guard":       "Abilities -Guard-                ",
+  "adv.slashblade.guard": "Abilities -Guard-                ",
   "adv.slashblade.guard.desc": "Blocks enemy ranged attacks and neutralizes damage. This technique expends the durability each time it is activated. Cannot be blocked while WALKING.\nUse buttons\nSneak ⚪:%s\nWhile on the ground, press ⚪",
-  "adv.slashblade.guard_just":  "Abilities -Just Guard-           ",
+  "adv.slashblade.guard_just": "Abilities -Just Guard-           ",
   "adv.slashblade.guard_just.desc": "Block and defend enemy attacks as close as possible, and do not consume durability at high ranks. Fills the Rank gauge.\nUse buttons\nSneak ⚪:%s\nJust as an enemy attacks, press ⚪",
-
 
   "adv.slashblade.summonedswords": "Shooting Arts -Summoned Swords-  ",
   "adv.slashblade.summonedswords.desc": "Launch swords.This technique expends the 1exp each time it is activated.\nUse buttons\n%s ♠:%s\npress ♠",
-  "adv.slashblade.spiral_swords":  "Shooting Arts -Spiral Swords-    ",
+  "adv.slashblade.spiral_swords": "Shooting Arts -Spiral Swords-    ",
   "adv.slashblade.spiral_swords.desc": "Creates a ring of Summoned Swords around you that acts as a shield.This technique expends the 5exp each time it is activated.\nUse buttons\n%s ♠:%s\nhold ♠",
-  "adv.slashblade.storm_swords":   "Shooting Arts -Storm Swords-     ",
+  "adv.slashblade.storm_swords": "Shooting Arts -Storm Swords-     ",
   "adv.slashblade.storm_swords.desc": "Countless swords surround an enemy, then attack all at once, launching them into the air.This technique expends the 5exp each time it is activated.\nUse buttons\n%s ♠:%s\nBack ᐁ:%s\nSneak ⚪:%s\npress ⚪+ᐁ hold ♠",
   "adv.slashblade.blistering_swords": "Shooting Arts -Blistering Swords-",
   "adv.slashblade.blistering_swords.desc": "Create swords around you that launch themselves at your enemy one after another.This technique expends the 5exp each time it is activated.\nUse buttons\n%s ♠:%s\nForward ᐃ:%s\nSneak ⚪:%s\npress ⚪+ᐃ hold and release ♠",
@@ -202,6 +196,19 @@
   "adv.slashblade.exeffect.feather_falling.desc": "Falling speed during aerial actions will be reduced depending on Feather Falling level.",
 
   "attribute.name.generic.slashblade_damage": "Slashblade Damage",
+
+  "jei.category.slashblade.entity_drop_entry": "SlashBlade Drops",
+  "jei.category.slashblade.entity_drop_entry.chance": "%s%%",
+  "jei.category.slashblade.entity_drop_entry.need_slash_blade": "Need Killed by SlashBlade",
+  "jei.category.slashblade.slash_arts": "SA",
+  "jei.category.slashblade.special_effect": "SE",
+  "jei.category.slashblade.special_effect.copiable": "Copiable",
+  "jei.category.slashblade.special_effect.removable": "Removable",
+  "jei.category.slashblade.special_blade_desc_data": "Special SlashBlade Desc",
+  "jei.slashblade.entity.not_registered": "Entity hasn't registered",
+  "jei.slashblade.blade.not_registered": "SlashBlade hasn't registered",
+  "jei.slashblade.true": "Yes",
+  "jei.slashblade.false": "No",
 
   "emi.category.slashblade.shaped_blade": "Slashblade Crafting",
   "emi.category.slashblade.slashblade_smithing": "Slashblade Smithing"

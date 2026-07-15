@@ -15,12 +15,12 @@ import mods.flammpfeil.slashblade.SlashBlade;
 import mods.flammpfeil.slashblade.client.renderer.model.BladeMotionManager;
 import mods.flammpfeil.slashblade.util.TimeValueHelper;
 import net.minecraft.resources.ResourceLocation;
-import javax.annotation.Nullable;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Quaterniond;
 import org.joml.Vector3d;
 import org.joml.Vector3f;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -28,10 +28,10 @@ import java.util.Map;
 public class VmdAnimation implements IAnimation {
     @Nullable
     static final MmdPmdModelMc alex;
-
+    
     @Nullable
     static final MmdMotionPlayerGL2 motionPlayer;
-
+    
     static {
         MmdPmdModelMc tmpAlex = null;
         try {
@@ -40,7 +40,7 @@ public class VmdAnimation implements IAnimation {
             SlashBlade.LOGGER.warn(e);
         }
         alex = tmpAlex;
-
+        
         MmdMotionPlayerGL2 tmpMp = null;
         if (alex != null) {
             tmpMp = new MmdMotionPlayerGL2();
@@ -52,20 +52,20 @@ public class VmdAnimation implements IAnimation {
         }
         motionPlayer = tmpMp;
     }
-
+    
     int currentTick;
-
+    
     final ResourceLocation loc;
     double start;
     double end;
     double span;
     boolean loop;
-
+    
     private boolean isRunning = true;
-
+    
     private boolean blendArms = false;
     private boolean blendLegs = true;
-
+    
     static private Map<String, String> initNamemap() {
         Map<String, String> map = Maps.newHashMap();
         map.put("leftArm", "left arm");
@@ -74,104 +74,103 @@ public class VmdAnimation implements IAnimation {
         map.put("rightLeg", "right leg");
         return map;
     }
-
+    
     static final Map<String, String> nameMap = initNamemap();
-
+    
     static final List<String> arms = Lists.newArrayList("leftArm", "rightArm");
     static final List<String> legs = Lists.newArrayList("leftLeg", "rightLeg");
-
+    
     public VmdAnimation(ResourceLocation loc, double start, double end, boolean loop) {
         this.loc = loc;
         this.start = start;
         this.end = end;
-
+        
         this.span = TimeValueHelper.getTicksFromFrames((float) Math.abs(end - start));
-
+        
         this.loop = loop;
-
+        
         currentTick = 0;
     }
-
+    
     public VmdAnimation getClone() {
         VmdAnimation tmp = new VmdAnimation(this.loc, this.start, this.end, this.loop);
-
+        
         tmp.setBlendArms(this.blendArms);
-
+        
         tmp.setBlendLegs(this.blendLegs);
-
+        
         return tmp;
     }
-
+    
     public VmdAnimation setBlendArms(boolean blend) {
         blendArms = blend;
         return this;
     }
-
+    
     public VmdAnimation setBlendLegs(boolean blend) {
         blendLegs = blend;
         return this;
     }
-
+    
     @Override
     public void tick() {
         if (this.isRunning) {
             this.currentTick++;
-
+            
             double endTicks = span;
             this.loop = false;
-
+            
             if (endTicks <= currentTick) {
                 this.stop();
             }
         }
     }
-
+    
     public void play() {
         play(0);
     }
-
+    
     public void play(int ticks) {
         this.currentTick = Math.max(0, ticks);
         this.isRunning = true;
     }
-
+    
     public void stop() {
         this.isRunning = false;
     }
-
+    
     @Override
     public boolean isActive() {
         return this.isRunning;
     }
-
+    
     @Override
     public @NotNull Vec3f get3DTransform(@NotNull String modelName, @NotNull TransformType type, float tickDelta,
                                          @NotNull Vec3f value0) {
         this.setupAnim(tickDelta);
-
+        
         double motionScale = 1.0 / 16.0;
         float bodyScale = (float) motionScale;
         float finalizeScale = 2.0f;
-
+        
         Vector3f blend = new Vector3f(value0.getX(), value0.getY(), value0.getZ());
-
+        
         if (type != TransformType.POSITION
-                && ((!this.blendArms && arms.contains(modelName)) || (!this.blendLegs && legs.contains(modelName)))) {
+            && ((!this.blendArms && arms.contains(modelName)) || (!this.blendLegs && legs.contains(modelName)))) {
             blend.mul(0);
         }
-
+        
         if (motionPlayer == null) {
             return value0;
         }
-        MmdMotionPlayerGL2 mmp = motionPlayer;
-
+        
         String boneName = modelName;
         if (nameMap.containsKey(modelName)) {
             boneName = nameMap.get(modelName);
         }
-
-        PmdBone bone = mmp.getBoneByName(boneName);
-
+        
+        PmdBone bone = motionPlayer.getBoneByName(boneName);
+        
         if (bone != null) {
             switch (type) {
                 case POSITION: {
@@ -182,21 +181,21 @@ public class VmdAnimation implements IAnimation {
                     } else {
                         tmp = tmp.mul(1, -1, 1);
                     }
-
+                    
                     tmp.mul(finalizeScale).add(blend);
                     return new Vec3f(tmp.x, tmp.y, tmp.z);
                 }
                 case ROTATION: {
                     Quaterniond qt = new Quaterniond(bone.m_vec4Rotate.x, bone.m_vec4Rotate.y, bone.m_vec4Rotate.z,
-                            bone.m_vec4Rotate.w);
+                        bone.m_vec4Rotate.w);
                     Vector3d tmp = QuaternionToEulerZYX(qt);
-
+                    
                     if ("body".equals(modelName)) {
                         tmp = tmp.mul(1, -1, -1);
                     } else {
                         tmp = tmp.mul(-1, 1, -1);
                     }
-
+                    
                     tmp.add(blend);
                     return new Vec3f((float) tmp.x, (float) tmp.y, (float) tmp.z);
                 }
@@ -205,7 +204,7 @@ public class VmdAnimation implements IAnimation {
             }
         }
         /**/
-
+        
         /*
          * int idx = mmp.getBoneIndexByName(boneName); if (0 <= idx) { float[] buf = new
          * float[16]; mmp._skinning_mat[idx].getValue(buf);
@@ -230,16 +229,16 @@ public class VmdAnimation implements IAnimation {
          *
          * } } } /
          **/
-
+        
         return value0;
     }
-
+    
     Vector3d QuaternionToEulerZYX(Quaterniond qt) {
         Vector3d tmp = new Vector3d();
-
+        
         // 1. 归一化四元数
         Quaterniond normalizedQt = qt.normalize();
-
+        
         // 2. 计算旋转矩阵元素(修正后的公式)
         double wx = normalizedQt.w * normalizedQt.x;
         double wy = normalizedQt.w * normalizedQt.y;
@@ -250,19 +249,19 @@ public class VmdAnimation implements IAnimation {
         double yy = normalizedQt.y * normalizedQt.y;
         double yz = normalizedQt.y * normalizedQt.z;
         double zz = normalizedQt.z * normalizedQt.z;
-
+        
         // 旋转矩阵 R 的元素(ZYX顺序)
         double m00 = 1.0 - 2.0 * (yy + zz);
         double m01 = 2.0 * (xy + wz);
         double m02 = 2.0 * (xz - wy);
         double m12 = 2.0 * (yz + wx);
         double m22 = 1.0 - 2.0 * (xx + yy);
-
+        
         // 3. 计算欧拉角(Z-Y-X顺序)
         tmp.z = Math.atan2(m01, m00);
         tmp.y = Math.asin(-m02);  // 确保参数在-1~1内
         tmp.x = Math.atan2(m12, m22);
-
+        
         return tmp;
         
 /*        Vector3d tmp = new Vector3d();
@@ -286,15 +285,15 @@ public class VmdAnimation implements IAnimation {
 
         return tmp;*/
     }
-
+    
     @Override
     public void setupAnim(float tickDelta) {
         if (motionPlayer == null) {
             return;
         }
-
+        
         MmdMotionPlayerGL2 mmp = motionPlayer;
-
+        
         double eofTime = 0;
         MmdVmdMotionMc motion = BladeMotionManager.getInstance().getMotion(loc);
         try {
@@ -303,11 +302,11 @@ public class VmdAnimation implements IAnimation {
         } catch (Exception e) {
             SlashBlade.LOGGER.warn(e);
         }
-
+        
         double time = TimeValueHelper.getMSecFromTicks((float) (currentTick + (double) tickDelta));
         time = Math.min(eofTime, time);
         time = TimeValueHelper.getMSecFromFrames((float) start) + time;
-
+        
         try {
             mmp.updateMotion((float) time);
         } catch (MmdException e) {

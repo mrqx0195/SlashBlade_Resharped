@@ -29,12 +29,11 @@ import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
 public class BladeStandEntity extends ItemFrame implements IEntityWithComplexSpawn {
-    
+    @Nullable
     public Item currentType = null;
     public ItemStack currentTypeStack = ItemStack.EMPTY;
     
@@ -43,16 +42,16 @@ public class BladeStandEntity extends ItemFrame implements IEntityWithComplexSpa
     }
     
     @Override
-    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket(@NotNull ServerEntity serverEntity) {
+    public Packet<ClientGamePacketListener> getAddEntityPacket(ServerEntity serverEntity) {
         return super.getAddEntityPacket(serverEntity);
     }
     
     @Override
-    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
+    public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         String standTypeStr;
-        ResourceLocation itemsKey = BuiltInRegistries.ITEM.getKey(this.currentType);
         if (this.currentType != null) {
+            ResourceLocation itemsKey = BuiltInRegistries.ITEM.getKey(this.currentType);
             standTypeStr = itemsKey.toString();
         } else {
             standTypeStr = "";
@@ -63,7 +62,7 @@ public class BladeStandEntity extends ItemFrame implements IEntityWithComplexSpa
     }
     
     @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
+    public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         String standTypeStr = compound.getString("StandType");
         if (standTypeStr.isEmpty()) {
@@ -104,7 +103,7 @@ public class BladeStandEntity extends ItemFrame implements IEntityWithComplexSpa
     
     @Nullable
     @Override
-    public ItemEntity spawnAtLocation(@NotNull ItemLike iip) {
+    public ItemEntity spawnAtLocation(ItemLike iip) {
         if (iip.equals(Items.ITEM_FRAME)) {
             if (this.currentType == null || this.currentType.equals(Items.AIR)) {
                 return null;
@@ -116,7 +115,7 @@ public class BladeStandEntity extends ItemFrame implements IEntityWithComplexSpa
     }
     
     @Override
-    public boolean hurt(@NotNull DamageSource damageSource, float cat) {
+    public boolean hurt(DamageSource damageSource, float cat) {
         ItemStack blade = this.getItem();
         
         if (blade.isEmpty()) {
@@ -136,7 +135,7 @@ public class BladeStandEntity extends ItemFrame implements IEntityWithComplexSpa
     }
     
     @Override
-    public @NotNull InteractionResult interact(@NotNull Player player, @NotNull InteractionHand hand) {
+    public InteractionResult interact(Player player, InteractionHand hand) {
         InteractionResult result = InteractionResult.PASS;
         if (!this.level().isClientSide() && hand == InteractionHand.MAIN_HAND) {
             ItemStack itemstack = player.getItemInHand(hand);
@@ -178,7 +177,7 @@ public class BladeStandEntity extends ItemFrame implements IEntityWithComplexSpa
     }
     
     @Override
-    protected @NotNull ItemStack getFrameItemStack() {
+    protected ItemStack getFrameItemStack() {
         if (currentType == null) {
             return ItemStack.EMPTY;
         }

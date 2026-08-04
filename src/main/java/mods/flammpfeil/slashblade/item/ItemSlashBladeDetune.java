@@ -8,6 +8,7 @@ import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public class ItemSlashBladeDetune extends ItemSlashBlade {
@@ -15,7 +16,7 @@ public class ItemSlashBladeDetune extends ItemSlashBlade {
     private ResourceLocation texture;
     private final float baseAttack;
     private boolean isDestructable;
-
+    
     public ItemSlashBladeDetune(Tier tier, int attackDamageIn, float attackSpeedIn, Properties builder) {
         super(tier, attackDamageIn, attackSpeedIn, builder);
         this.baseAttack = attackDamageIn;
@@ -23,45 +24,45 @@ public class ItemSlashBladeDetune extends ItemSlashBlade {
         this.model = DefaultResources.resourceDefaultModel;
         this.texture = DefaultResources.resourceDefaultTexture;
     }
-
+    
     public ResourceLocation getModel() {
         return model;
     }
-
+    
     public ItemSlashBladeDetune setModel(ResourceLocation model) {
         this.model = model;
         return this;
     }
-
+    
     public ResourceLocation getTexture() {
         return texture;
     }
-
+    
     public float getBaseAttackModifier() {
         return baseAttack;
     }
-
+    
     public ItemSlashBladeDetune setTexture(ResourceLocation texture) {
         this.texture = texture;
         return this;
     }
-
+    
     public boolean isDestructable() {
         return isDestructable;
     }
-
+    
     public ItemSlashBladeDetune setDestructable() {
         this.isDestructable = true;
         return this;
     }
-
+    
     @Override
     public boolean isDestructable(ItemStack stack) {
         return this.isDestructable;
     }
-
+    
     @Override
-    public void appendSwordType(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-
+    public void appendSwordType(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+    
     }
 }

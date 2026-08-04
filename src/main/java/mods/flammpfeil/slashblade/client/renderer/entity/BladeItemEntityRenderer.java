@@ -15,7 +15,6 @@ import net.minecraft.client.renderer.entity.ItemEntityRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumSet;
 
@@ -25,8 +24,8 @@ public class BladeItemEntityRenderer extends ItemEntityRenderer {
     }
     
     @Override
-    public void render(ItemEntity itemIn, float entityYRot, float partialTick, @NotNull PoseStack matrixStackIn,
-                       @NotNull MultiBufferSource bufferIn, int packedLightIn) {
+    public void render(ItemEntity itemIn, float entityYRot, float partialTick, PoseStack matrixStackIn,
+                       MultiBufferSource bufferIn, int packedLightIn) {
         this.shadowRadius = 0;
         
         if (!itemIn.getItem().isEmpty()) {

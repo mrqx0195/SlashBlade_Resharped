@@ -9,16 +9,15 @@ import mods.flammpfeil.slashblade.registry.SlashBladeItems;
 import net.minecraft.advancements.critereon.ItemSubPredicate;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.NotNull;
 
 public record SlashBladeItemPredicate(RequestDefinition request) implements ItemSubPredicate {
-
+    
     public static final Codec<SlashBladeItemPredicate> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            RequestDefinition.CODEC.fieldOf("requestBlade").forGetter(SlashBladeItemPredicate::request)
+        RequestDefinition.CODEC.fieldOf("requestBlade").forGetter(SlashBladeItemPredicate::request)
     ).apply(instance, SlashBladeItemPredicate::new));
-
+    
     @Override
-    public boolean matches(@NotNull ItemStack stack) {
+    public boolean matches(ItemStack stack) {
         var name = this.request().name();
         boolean requestCheck = this.request().test(stack);
         if (name.equals(SlashBlade.prefix("none"))) {

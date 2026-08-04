@@ -17,7 +17,6 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.NotNull;
 
 public class BladeStandEntityRenderer extends ItemFrameRenderer<BladeStandEntity> {
     private final net.minecraft.client.renderer.entity.ItemRenderer itemRenderer;
@@ -29,8 +28,8 @@ public class BladeStandEntityRenderer extends ItemFrameRenderer<BladeStandEntity
     }
     
     @Override
-    public void render(@NotNull BladeStandEntity entity, float entityYRot, float partialTick, @NotNull PoseStack matrixStackIn,
-                       @NotNull MultiBufferSource bufferIn, int packedLightIn) {
+    public void render(BladeStandEntity entity, float entityYRot, float partialTick, PoseStack matrixStackIn,
+                       MultiBufferSource bufferIn, int packedLightIn) {
         doRender(entity, entityYRot, partialTick, matrixStackIn, bufferIn, packedLightIn);
     }
     
@@ -59,37 +58,38 @@ public class BladeStandEntityRenderer extends ItemFrameRenderer<BladeStandEntity
                 
                 matrixStackIn.scale(2, 2, 2);
                 Item type = entity.currentType;
-                if (type.equals(SlashBladeItems.BLADESTAND_1.get())) {
-                    matrixStackIn.mulPose(Axis.XP.rotationDegrees(-90f));
-                } else if (type.equals(SlashBladeItems.BLADESTAND_2.get())) {
-                    matrixStackIn.mulPose(Axis.XP.rotationDegrees(-90f));
-                } else if (type.equals(SlashBladeItems.BLADESTAND_V.get())) {
-                    matrixStackIn.mulPose(Axis.XP.rotationDegrees(-90f));
-                } else if (type.equals(SlashBladeItems.BLADESTAND_S.get())) {
-                    matrixStackIn.mulPose(Axis.XP.rotationDegrees(-90f));
-                } else if (type.equals(SlashBladeItems.BLADESTAND_1_W.get())) {
-                    matrixStackIn.mulPose(Axis.YP.rotationDegrees(180f));
-                    matrixStackIn.translate(0, 0, -0.15f);
-                } else if (type.equals(SlashBladeItems.BLADESTAND_2_W.get())) {
-                    matrixStackIn.mulPose(Axis.YP.rotationDegrees(180f));
-                    matrixStackIn.translate(0, 0, -0.15f);
+                if (type != null) {
+                    if (type.equals(SlashBladeItems.BLADESTAND_1.get())) {
+                        matrixStackIn.mulPose(Axis.XP.rotationDegrees(-90f));
+                    } else if (type.equals(SlashBladeItems.BLADESTAND_2.get())) {
+                        matrixStackIn.mulPose(Axis.XP.rotationDegrees(-90f));
+                    } else if (type.equals(SlashBladeItems.BLADESTAND_V.get())) {
+                        matrixStackIn.mulPose(Axis.XP.rotationDegrees(-90f));
+                    } else if (type.equals(SlashBladeItems.BLADESTAND_S.get())) {
+                        matrixStackIn.mulPose(Axis.XP.rotationDegrees(-90f));
+                    } else if (type.equals(SlashBladeItems.BLADESTAND_1_W.get())) {
+                        matrixStackIn.mulPose(Axis.YP.rotationDegrees(180f));
+                        matrixStackIn.translate(0, 0, -0.15f);
+                    } else if (type.equals(SlashBladeItems.BLADESTAND_2_W.get())) {
+                        matrixStackIn.mulPose(Axis.YP.rotationDegrees(180f));
+                        matrixStackIn.translate(0, 0, -0.15f);
+                    }
+                    
+                    // stand render
+                    matrixStackIn.pushPose();
+                    matrixStackIn.mulPose(Axis.XP.rotationDegrees(90));
+                    matrixStackIn.scale(0.5f, 0.5f, 0.5f);
+                    matrixStackIn.translate(0, 0, 0.44);
+                    this.renderItem(entity, entity.currentTypeStack, matrixStackIn, bufferIn, packedLightIn);
+                    matrixStackIn.popPose();
+                    
+                    if (type.equals(SlashBladeItems.BLADESTAND_1_W.get()) || type.equals(SlashBladeItems.BLADESTAND_2_W.get())) {
+                        matrixStackIn.translate(0, 0, -0.19f);
+                    }
+                    // blade render
+                    matrixStackIn.mulPose(Axis.YP.rotationDegrees(-180f));
+                    this.renderItem(entity, entity.getItem(), matrixStackIn, bufferIn, packedLightIn);
                 }
-                
-                // stand render
-                matrixStackIn.pushPose();
-                matrixStackIn.mulPose(Axis.XP.rotationDegrees(90));
-                matrixStackIn.scale(0.5f, 0.5f, 0.5f);
-                matrixStackIn.translate(0, 0, 0.44);
-                this.renderItem(entity, entity.currentTypeStack, matrixStackIn, bufferIn, packedLightIn);
-                matrixStackIn.popPose();
-                
-                if (entity.currentType.equals(SlashBladeItems.BLADESTAND_1_W.get()) || type.equals(SlashBladeItems.BLADESTAND_2_W.get())) {
-                    matrixStackIn.translate(0, 0, -0.19f);
-                }
-                // blade render
-                matrixStackIn.mulPose(Axis.YP.rotationDegrees(-180f));
-                this.renderItem(entity, entity.getItem(), matrixStackIn, bufferIn, packedLightIn);
-                
             }
         }
         

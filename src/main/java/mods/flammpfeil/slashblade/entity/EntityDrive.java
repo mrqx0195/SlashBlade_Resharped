@@ -36,7 +36,6 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.entity.PartEntity;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
@@ -101,7 +100,7 @@ public class EntityDrive extends EntityAbstractSummonedSword {
     }
     
     @Override
-    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
+    public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         
         NBTHelper.getNBTCoupler(compound).put("RotationOffset", this.getRotationOffset())
@@ -112,7 +111,7 @@ public class EntityDrive extends EntityAbstractSummonedSword {
     }
     
     @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
+    public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         
         NBTHelper.getNBTCoupler(compound).get("RotationOffset", this::setRotationOffset)
@@ -124,7 +123,7 @@ public class EntityDrive extends EntityAbstractSummonedSword {
     }
     
     @Override
-    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket(@NotNull ServerEntity entity) {
+    public Packet<ClientGamePacketListener> getAddEntityPacket(ServerEntity entity) {
         return super.getAddEntityPacket(entity);
     }
     
@@ -195,6 +194,7 @@ public class EntityDrive extends EntityAbstractSummonedSword {
         this.getEntityData().set(RANK, value);
     }
     
+    @Nullable
     public IConcentrationRank.ConcentrationRanks getRankCode() {
         return IConcentrationRank.ConcentrationRanks.getRankFromLevel(getRank());
     }
@@ -288,13 +288,15 @@ public class EntityDrive extends EntityAbstractSummonedSword {
                 IConcentrationRank.ConcentrationRanks rankBonus = player.hasData(CapabilityConcentrationRank.RANK_POINT.get())
                     ? player.getData(CapabilityConcentrationRank.RANK_POINT.get()).getRank(player.level().getGameTime())
                     : IConcentrationRank.ConcentrationRanks.NONE;
-                float rankDamageBonus = rankBonus.level / 2.0f;
-                if (IConcentrationRank.ConcentrationRanks.S.level <= rankBonus.level) {
-                    int refine = BladeStateAccess.of(player.getMainHandItem()).map(ISlashBladeState::getRefine).orElse(0);
-                    int level = player.experienceLevel;
-                    rankDamageBonus = (float) Math.max(rankDamageBonus, Math.min(level, refine) * REFINE_DAMAGE_MULTIPLIER.get());
+                if (rankBonus != null) {
+                    float rankDamageBonus = rankBonus.level / 2.0f;
+                    if (IConcentrationRank.ConcentrationRanks.S.level <= rankBonus.level) {
+                        int refine = BladeStateAccess.of(player.getMainHandItem()).map(ISlashBladeState::getRefine).orElse(0);
+                        int level = player.experienceLevel;
+                        rankDamageBonus = (float) Math.max(rankDamageBonus, Math.min(level, refine) * REFINE_DAMAGE_MULTIPLIER.get());
+                    }
+                    damageValue += rankDamageBonus;
                 }
-                damageValue += rankDamageBonus;
             }
             damageValue *= (float) (AttackManager.getSlashBladeDamageScale(living) * SLASHBLADE_DAMAGE_MULTIPLIER.get());
             if (this.getIsCritical()) {

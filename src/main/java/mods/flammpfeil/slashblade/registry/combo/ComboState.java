@@ -18,7 +18,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -111,6 +110,7 @@ public class ComboState {
         return this.releaseAction.apply(user, elapsed);
     }
     
+    @Nullable
     public static ResourceLocation getRegistryKey(ComboState state) {
         return ComboStateRegistry.REGISTRY.getKey(state);
     }
@@ -257,7 +257,7 @@ public class ComboState {
         }
         
         @Override
-        public @NotNull Consumer<LivingEntity> andThen(@NotNull Consumer<? super LivingEntity> after) {
+        public Consumer<LivingEntity> andThen(Consumer<? super LivingEntity> after) {
             Objects.requireNonNull(after);
             return (LivingEntity livingEntity) -> {
                 CompoundTag persistentData = livingEntity.getPersistentData();
@@ -303,6 +303,7 @@ public class ComboState {
             this.loop = false;
             this.aerial = false;
             this.next = entity -> SlashBlade.prefix("none");
+            this.nextOfTimeout = entity -> SlashBlade.prefix("none");
             this.tickAction = EMPTY_TICK_ACTION.andThen(ArrowReflector::doTicks);
             this.releaseAction = (u, e) -> SlashArts.ArtsType.Fail;
             this.holdAction = EMPTY_TICK_ACTION;

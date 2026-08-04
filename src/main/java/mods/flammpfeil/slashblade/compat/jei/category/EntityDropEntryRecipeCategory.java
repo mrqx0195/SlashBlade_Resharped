@@ -21,7 +21,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.common.DeferredSpawnEggItem;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * @author yiran1457
@@ -34,12 +33,12 @@ public record EntityDropEntryRecipeCategory(IDrawable icon) implements IRecipeCa
     }
     
     @Override
-    public @NotNull RecipeType<EntityDropEntry> getRecipeType() {
+    public RecipeType<EntityDropEntry> getRecipeType() {
         return DROP_TYPE;
     }
     
     @Override
-    public @NotNull Component getTitle() {
+    public Component getTitle() {
         return Component.translatable("jei.category.slashblade.entity_drop_entry");
     }
     
@@ -59,7 +58,7 @@ public record EntityDropEntryRecipeCategory(IDrawable icon) implements IRecipeCa
     }
     
     @Override
-    public void setRecipe(IRecipeLayoutBuilder builder, EntityDropEntry entityDropEntry, @NotNull IFocusGroup iFocusGroup) {
+    public void setRecipe(IRecipeLayoutBuilder builder, EntityDropEntry entityDropEntry, IFocusGroup iFocusGroup) {
         Item entityItem;
         IRecipeSlotBuilder entitySlot = builder.addInputSlot(8, 6).setStandardSlotBackground();
         if (!BuiltInRegistries.ENTITY_TYPE.containsKey(entityDropEntry.entityType())) {
@@ -95,7 +94,7 @@ public record EntityDropEntryRecipeCategory(IDrawable icon) implements IRecipeCa
     }
     
     @Override
-    public void createRecipeExtras(@NotNull IRecipeExtrasBuilder builder, EntityDropEntry recipe, @NotNull IFocusGroup focuses) {
+    public void createRecipeExtras(IRecipeExtrasBuilder builder, EntityDropEntry recipe, IFocusGroup focuses) {
         if (BuiltInRegistries.ENTITY_TYPE.containsKey(recipe.entityType())) {
             builder.addDrawable(new EntityDrawable(BuiltInRegistries.ENTITY_TYPE.get(recipe.entityType())), 0, 0);
         }

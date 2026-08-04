@@ -30,7 +30,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.*;
@@ -65,7 +64,7 @@ public interface ISlashBladeState {
         
         // performance setting
         
-        tag.putString("SpecialAttackType", Optional.ofNullable(this.getSlashArtsKey()).orElse(SlashArtsRegistry.JUDGEMENT_CUT.getId()).toString());
+        tag.putString("SpecialAttackType", Optional.of(this.getSlashArtsKey()).orElse(SlashArtsRegistry.JUDGEMENT_CUT.getId()).toString());
         tag.putBoolean("isDefaultBewitched", this.isDefaultBewitched());
         tag.putString("translationKey", this.getTranslationKey());
         
@@ -78,9 +77,9 @@ public interface ISlashBladeState {
         this.getTexture().ifPresent(loc -> tag.putString("TextureName", loc.toString()));
         this.getModel().ifPresent(loc -> tag.putString("ModelName", loc.toString()));
         
-        tag.putString("ComboRoot", Optional.ofNullable(this.getComboRoot()).orElse(ComboStateRegistry.STANDBY.getId()).toString());
+        tag.putString("ComboRoot", Optional.of(this.getComboRoot()).orElse(ComboStateRegistry.STANDBY.getId()).toString());
         
-        if (this.getSpecialEffects() != null && !this.getSpecialEffects().isEmpty()) {
+        if (!this.getSpecialEffects().isEmpty()) {
             ListTag seList = new ListTag();
             this.getSpecialEffects().forEach(se -> seList.add(StringTag.valueOf(se.toString())));
             tag.put("SpecialEffects", seList);
@@ -89,7 +88,7 @@ public interface ISlashBladeState {
         return tag;
     }
     
-    default void deserializeNBT(CompoundTag tag) {
+    default void deserializeNBT(@Nullable CompoundTag tag) {
         if (tag == null) {
             return;
         }
@@ -100,7 +99,7 @@ public interface ISlashBladeState {
         this.setOnClick(tag.getBoolean("_onClick"));
         this.setFallDecreaseRate(tag.getFloat("fallDecreaseRate"));
         this.setAttackAmplifier(tag.getFloat("AttackAmplifier"));
-        this.setComboSeq(ResourceLocation.tryParse(tag.getString("currentCombo")));
+        this.setComboSeq(ResourceLocation.parse(tag.getString("currentCombo")));
         this.setDamage(tag.getInt("Damage"));
         this.setMaxDamage(tag.getInt("maxDamage"));
         this.setProudSoulCount(tag.getInt("proudSoul"));
@@ -116,7 +115,7 @@ public interface ISlashBladeState {
         
         // performance setting
         
-        this.setSlashArtsKey(ResourceLocation.tryParse(tag.getString("SpecialAttackType")));
+        this.setSlashArtsKey(ResourceLocation.parse(tag.getString("SpecialAttackType")));
         this.setDefaultBewitched(tag.getBoolean("isDefaultBewitched"));
         
         this.setTranslationKey(tag.getString("translationKey"));
@@ -140,7 +139,7 @@ public interface ISlashBladeState {
             this.setModel(null);
         }
         
-        this.setComboRoot(ResourceLocation.tryParse(tag.getString("ComboRoot")));
+        this.setComboRoot(ResourceLocation.parse(tag.getString("ComboRoot")));
         if (tag.contains("SpecialEffects")) {
             ListTag list = tag.getList("SpecialEffects", 8);
             this.setSpecialEffects(list);
@@ -201,14 +200,10 @@ public interface ISlashBladeState {
     
     void setRefine(int refine);
     
-    @Nonnull
     default SlashArts getSlashArts() {
         ResourceLocation key = getSlashArtsKey();
-        SlashArts result = null;
-        if (key != null) {
-            result = SlashArtsRegistry.REGISTRY.containsKey(key) ? SlashArtsRegistry.REGISTRY.get(key)
-                : SlashArtsRegistry.JUDGEMENT_CUT.get();
-        }
+        SlashArts result = SlashArtsRegistry.REGISTRY.containsKey(key) ? SlashArtsRegistry.REGISTRY.get(key)
+            : SlashArtsRegistry.JUDGEMENT_CUT.get();
         
         if (SlashArtsRegistry.NONE.getId().equals(key)) {
             result = null;
@@ -217,7 +212,7 @@ public interface ISlashBladeState {
         return result != null ? result : SlashArtsRegistry.JUDGEMENT_CUT.get();
     }
     
-    void setSlashArtsKey(ResourceLocation slashArts);
+    void setSlashArtsKey(@Nullable ResourceLocation slashArts);
     
     ResourceLocation getSlashArtsKey();
     
@@ -225,17 +220,14 @@ public interface ISlashBladeState {
     
     void setDefaultBewitched(boolean defaultBewitched);
     
-    @Nonnull
     String getTranslationKey();
     
     void setTranslationKey(String translationKey);
     
-    @Nonnull
     CarryType getCarryType();
     
     void setCarryType(CarryType carryType);
     
-    @Nonnull
     Color getEffectColor();
     
     void setEffectColor(Color effectColor);
@@ -252,27 +244,26 @@ public interface ISlashBladeState {
         return getEffectColor().getRGB();
     }
     
-    @Nonnull
     Vec3 getAdjust();
     
     void setAdjust(Vec3 adjust);
     
-    @Nonnull
     Optional<ResourceLocation> getTexture();
     
-    void setTexture(ResourceLocation texture);
+    void setTexture(@Nullable ResourceLocation texture);
     
-    @Nonnull
     Optional<ResourceLocation> getModel();
     
-    void setModel(ResourceLocation model);
+    void setModel(@Nullable ResourceLocation model);
     
     int getTargetEntityId();
     
     void setTargetEntityId(int id);
     
+    @Deprecated
     long getLastProcessedComboTick();
     
+    @Deprecated
     void setLastProcessedComboTick(long tick);
     
     @Nullable
@@ -285,7 +276,7 @@ public interface ISlashBladeState {
         }
     }
     
-    default void setTargetEntityId(Entity target) {
+    default void setTargetEntityId(@Nullable Entity target) {
         if (target != null) {
             this.setTargetEntityId(target.getId());
         } else {
@@ -308,6 +299,7 @@ public interface ISlashBladeState {
         return getFullChargeTicks(user) < elapsed;
     }
     
+    @Nullable
     default ResourceLocation progressCombo(LivingEntity user, boolean isVirtual) {
         ResourceLocation currentloc = resolvCurrentComboState(user);
         ComboState current = ComboStateRegistry.REGISTRY.get(currentloc);
@@ -344,10 +336,12 @@ public interface ISlashBladeState {
         return resolved;
     }
     
+    @Nullable
     default ResourceLocation progressCombo(LivingEntity user) {
         return progressCombo(user, false);
     }
     
+    @Nullable
     default ResourceLocation doChargeAction(LivingEntity user, int elapsed) {
         if (elapsed <= 2) {
             return ComboStateRegistry.NONE.getId();
@@ -417,7 +411,7 @@ public interface ISlashBladeState {
         return csloc;
     }
     
-    default void updateComboSeq(LivingEntity entity, ResourceLocation loc) {
+    default void updateComboSeq(LivingEntity entity, @Nullable ResourceLocation loc) {
         if (!applyComboSeq(entity, loc, entity.level().getGameTime())) {
             return;
         }
@@ -455,22 +449,20 @@ public interface ISlashBladeState {
         int time = (int) TimeValueHelper.getMSecFromTicks(getElapsedTime(user));
         
         if (currentCS != null) {
-            if (current != null) {
-                while (!current.equals(ComboStateRegistry.NONE.getId()) && currentCS.getTimeoutMS() < time) {
-                    time -= currentCS.getTimeoutMS();
-                    
-                    var event = new SlashBladeEvent.NextOfTimeOutComboEvent(user.getMainHandItem(), this, user, currentCS.getNextOfTimeout(user));
-                    NeoForge.EVENT_BUS.post(event);
-                    current = event.getNextCombo();
-                    
-                    if (updateState) {
-                        this.updateComboSeq(user, current);
-                    }
-                    currentCS = ComboStateRegistry.REGISTRY.get(current);
-                    if (currentCS == null) {
-                        current = ComboStateRegistry.NONE.getId();
-                        currentCS = ComboStateRegistry.NONE.get();
-                    }
+            while (!current.equals(ComboStateRegistry.NONE.getId()) && currentCS.getTimeoutMS() < time) {
+                time -= currentCS.getTimeoutMS();
+                
+                var event = new SlashBladeEvent.NextOfTimeOutComboEvent(user.getMainHandItem(), this, user, currentCS.getNextOfTimeout(user));
+                NeoForge.EVENT_BUS.post(event);
+                current = event.getNextCombo();
+                
+                if (updateState) {
+                    this.updateComboSeq(user, current);
+                }
+                currentCS = ComboStateRegistry.REGISTRY.get(current);
+                if (currentCS == null) {
+                    current = ComboStateRegistry.NONE.getId();
+                    currentCS = ComboStateRegistry.NONE.get();
                 }
             }
         }
@@ -479,7 +471,10 @@ public interface ISlashBladeState {
         return new AbstractMap.SimpleImmutableEntry<>(ticks, current);
     }
     
-    private boolean applyComboSeq(LivingEntity entity, ResourceLocation loc, long actionTime) {
+    private boolean applyComboSeq(LivingEntity entity, @Nullable ResourceLocation loc, long actionTime) {
+        if (loc == null) {
+            return false;
+        }
         BladeMotionEvent event = new BladeMotionEvent(entity, loc, actionTime);
         NeoForge.EVENT_BUS.post(event);
         if (event.isCanceled()) {

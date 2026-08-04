@@ -17,7 +17,6 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -31,37 +30,37 @@ public class DataGen {
         PackOutput packOutput = dataGenerator.getPackOutput();
         ExistingFileHelper existingFileHelper = event.getExistingFileHelper();
         final RegistrySetBuilder bladeBuilder = new RegistrySetBuilder().add(SlashBladeDefinition.REGISTRY_KEY,
-                SlashBladeBuiltInRegistry::registerAll);
-
+            SlashBladeBuiltInRegistry::registerAll);
+        
         final RegistrySetBuilder bladeDropBuilder = new RegistrySetBuilder().add(EntityDropEntry.REGISTRY_KEY,
-                SlashBladeEntityDropBuiltInRegistry::registerAll);
-
+            SlashBladeEntityDropBuiltInRegistry::registerAll);
+        
         dataGenerator.addProvider(event.includeServer(), new SlashBladeRecipeProvider(packOutput, lookupProvider));
         dataGenerator.addProvider(event.includeServer(),
-                new DatapackBuiltinEntriesProvider(packOutput, lookupProvider, bladeBuilder, Set.of("minecraft", SlashBlade.MODID)) {
-        			
-                    @Override
-                    public @NotNull String getName() {
-                        return "SlashBlade Definition Registry";
-                    }
-
-                });
+            new DatapackBuiltinEntriesProvider(packOutput, lookupProvider, bladeBuilder, Set.of("minecraft", SlashBlade.MODID)) {
+                
+                @Override
+                public String getName() {
+                    return "SlashBlade Definition Registry";
+                }
+                
+            });
         dataGenerator.addProvider(event.includeServer(), new DatapackBuiltinEntriesProvider(packOutput, lookupProvider,
-                bladeDropBuilder, Set.of(SlashBlade.MODID)) {
-
+            bladeDropBuilder, Set.of(SlashBlade.MODID)) {
+            
             @Override
-            public @NotNull String getName() {
+            public String getName() {
                 return "SlashBlade Entity Drop Entry Registry";
             }
-
+            
         });
         dataGenerator.addProvider(event.includeServer(),
-                new SlashBladeEntityTypeTagProvider(packOutput, lookupProvider, SlashBlade.MODID, existingFileHelper));
-
+            new SlashBladeEntityTypeTagProvider(packOutput, lookupProvider, SlashBlade.MODID, existingFileHelper));
+        
         var itemTagsProvider = new SlashBladeItemTagProvider(packOutput, lookupProvider,
-                CompletableFuture.completedFuture(TagsProvider.TagLookup.empty()),
-                existingFileHelper);
+            CompletableFuture.completedFuture(TagsProvider.TagLookup.empty()),
+            existingFileHelper);
         dataGenerator.addProvider(event.includeServer(), itemTagsProvider);
     }
-
+    
 }

@@ -14,7 +14,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumSet;
 
@@ -32,7 +31,7 @@ public record MoveCommandMessage(int command) implements CustomPacketPayload {
     }
     
     @Override
-    public @NotNull Type<MoveCommandMessage> type() {
+    public Type<MoveCommandMessage> type() {
         return TYPE;
     }
     

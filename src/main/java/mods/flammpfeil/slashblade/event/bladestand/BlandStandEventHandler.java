@@ -249,18 +249,19 @@ public class BlandStandEventHandler {
             spawnSucceedEffects(world, bladeStand, random);
             
             ItemEntity itemEntity = player.drop(orb, true);
-            
-            if (pe.isRemovable()) {
-                state.removeSpecialEffect(se);
+            if (itemEntity != null) {
+                if (pe.isRemovable()) {
+                    state.removeSpecialEffect(se);
+                }
+                
+                CopySpecialEffectFromBladeEvent e = new CopySpecialEffectFromBladeEvent(
+                    pe, orb, itemEntity);
+                
+                NeoForge.EVENT_BUS.post(e);
+                
+                event.setCanceled(true);
+                return;
             }
-            
-            CopySpecialEffectFromBladeEvent e = new CopySpecialEffectFromBladeEvent(
-                pe, orb, itemEntity);
-            
-            NeoForge.EVENT_BUS.post(e);
-            
-            event.setCanceled(true);
-            return;
         }
     }
     
@@ -317,12 +318,14 @@ public class BlandStandEventHandler {
             
             ItemEntity itemEntity = player.drop(orb, true);
             
-            CopySpecialAttackFromBladeEvent e = new CopySpecialAttackFromBladeEvent(
-                pe, orb, itemEntity);
-            
-            NeoForge.EVENT_BUS.post(e);
-            
-            event.setCanceled(true);
+            if (itemEntity != null) {
+                CopySpecialAttackFromBladeEvent e = new CopySpecialAttackFromBladeEvent(
+                    pe, orb, itemEntity);
+                
+                NeoForge.EVENT_BUS.post(e);
+                
+                event.setCanceled(true);
+            }
         }
     }
     

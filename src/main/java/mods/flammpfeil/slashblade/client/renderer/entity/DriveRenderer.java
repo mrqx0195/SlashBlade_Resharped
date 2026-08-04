@@ -16,7 +16,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import org.jetbrains.annotations.NotNull;
 
 @OnlyIn(Dist.CLIENT)
 public class DriveRenderer<T extends EntityDrive> extends EntityRenderer<T> {
@@ -25,7 +24,7 @@ public class DriveRenderer<T extends EntityDrive> extends EntityRenderer<T> {
     private static final ResourceLocation MODEL = SlashBlade.prefix("model/util/drive.obj");
     
     @Override
-    public @NotNull ResourceLocation getTextureLocation(T entity) {
+    public ResourceLocation getTextureLocation(T entity) {
         return entity.getTextureLoc();
     }
     
@@ -34,7 +33,7 @@ public class DriveRenderer<T extends EntityDrive> extends EntityRenderer<T> {
     }
     
     @Override
-    public void render(T entity, float entityYaw, float partialTicks, PoseStack matrixStack, @NotNull MultiBufferSource bufferIn,
+    public void render(T entity, float entityYaw, float partialTicks, PoseStack matrixStack, MultiBufferSource bufferIn,
                        int packedLightIn) {
         
         try (MSAutoCloser ignored = MSAutoCloser.pushMatrix(matrixStack)) {

@@ -15,6 +15,7 @@ import net.neoforged.neoforge.event.entity.living.LivingEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,7 +46,7 @@ public class Untouchable {
         return entity.getData(CapabilityMobEffect.MOB_EFFECT.get()).isUntouchable(entity.level().getGameTime());
     }
     
-    private void doWitchTime(Entity entity) {
+    private void doWitchTime(@Nullable Entity entity) {
         if (entity == null) {
             return;
         }
@@ -57,7 +58,7 @@ public class Untouchable {
         StunManager.setStun((LivingEntity) entity);
     }
     
-    public boolean doUntouchable(LivingEntity self, Entity other) {
+    public boolean doUntouchable(LivingEntity self, @Nullable Entity other) {
         if (checkUntouchable(self)) {
             doWitchTime(other);
             return true;

@@ -44,7 +44,6 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.entity.PartEntity;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -75,12 +74,13 @@ public class EntityAbstractSummonedSword extends Projectile implements IShootabl
     
     private int ticksInGround;
     private boolean inGround;
+    @Nullable
     private BlockState inBlockState;
     private int ticksInAir;
     private double damage = 1.0D;
-    
+    @Nullable
     private IntOpenHashSet alreadyHits;
-    
+    @Nullable
     private Entity hitEntity = null;
     
     static final int ON_GROUND_LIFE_TIME = 20 * 5;
@@ -121,7 +121,7 @@ public class EntityAbstractSummonedSword extends Projectile implements IShootabl
     }
     
     @Override
-    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
+    public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         
         NBTHelper.getNBTCoupler(compound).put("Color", this.getColor()).put("life", (short) this.ticksInGround)
@@ -132,7 +132,7 @@ public class EntityAbstractSummonedSword extends Projectile implements IShootabl
     }
     
     @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
+    public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         
         NBTHelper.getNBTCoupler(compound).get("Color", this::setColor)
@@ -147,7 +147,7 @@ public class EntityAbstractSummonedSword extends Projectile implements IShootabl
     }
     
     @Override
-    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket(@NotNull ServerEntity entity) {
+    public Packet<ClientGamePacketListener> getAddEntityPacket(ServerEntity entity) {
         return super.getAddEntityPacket(entity);
     }
     
@@ -313,12 +313,11 @@ public class EntityAbstractSummonedSword extends Projectile implements IShootabl
         }
         
         if (this.inGround && !disallowedHitBlock) {
-            if (!this.inBlockState.equals(blockstate) && this.level().noCollision(this.getBoundingBox().inflate(0.06D))) {
+            // onBlock
+            if (this.inBlockState != null && !this.inBlockState.equals(blockstate)
+                && this.level().noCollision(this.getBoundingBox().inflate(0.06D))) {
                 // block breaked
                 this.burst();
-            } else if (!this.level().isClientSide()) {
-                // onBlock
-                this.tryDespawn();
             }
         } else {
             // process pose
@@ -408,8 +407,10 @@ public class EntityAbstractSummonedSword extends Projectile implements IShootabl
                 this.setYRot((float) (Mth.atan2(mx, mz) * (double) (180F / (float) Math.PI)));
             }
             
-            for (this.setXRot((float) (Mth.atan2(my, f4) * (double) (180F / (float) Math.PI))); this.getXRot()
-                - this.xRotO < -180.0F; this.xRotO -= 360.0F) {
+            this.setXRot((float) (Mth.atan2(my, f4) * (double) (180F / (float) Math.PI)));
+            while (this.getXRot()
+                - this.xRotO < -180.0F) {
+                this.xRotO -= 360.0F;
             }
             
             while (this.getXRot() - this.xRotO >= 180.0F) {
@@ -754,7 +755,7 @@ public class EntityAbstractSummonedSword extends Projectile implements IShootabl
     
     private static final String defaultModelName = "slashblade:model/util/ss";
     
-    public void setModelName(String name) {
+    public void setModelName(@Nullable String name) {
         this.entityData.set(MODEL, Optional.ofNullable(name).orElse(defaultModelName));
     }
     
@@ -778,7 +779,7 @@ public class EntityAbstractSummonedSword extends Projectile implements IShootabl
     }
     
     @Override
-    public void push(@NotNull Entity entityIn) {
+    public void push(Entity entityIn) {
         // Suppress velocity change due to collision
         // super.applyEntityCollision(entityIn);
     }

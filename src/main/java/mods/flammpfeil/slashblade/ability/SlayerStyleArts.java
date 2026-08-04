@@ -34,7 +34,6 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.EnumSet;
@@ -199,7 +198,7 @@ public class SlayerStyleArts {
         return true;
     }
     
-    public static @NotNull Vec3 getInput(EnumSet<InputCommand> current) {
+    public static Vec3 getInput(EnumSet<InputCommand> current) {
         float moveForward = current.contains(InputCommand.FORWARD) ^ current.contains(InputCommand.BACK)
             ?
             (current.contains(InputCommand.FORWARD) ?

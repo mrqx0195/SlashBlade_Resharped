@@ -10,7 +10,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
@@ -31,7 +30,7 @@ public record MotionBroadcastMessage(UUID playerId, ResourceLocation combo,
     }
     
     @Override
-    public @NotNull Type<MotionBroadcastMessage> type() {
+    public Type<MotionBroadcastMessage> type() {
         return TYPE;
     }
     

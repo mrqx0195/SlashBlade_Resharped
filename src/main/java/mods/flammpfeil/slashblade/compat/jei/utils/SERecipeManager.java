@@ -6,7 +6,6 @@ import mods.flammpfeil.slashblade.capability.slashblade.BladeStateAccess;
 import mods.flammpfeil.slashblade.capability.slashblade.ISlashBladeState;
 import mods.flammpfeil.slashblade.registry.SpecialEffectsRegistry;
 import mods.flammpfeil.slashblade.registry.specialeffects.SpecialEffect;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,12 +24,12 @@ public class SERecipeManager implements ISimpleRecipeManagerPlugin<SpecialEffect
     }
     
     @Override
-    public boolean isHandledOutput(@NotNull ITypedIngredient<?> iTypedIngredient) {
+    public boolean isHandledOutput(ITypedIngredient<?> iTypedIngredient) {
         return false;
     }
     
     @Override
-    public @NotNull List<SpecialEffect> getRecipesForInput(ITypedIngredient<?> iTypedIngredient) {
+    public List<SpecialEffect> getRecipesForInput(ITypedIngredient<?> iTypedIngredient) {
         return iTypedIngredient.getItemStack()
             .map(BladeStateAccess::of)
             .filter(Optional::isPresent)
@@ -44,12 +43,12 @@ public class SERecipeManager implements ISimpleRecipeManagerPlugin<SpecialEffect
     }
     
     @Override
-    public @NotNull List<SpecialEffect> getRecipesForOutput(@NotNull ITypedIngredient<?> iTypedIngredient) {
+    public List<SpecialEffect> getRecipesForOutput(ITypedIngredient<?> iTypedIngredient) {
         return List.of();
     }
     
     @Override
-    public @NotNull List<SpecialEffect> getAllRecipes() {
+    public List<SpecialEffect> getAllRecipes() {
         return SpecialEffectsRegistry.REGISTRY.stream().toList();
     }
 }

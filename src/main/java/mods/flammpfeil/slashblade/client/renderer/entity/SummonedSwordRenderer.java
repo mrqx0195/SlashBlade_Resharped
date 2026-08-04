@@ -16,13 +16,12 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import org.jetbrains.annotations.NotNull;
 
 @OnlyIn(Dist.CLIENT)
 public class SummonedSwordRenderer<T extends EntityAbstractSummonedSword> extends EntityRenderer<T> {
     
     @Override
-    public @NotNull ResourceLocation getTextureLocation(T entity) {
+    public ResourceLocation getTextureLocation(T entity) {
         return entity.getTextureLoc();
     }
     
@@ -31,7 +30,7 @@ public class SummonedSwordRenderer<T extends EntityAbstractSummonedSword> extend
     }
     
     @Override
-    public void render(T entity, float entityYaw, float partialTicks, @NotNull PoseStack matrixStack, @NotNull MultiBufferSource bufferIn,
+    public void render(T entity, float entityYaw, float partialTicks, PoseStack matrixStack, MultiBufferSource bufferIn,
                        int packedLightIn) {
         
         try (MSAutoCloser ignored = MSAutoCloser.pushMatrix(matrixStack)) {

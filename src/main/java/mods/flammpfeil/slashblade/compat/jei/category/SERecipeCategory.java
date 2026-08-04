@@ -20,7 +20,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -35,12 +34,12 @@ public record SERecipeCategory(IDrawable icon) implements IRecipeCategory<Specia
     }
     
     @Override
-    public @NotNull RecipeType<SpecialEffect> getRecipeType() {
+    public RecipeType<SpecialEffect> getRecipeType() {
         return SE_TYPE;
     }
     
     @Override
-    public @NotNull Component getTitle() {
+    public Component getTitle() {
         return Component.translatable("jei.category.slashblade.special_effect");
     }
     
@@ -60,7 +59,7 @@ public record SERecipeCategory(IDrawable icon) implements IRecipeCategory<Specia
     }
     
     @Override
-    public void setRecipe(IRecipeLayoutBuilder builder, @NotNull SpecialEffect specialEffect, @NotNull IFocusGroup iFocusGroup) {
+    public void setRecipe(IRecipeLayoutBuilder builder, SpecialEffect specialEffect, IFocusGroup iFocusGroup) {
         builder.addInvisibleIngredients(RecipeIngredientRole.INPUT)
             .addIngredient(SEIngredient.INSTANCE, specialEffect);
         builder.addInvisibleIngredients(RecipeIngredientRole.OUTPUT)
@@ -75,7 +74,7 @@ public record SERecipeCategory(IDrawable icon) implements IRecipeCategory<Specia
     }
     
     @Override
-    public void createRecipeExtras(IRecipeExtrasBuilder builder, SpecialEffect recipe, @NotNull IFocusGroup focuses) {
+    public void createRecipeExtras(IRecipeExtrasBuilder builder, SpecialEffect recipe, IFocusGroup focuses) {
         builder.addText(recipe.getDescription(), getWidth() - 20, 10)
             .setPosition(25, 7);
         builder.addText(
@@ -99,7 +98,7 @@ public record SERecipeCategory(IDrawable icon) implements IRecipeCategory<Specia
     }
     
     @Override
-    public ResourceLocation getRegistryName(@NotNull SpecialEffect recipe) {
+    public ResourceLocation getRegistryName(SpecialEffect recipe) {
         ResourceLocation key = SpecialEffectsRegistry.REGISTRY.getKey(recipe);
         if (key == null) {
             throw new NullPointerException("Key of SpecialEffect " + recipe + " is null!");

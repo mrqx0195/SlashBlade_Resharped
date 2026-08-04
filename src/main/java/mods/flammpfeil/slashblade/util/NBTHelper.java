@@ -119,7 +119,7 @@ public class NBTHelper {
     
     @SafeVarargs
     public static <T> void writeNBT(CompoundTag dest, String key, T... value) {
-        if (value == null || value.length != 1 || value[0] == null) {
+        if (value.length != 1 || value[0] == null) {
             return;
         }
         
@@ -177,10 +177,6 @@ public class NBTHelper {
     @SuppressWarnings("unchecked")
     @SafeVarargs
     public static <T> Optional<T> castValue(String key, CompoundTag src, T... defaultValue) {
-        if (defaultValue == null) {
-            return Optional.empty();
-        }
-        
         Class<T> type = (Class<T>) defaultValue.getClass().getComponentType();
         
         Object result = null;

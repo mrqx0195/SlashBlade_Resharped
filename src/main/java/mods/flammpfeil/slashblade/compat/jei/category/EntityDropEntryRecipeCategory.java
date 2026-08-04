@@ -82,15 +82,7 @@ public record EntityDropEntryRecipeCategory(IDrawable icon) implements IRecipeCa
         entitySlot.addItemLike(entityItem);
         ItemStack blade = BladeRegisterManager.getBlade(entityDropEntry.bladeName());
         IRecipeSlotBuilder bladeSlot = builder.addOutputSlot(64 - 8, 6).setStandardSlotBackground();
-        if (blade == null) {
-            bladeSlot.addRichTooltipCallback((iRecipeSlotView, components) -> {
-                    components.clear();
-                    components.add(Component.translatable("jei.slashblade.blade.not_registered", entityDropEntry.bladeName()));
-                })
-                .addItemLike(Items.BARRIER);
-        } else {
-            bladeSlot.addItemStack(blade);
-        }
+        bladeSlot.addItemStack(blade);
     }
     
     @Override

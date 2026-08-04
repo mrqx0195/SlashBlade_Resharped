@@ -287,7 +287,7 @@ public class BlandStandEventHandler {
         var state = event.getSlashBladeState();
         var bladeStand = event.getBladeStand();
         ResourceLocation SA = state.getSlashArtsKey();
-        if (SA != null && !SA.equals(SlashArtsRegistry.NONE.getId())) {
+        if (!SA.equals(SlashArtsRegistry.NONE.getId())) {
             
             PreCopySpecialAttackFromBladeEvent pe = new PreCopySpecialAttackFromBladeEvent(
                 blade, state, SA, event);
@@ -425,9 +425,6 @@ public class BlandStandEventHandler {
     @SubscribeEvent
     public static void copySAEnchantmentCheck(PreCopySpecialAttackFromBladeEvent event) {
         SlashBladeEvent.BladeStandAttackEvent oriEvent = event.getOriginalEvent();
-        if (oriEvent == null) {
-            return;
-        }
         if (oriEvent.getDamageSource().getEntity() instanceof Player player) {
             ItemStack stack = player.getItemInHand(InteractionHand.MAIN_HAND);
             ItemStack blade = event.getBlade();

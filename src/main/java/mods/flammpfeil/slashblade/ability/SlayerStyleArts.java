@@ -142,7 +142,7 @@ public class SlayerStyleArts {
     public boolean handleForwardSprintSneak(ServerPlayer sender, Level worldIn) {
         return BladeStateAccess.of(sender.getMainHandItem()).map(state -> {
             Entity tmpTarget = state.getTargetEntity(worldIn);
-            Entity target = tmpTarget != null && tmpTarget.getParts().length > 0
+            Entity target = tmpTarget != null && tmpTarget.isMultipartEntity() && tmpTarget.getParts().length > 0
                 ? tmpTarget.getParts()[0] : tmpTarget;
             
             if (target == null

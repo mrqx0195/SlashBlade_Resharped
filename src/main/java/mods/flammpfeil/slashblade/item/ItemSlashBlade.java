@@ -552,12 +552,6 @@ public class ItemSlashBlade extends SwordItem {
     }
     
     @Override
-    public Component getName(ItemStack p_41458_) {
-        // TODO Auto-generated method stub
-        return super.getName(p_41458_);
-    }
-    
-    @Override
     public String getDescriptionId(ItemStack stack) {
         return BladeStateAccess.of(stack).filter((s) -> !s.getTranslationKey().isBlank())
             .map(ISlashBladeState::getTranslationKey).orElseGet(() -> super.getDescriptionId(stack));

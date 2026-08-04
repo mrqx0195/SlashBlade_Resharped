@@ -472,7 +472,7 @@ public interface ISlashBladeState {
     }
     
     private boolean applyComboSeq(LivingEntity entity, @Nullable ResourceLocation loc, long actionTime) {
-        if (loc == null) {
+        if (loc == null || entity.level().isClientSide) {
             return false;
         }
         BladeMotionEvent event = new BladeMotionEvent(entity, loc, actionTime);
@@ -482,6 +482,7 @@ public interface ISlashBladeState {
         }
         this.setComboSeq(event.getCombo());
         this.setLastActionTime(event.getActionTime());
+        entity.getPersistentData().remove(ComboState.LAST_PROCESSED_TICK_KEY);
         return true;
     }
     

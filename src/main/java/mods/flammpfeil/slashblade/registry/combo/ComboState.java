@@ -21,7 +21,6 @@ import net.minecraft.world.item.enchantment.Enchantments;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
-import java.util.Objects;
 import java.util.TreeMap;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -32,6 +31,7 @@ public class ComboState {
     public static final ResourceKey<Registry<ComboState>> REGISTRY_KEY = ResourceKey
         .createRegistryKey(ResourceLocation.fromNamespaceAndPath(SlashBlade.MODID, "combo_state"));
     public static final TimeLineTickAction EMPTY_TICK_ACTION = TimeLineTickAction.getBuilder().build();
+    public static final String LAST_PROCESSED_TICK_KEY = SlashBlade.MODID + ".lastProcessedTick";
     
     private final ResourceLocation motionLoc;
     
@@ -215,7 +215,7 @@ public class ComboState {
         }
     }
     
-    public static class TimeLineTickAction implements Consumer<LivingEntity> {
+    public static class TimeLineTickAction implements TickAction {
         public static TimeLineTickActionBuilder getBuilder() {
             return new TimeLineTickActionBuilder();
         }
@@ -234,7 +234,6 @@ public class ComboState {
         }
         
         private final Map<Integer, Consumer<LivingEntity>> timeLine;
-        public static final String LAST_PROCESSED_TICK_KEY = SlashBlade.MODID + ".lastProcessedTick";
         
         TimeLineTickAction(Map<Integer, Consumer<LivingEntity>> timeLine) {
             this.timeLine = Maps.newHashMap(timeLine);
@@ -245,27 +244,19 @@ public class ComboState {
             int elapsed = (int) getElapsed(livingEntity);
             CompoundTag persistentData = livingEntity.getPersistentData();
             
-            if (persistentData.getInt(LAST_PROCESSED_TICK_KEY) == elapsed) {
+            int lastProcessedTick = persistentData.getInt(LAST_PROCESSED_TICK_KEY);
+            if (lastProcessedTick > elapsed) {
                 return;
             }
-            persistentData.putInt(LAST_PROCESSED_TICK_KEY, elapsed);
             
-            Consumer<LivingEntity> action = timeLine.get(elapsed);
-            if (action != null) {
-                action.accept(livingEntity);
+            while (lastProcessedTick <= elapsed) {
+                Consumer<LivingEntity> action = timeLine.get(lastProcessedTick);
+                if (action != null) {
+                    action.accept(livingEntity);
+                    persistentData.putInt(LAST_PROCESSED_TICK_KEY, elapsed + 1);
+                }
+                lastProcessedTick++;
             }
-        }
-        
-        @Override
-        public Consumer<LivingEntity> andThen(Consumer<? super LivingEntity> after) {
-            Objects.requireNonNull(after);
-            return (LivingEntity livingEntity) -> {
-                CompoundTag persistentData = livingEntity.getPersistentData();
-                int lastProcessedTick = persistentData.getInt(LAST_PROCESSED_TICK_KEY);
-                accept(livingEntity);
-                persistentData.putInt(LAST_PROCESSED_TICK_KEY, lastProcessedTick);
-                after.accept(livingEntity);
-            };
         }
     }
     
@@ -396,6 +387,22 @@ public class ComboState {
             this.rotationKeyframes.put(tick, yawDegrees);
             return this;
         }
-        
+    }
+    
+    public interface TickAction extends Consumer<LivingEntity> {
+        @Override
+        default TickAction andThen(Consumer<? super LivingEntity> after) {
+            return (LivingEntity livingEntity) -> {
+                if (after instanceof TimeLineTickAction) {
+                    CompoundTag persistentData = livingEntity.getPersistentData();
+                    int lastProcessedTick = persistentData.getInt(LAST_PROCESSED_TICK_KEY);
+                    accept(livingEntity);
+                    persistentData.putInt(LAST_PROCESSED_TICK_KEY, lastProcessedTick);
+                } else {
+                    accept(livingEntity);
+                }
+                after.accept(livingEntity);
+            };
+        }
     }
 }

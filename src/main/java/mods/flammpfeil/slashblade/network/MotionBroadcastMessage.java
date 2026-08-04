@@ -3,6 +3,7 @@ package mods.flammpfeil.slashblade.network;
 import mods.flammpfeil.slashblade.SlashBlade;
 import mods.flammpfeil.slashblade.event.BladeMotionEvent;
 import mods.flammpfeil.slashblade.registry.ComboStateRegistry;
+import mods.flammpfeil.slashblade.registry.combo.ComboState;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -39,7 +40,8 @@ public record MotionBroadcastMessage(UUID playerId, ResourceLocation combo,
         if (target == null) {
             return;
         }
-        if (!ComboStateRegistry.REGISTRY.containsKey(msg.combo())) {
+        ComboState comboState = ComboStateRegistry.REGISTRY.get(msg.combo());
+        if (comboState == null) {
             return;
         }
 
@@ -48,5 +50,6 @@ public record MotionBroadcastMessage(UUID playerId, ResourceLocation combo,
 //        }
         
         NeoForge.EVENT_BUS.post(new BladeMotionEvent(target, msg.combo(), msg.actionTime()));
+        comboState.clickAction(target);
     }
 }

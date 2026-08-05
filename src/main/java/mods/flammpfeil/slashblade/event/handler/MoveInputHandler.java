@@ -5,8 +5,8 @@ import mods.flammpfeil.slashblade.capability.inputstate.CapabilityInputState;
 import mods.flammpfeil.slashblade.capability.inputstate.IInputState;
 import mods.flammpfeil.slashblade.capability.slashblade.BladeStateAccess;
 import mods.flammpfeil.slashblade.client.SlashBladeKeyMappings;
+import mods.flammpfeil.slashblade.event.client.MoveInputEvent;
 import mods.flammpfeil.slashblade.network.MoveCommandMessage;
-import mods.flammpfeil.slashblade.util.EnumSetConverter;
 import mods.flammpfeil.slashblade.util.InputCommand;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -15,6 +15,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.EnumSet;
@@ -78,6 +79,10 @@ public class MoveInputHandler {
             commands.add(InputCommand.M_DOWN);
         }
         
+        MoveInputEvent moveInputEvent = new MoveInputEvent(player, commands, event);
+        NeoForge.EVENT_BUS.post(moveInputEvent);
+        commands = moveInputEvent.getNewCommands();
+        
         IInputState state = player.getData(CapabilityInputState.INPUT_STATE.get());
         EnumSet<InputCommand> old = state.getCommands().clone();
         long currentTime = player.level().getGameTime();
@@ -93,7 +98,7 @@ public class MoveInputHandler {
             state.getCommands().clear();
             state.getCommands().addAll(commands);
             
-            PacketDistributor.sendToServer(new MoveCommandMessage(EnumSetConverter.convertToInt(commands)));
+            PacketDistributor.sendToServer(new MoveCommandMessage(commands));
         }
     }
 }

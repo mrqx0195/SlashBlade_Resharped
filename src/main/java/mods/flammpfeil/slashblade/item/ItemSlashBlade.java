@@ -64,10 +64,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.NeoForge;
 
 import javax.annotation.Nullable;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class ItemSlashBlade extends SwordItem {
@@ -731,5 +728,7 @@ public class ItemSlashBlade extends SwordItem {
         return super.getEntityLifespan(itemStack, world);// Short.MAX_VALUE;
     }
     
-    
+    public EnumSet<SwordType> getSwordType(EnumSet<SwordType> from, ItemStack itemStack, Optional<ISlashBladeState> state) {
+        return from;
+    }
 }

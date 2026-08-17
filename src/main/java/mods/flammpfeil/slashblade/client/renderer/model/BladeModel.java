@@ -10,8 +10,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -25,17 +25,18 @@ public class BladeModel implements BakedModel {
         this.original = original;
     }
     
+    @Nullable
     public static LivingEntity user = null;
     
     @Override
-    public @NotNull ItemOverrides getOverrides() {
+    public ItemOverrides getOverrides() {
         return this.original.getOverrides();
     }
     
     @SuppressWarnings("deprecation")
     @Override
-    public @NotNull List<BakedQuad> getQuads(@org.jetbrains.annotations.Nullable BlockState p_235039_,
-                                             @org.jetbrains.annotations.Nullable Direction p_235040_, @NotNull RandomSource p_235041_) {
+    public List<BakedQuad> getQuads(@org.jetbrains.annotations.Nullable BlockState p_235039_,
+                                    @org.jetbrains.annotations.Nullable Direction p_235040_, RandomSource p_235041_) {
         return original.getQuads(p_235039_, p_235040_, p_235041_);
     }
     
@@ -61,7 +62,7 @@ public class BladeModel implements BakedModel {
     
     @SuppressWarnings("deprecation")
     @Override
-    public @NotNull TextureAtlasSprite getParticleIcon() {
+    public TextureAtlasSprite getParticleIcon() {
         return original.getParticleIcon();
         // return
         // Minecraft.getInstance().getItemRenderer().getItemModelMesher().getParticleIcon(SlashBlade.proudSoul);
@@ -69,7 +70,7 @@ public class BladeModel implements BakedModel {
     
     @SuppressWarnings("deprecation")
     @Override
-    public @NotNull ItemTransforms getTransforms() {
+    public ItemTransforms getTransforms() {
         return ItemTransforms.NO_TRANSFORMS;
     }
     

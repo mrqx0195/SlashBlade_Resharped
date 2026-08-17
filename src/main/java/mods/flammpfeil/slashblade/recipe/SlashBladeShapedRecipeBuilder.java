@@ -20,7 +20,6 @@ import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.ShapedRecipePattern;
 import net.minecraft.world.level.ItemLike;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -89,32 +88,32 @@ public class SlashBladeShapedRecipeBuilder implements RecipeBuilder {
     }
     
     @Override
-    public @NotNull SlashBladeShapedRecipeBuilder unlockedBy(@NotNull String key,
-                                                             @NotNull Criterion<?> trigger) {
+    public SlashBladeShapedRecipeBuilder unlockedBy(String key,
+                                                    Criterion<?> trigger) {
         this.criteria.put(key, trigger);
         this.advancement.addCriterion(key, trigger);
         return this;
     }
     
     @Override
-    public @NotNull SlashBladeShapedRecipeBuilder group(@Nullable String group) {
+    public SlashBladeShapedRecipeBuilder group(@Nullable String group) {
         this.group = group;
         return this;
     }
     
     @Override
-    public @NotNull Item getResult() {
+    public Item getResult() {
         return this.result;
     }
     
     @Override
-    public void save(@NotNull RecipeOutput output) {
+    public void save(RecipeOutput output) {
         ResourceLocation id = this.blade != null ? this.blade : BuiltInRegistries.ITEM.getKey(this.result);
         this.save(output, id);
     }
     
     @Override
-    public void save(RecipeOutput output, @NotNull ResourceLocation id) {
+    public void save(RecipeOutput output, ResourceLocation id) {
         this.ensureValid(id);
         Advancement.Builder advancementBuilder = output.advancement()
             .addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(id))

@@ -5,7 +5,6 @@ import mezz.jei.api.ingredients.subtypes.UidContext;
 import mods.flammpfeil.slashblade.capability.slashblade.BladeStateAccess;
 import mods.flammpfeil.slashblade.capability.slashblade.ISlashBladeState;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class SlashBladeSubtypeInterpreter implements ISubtypeInterpreter<ItemStack> {
@@ -17,13 +16,13 @@ public class SlashBladeSubtypeInterpreter implements ISubtypeInterpreter<ItemSta
     
     @Override
     @Nullable
-    public Object getSubtypeData(@NotNull ItemStack ingredient, @NotNull UidContext context) {
+    public Object getSubtypeData(ItemStack ingredient, UidContext context) {
         return BladeStateAccess.of(ingredient).map(ISlashBladeState::getTranslationKey).orElse("");
     }
     
     @Override
     @SuppressWarnings("deprecation")
-    public @NotNull String getLegacyStringSubtypeInfo(@NotNull ItemStack ingredient, @NotNull UidContext context) {
+    public String getLegacyStringSubtypeInfo(ItemStack ingredient, UidContext context) {
         return getStringName(ingredient);
     }
     

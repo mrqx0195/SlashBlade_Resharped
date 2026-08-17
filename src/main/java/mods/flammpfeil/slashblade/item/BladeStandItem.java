@@ -14,23 +14,22 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.NotNull;
 
 public class BladeStandItem extends HangingEntityItem {
     private final boolean isWallType;
-
+    
     public BladeStandItem(Properties builder) {
         this(builder, false);
     }
-
+    
     public BladeStandItem(Properties builder, boolean isWallType) {
         super(RegistryEvents.BladeStand, builder);
-
+        
         this.isWallType = isWallType;
     }
-
+    
     @Override
-    public @NotNull InteractionResult useOn(UseOnContext context) {
+    public InteractionResult useOn(UseOnContext context) {
         BlockPos blockpos = context.getClickedPos();
         Direction direction = context.getClickedFace();
         BlockPos blockpos1 = blockpos.relative(direction);
@@ -41,18 +40,18 @@ public class BladeStandItem extends HangingEntityItem {
         } else {
             Level world = context.getLevel();
             HangingEntity hangingentity = BladeStandEntity.createInstanceFromPos(world, blockpos1, direction, this);
-
+            
             CustomData entityData = itemstack.getOrDefault(DataComponents.ENTITY_DATA, CustomData.EMPTY);
             if (!entityData.isEmpty()) {
                 EntityType.updateCustomEntityTag(world, playerentity, hangingentity, entityData);
             }
-
+            
             if (hangingentity.survives()) {
                 if (!world.isClientSide) {
                     hangingentity.playPlacementSound();
                     world.addFreshEntity(hangingentity);
                 }
-
+                
                 itemstack.shrink(1);
                 return InteractionResult.sidedSuccess(world.isClientSide);
             } else {
@@ -60,15 +59,15 @@ public class BladeStandItem extends HangingEntityItem {
             }
         }
     }
-
+    
     @Override
-    protected boolean mayPlace(@NotNull Player player, @NotNull Direction dir, @NotNull ItemStack stack, @NotNull BlockPos pos) {
+    protected boolean mayPlace(Player player, Direction dir, ItemStack stack, BlockPos pos) {
         if (isWallType) {
             return !dir.getAxis().isVertical() && !player.level().isOutsideBuildHeight(pos)
-                    && player.mayUseItemAt(pos, dir, stack);
+                && player.mayUseItemAt(pos, dir, stack);
         } else {
             return (dir == Direction.UP) && !player.level().isOutsideBuildHeight(pos)
-                    && player.mayUseItemAt(pos, dir, stack);
+                && player.mayUseItemAt(pos, dir, stack);
         }
     }
 }

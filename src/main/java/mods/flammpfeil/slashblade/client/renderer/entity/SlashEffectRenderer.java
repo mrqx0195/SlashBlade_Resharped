@@ -18,7 +18,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import org.jetbrains.annotations.NotNull;
 
 @OnlyIn(Dist.CLIENT)
 public class SlashEffectRenderer<T extends EntitySlashEffect> extends EntityRenderer<T> {
@@ -29,7 +28,7 @@ public class SlashEffectRenderer<T extends EntitySlashEffect> extends EntityRend
         "model/util/slash.png");
     
     @Override
-    public @NotNull ResourceLocation getTextureLocation(@NotNull T entity) {
+    public ResourceLocation getTextureLocation(T entity) {
         return textureLocation;
     }
     
@@ -39,7 +38,7 @@ public class SlashEffectRenderer<T extends EntitySlashEffect> extends EntityRend
     
     @Override
     public void render(T entity, float entityYRot, float partialTick, PoseStack matrixStackIn,
-                       @NotNull MultiBufferSource bufferIn, int packedLightIn) {
+                       MultiBufferSource bufferIn, int packedLightIn) {
         
         try (MSAutoCloser ignored = MSAutoCloser.pushMatrix(matrixStackIn)) {
             
@@ -78,51 +77,53 @@ public class SlashEffectRenderer<T extends EntitySlashEffect> extends EntityRend
             
             ConcentrationRanks rank = entity.getRankCode();
             
-            // rank color overwrite
-            if (rank.level < ConcentrationRanks.C.level) {
-                color = 0x555555;
-            }
-            
             ResourceLocation rl = getTextureLocation(entity);
             
             // baseAlpha = 1.0f;
             int alpha = ((0xFF & (int) (0xFF * baseAlpha)) << 24);
             
-            // black alpha insidee
-            if (ConcentrationRanks.S.level <= rank.level) {
-                try (MSAutoCloser ignored1 = MSAutoCloser.pushMatrix(matrixStackIn)) {
-                    float windscale = entity.getBaseSize() * Mth.lerp(progress, 0.035f, 0.03f);
-                    matrixStackIn.scale(windscale, yscale, windscale);
-                    Face.setAlphaOverride(Face.alphaOverrideYZZ);
-                    Face.setUvOperator(1, 1, 0, -0.8f + progress * 0.3f);
-                    BladeRenderState.setCol(0x222222 | alpha);
-                    BladeRenderState.renderOverridedColorWrite(ItemStack.EMPTY, model, "base", rl, matrixStackIn,
-                        bufferIn, packedLightIn);
+            if (rank != null) {
+                // rank color overwrite
+                if (rank.level < ConcentrationRanks.C.level) {
+                    color = 0x555555;
                 }
-            }
-            
-            // color alpha base
-            if (ConcentrationRanks.D.level <= rank.level) {
-                try (MSAutoCloser ignored1 = MSAutoCloser.pushMatrix(matrixStackIn)) {
-                    matrixStackIn.scale(scale, yscale, scale);
-                    Face.setAlphaOverride(Face.alphaOverrideYZZ);
-                    Face.setUvOperator(1, 1, 0, -0.35f + progress * -0.15f);
-                    BladeRenderState.setCol(color | alpha);
-                    BladeRenderState.renderOverridedColorWrite(ItemStack.EMPTY, model, "base", rl, matrixStackIn,
-                        bufferIn, packedLightIn);
+                
+                // black alpha insidee
+                if (ConcentrationRanks.S.level <= rank.level) {
+                    try (MSAutoCloser ignored1 = MSAutoCloser.pushMatrix(matrixStackIn)) {
+                        float windscale = entity.getBaseSize() * Mth.lerp(progress, 0.035f, 0.03f);
+                        matrixStackIn.scale(windscale, yscale, windscale);
+                        Face.setAlphaOverride(Face.alphaOverrideYZZ);
+                        Face.setUvOperator(1, 1, 0, -0.8f + progress * 0.3f);
+                        BladeRenderState.setCol(0x222222 | alpha);
+                        BladeRenderState.renderOverridedColorWrite(ItemStack.EMPTY, model, "base", rl, matrixStackIn,
+                            bufferIn, packedLightIn);
+                    }
                 }
-            }
-            
-            // white add outside
-            if (ConcentrationRanks.B.level <= rank.level) {
-                try (MSAutoCloser ignored1 = MSAutoCloser.pushMatrix(matrixStackIn)) {
-                    float windscale = entity.getBaseSize() * Mth.lerp(progress, 0.03f, 0.0375f);
-                    matrixStackIn.scale(windscale, yscale, windscale);
-                    Face.setAlphaOverride(Face.alphaOverrideYZZ);
-                    Face.setUvOperator(1, 1, 0, -0.5f + progress * -0.2f);
-                    BladeRenderState.setCol(0x404040 | alpha);
-                    BladeRenderState.renderOverridedLuminous(ItemStack.EMPTY, model, "base", rl, matrixStackIn,
-                        bufferIn, packedLightIn);
+                
+                // color alpha base
+                if (ConcentrationRanks.D.level <= rank.level) {
+                    try (MSAutoCloser ignored1 = MSAutoCloser.pushMatrix(matrixStackIn)) {
+                        matrixStackIn.scale(scale, yscale, scale);
+                        Face.setAlphaOverride(Face.alphaOverrideYZZ);
+                        Face.setUvOperator(1, 1, 0, -0.35f + progress * -0.15f);
+                        BladeRenderState.setCol(color | alpha);
+                        BladeRenderState.renderOverridedColorWrite(ItemStack.EMPTY, model, "base", rl, matrixStackIn,
+                            bufferIn, packedLightIn);
+                    }
+                }
+                
+                // white add outside
+                if (ConcentrationRanks.B.level <= rank.level) {
+                    try (MSAutoCloser ignored1 = MSAutoCloser.pushMatrix(matrixStackIn)) {
+                        float windscale = entity.getBaseSize() * Mth.lerp(progress, 0.03f, 0.0375f);
+                        matrixStackIn.scale(windscale, yscale, windscale);
+                        Face.setAlphaOverride(Face.alphaOverrideYZZ);
+                        Face.setUvOperator(1, 1, 0, -0.5f + progress * -0.2f);
+                        BladeRenderState.setCol(0x404040 | alpha);
+                        BladeRenderState.renderOverridedLuminous(ItemStack.EMPTY, model, "base", rl, matrixStackIn,
+                            bufferIn, packedLightIn);
+                    }
                 }
             }
             

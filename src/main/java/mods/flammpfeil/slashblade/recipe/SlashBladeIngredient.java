@@ -15,7 +15,6 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.common.crafting.ICustomIngredient;
 import net.neoforged.neoforge.common.crafting.IngredientType;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 import java.util.function.Supplier;
@@ -26,6 +25,7 @@ public class SlashBladeIngredient implements ICustomIngredient {
     private final Set<Item> items;
     private final RequestDefinition request;
     
+    @SuppressWarnings("NotNullFieldNotInitialized")
     public static Supplier<IngredientType<SlashBladeIngredient>> TYPE;
     
     private static final Codec<Set<Item>> ITEMS_CODEC =
@@ -73,7 +73,7 @@ public class SlashBladeIngredient implements ICustomIngredient {
     }
     
     @Override
-    public boolean test(@NotNull ItemStack input) {
+    public boolean test(ItemStack input) {
         if (input.isEmpty()) {
             return false;
         }
@@ -86,7 +86,7 @@ public class SlashBladeIngredient implements ICustomIngredient {
     }
     
     @Override
-    public @NotNull Stream<ItemStack> getItems() {
+    public Stream<ItemStack> getItems() {
         return items.stream().map(item -> {
             var result = new ItemStack(item);
             this.request.initItemStack(result);
@@ -95,7 +95,7 @@ public class SlashBladeIngredient implements ICustomIngredient {
     }
     
     @Override
-    public @NotNull IngredientType<?> getType() {
+    public IngredientType<?> getType() {
         return TYPE.get();
     }
 }

@@ -38,7 +38,8 @@ import net.neoforged.neoforge.client.event.TextureAtlasStitchedEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
-import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nullable;
 
 @EventBusSubscriber(modid = SlashBlade.MODID, value = Dist.CLIENT)
 @OnlyIn(Dist.CLIENT)
@@ -130,7 +131,7 @@ public class ClientHandler {
                 Minecraft.getInstance().getEntityModels());
             
             @Override
-            public @NotNull BlockEntityWithoutLevelRenderer getCustomRenderer() {
+            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
                 return renderer;
             }
         };
@@ -176,7 +177,7 @@ public class ClientHandler {
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static void addEntityLayer(EntityRenderersEvent.AddLayers evt, EntityRenderer<?> renderer) {
+    private static void addEntityLayer(EntityRenderersEvent.AddLayers evt, @Nullable EntityRenderer<?> renderer) {
         if (renderer instanceof LivingEntityRenderer livingRenderer) {
             livingRenderer.addLayer(new LayerMainBlade<>(livingRenderer));
         }

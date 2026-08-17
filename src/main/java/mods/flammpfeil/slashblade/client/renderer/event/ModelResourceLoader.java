@@ -10,7 +10,6 @@ import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -20,28 +19,28 @@ import java.util.concurrent.Executor;
 public class ModelResourceLoader implements PreparableReloadListener {
     private static final ResourceLocation MODEL_DIR = SlashBlade.prefix("model");
     private static final String FILE_TYPES = ".obj";
-
+    
     private void loadResources(ResourceManager manager) {
         BladeModelManager instance = BladeModelManager.getInstance();
         LoadingCache<ResourceLocation, WavefrontObject> cache = instance.cache;
         cache.invalidateAll();
         instance.defaultModel = new WavefrontObject(DefaultResources.resourceDefaultModel);
-
+        
         Map<ResourceLocation, Resource> resources = manager.listResources(
-                MODEL_DIR.getPath(),
-                resLoc -> resLoc.getPath().endsWith(FILE_TYPES)
+            MODEL_DIR.getPath(),
+            resLoc -> resLoc.getPath().endsWith(FILE_TYPES)
         );
-
+        
         resources.keySet().forEach(instance::getModel);
     }
-
+    
     @Override
-    public @NotNull CompletableFuture<Void> reload(PreparationBarrier stage,
-                                                   @NotNull ResourceManager resourceManager,
-                                                   @NotNull ProfilerFiller preparationsProfiler,
-                                                   @NotNull ProfilerFiller reloadProfiler,
-                                                   @NotNull Executor backgroundExecutor,
-                                                   @NotNull Executor gameExecutor) {
+    public CompletableFuture<Void> reload(PreparationBarrier stage,
+                                          ResourceManager resourceManager,
+                                          ProfilerFiller preparationsProfiler,
+                                          ProfilerFiller reloadProfiler,
+                                          Executor backgroundExecutor,
+                                          Executor gameExecutor) {
         return CompletableFuture.runAsync(() -> loadResources(resourceManager), backgroundExecutor).thenCompose(stage::wait);
     }
 }

@@ -11,6 +11,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 
+import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -160,7 +161,7 @@ public record BladeStateData(
     public static final StreamCodec<RegistryFriendlyByteBuf, BladeStateData> STREAM_CODEC =
         ByteBufCodecs.fromCodecWithRegistries(CODEC);
     
-    public BladeStateData withSpecialEffects(List<ResourceLocation> effects) {
+    public BladeStateData withSpecialEffects(@Nullable List<ResourceLocation> effects) {
         return new BladeStateData(translationKey, baseAttackModifier, proudSoul, killCount, refine,
             broken, sealed, slashArtsKey, defaultBewitched, comboRoot, carryType,
             effectColor, effectColorInverse, adjust, texture, model,

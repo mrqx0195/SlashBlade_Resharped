@@ -23,6 +23,7 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -104,7 +105,7 @@ public class EntityBlisteringSwords extends EntityAbstractSummonedSword {
                             }
                             
                             if (target instanceof IShootable) {
-                                isMatch = !((IShootable) target).getShooter().equals(sender);
+                                isMatch = !Objects.equals(((IShootable) target).getShooter(), sender);
                             }
                             
                             return isMatch;

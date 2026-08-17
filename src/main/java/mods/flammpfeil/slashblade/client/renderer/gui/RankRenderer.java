@@ -75,7 +75,7 @@ public class RankRenderer {
              * cr.getLastUpdate();
              */
             
-            if (rank == IConcentrationRank.ConcentrationRanks.NONE) {
+            if (rank == null || rank == IConcentrationRank.ConcentrationRanks.NONE) {
                 return;
             }
             

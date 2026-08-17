@@ -29,7 +29,7 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -55,28 +55,34 @@ public class AttackManager {
         areaAttack(playerIn, beforeHit, 1.0f, true, true, false);
     }
     
+    @Nullable
     public static EntitySlashEffect doSlash(LivingEntity playerIn, float roll) {
         return doSlash(playerIn, roll, false);
     }
     
+    @Nullable
     public static EntitySlashEffect doSlash(LivingEntity playerIn, float roll, boolean mute) {
         return doSlash(playerIn, roll, mute, false);
     }
     
+    @Nullable
     public static EntitySlashEffect doSlash(LivingEntity playerIn, float roll, boolean mute, boolean critical) {
         return doSlash(playerIn, roll, mute, critical, 1.0);
     }
     
+    @Nullable
     public static EntitySlashEffect doSlash(LivingEntity playerIn, float roll, boolean mute, boolean critical,
                                             double comboRatio) {
         return doSlash(playerIn, roll, Vec3.ZERO, mute, critical, comboRatio);
     }
     
+    @Nullable
     public static EntitySlashEffect doSlash(LivingEntity playerIn, float roll, Vec3 centerOffset, boolean mute,
                                             boolean critical, double comboRatio) {
         return doSlash(playerIn, roll, centerOffset, mute, critical, comboRatio, KnockBacks.cancel);
     }
     
+    @Nullable
     public static EntitySlashEffect doSlash(LivingEntity playerIn, float roll, Vec3 centerOffset, boolean mute,
                                             boolean critical, double comboRatio, KnockBacks knockback) {
         
@@ -86,6 +92,7 @@ public class AttackManager {
         return doSlash(playerIn, roll, colorCode, centerOffset, mute, critical, comboRatio, knockback);
     }
     
+    @Nullable
     public static EntitySlashEffect doSlash(LivingEntity playerIn, float roll, int colorCode, Vec3 centerOffset,
                                             boolean mute, boolean critical, double comboRatio, KnockBacks knockback) {
         
@@ -158,7 +165,7 @@ public class AttackManager {
         living.level().addFreshEntity(jc);
     }
     
-    public static @NotNull EntitySlashEffect newVoidSlashEffect(LivingEntity living, Vec3 pos) {
+    public static EntitySlashEffect newVoidSlashEffect(LivingEntity living, Vec3 pos) {
         EntitySlashEffect jc = new EntitySlashEffect(RegistryEvents.SlashEffect, living.level()) {
             
             @Override
@@ -228,7 +235,8 @@ public class AttackManager {
     }
     
     public static List<Entity> areaAttack(LivingEntity playerIn, Consumer<LivingEntity> beforeHit, float comboRatio,
-                                          boolean forceHit, boolean resetHit, boolean mute, List<Entity> exclude) {
+                                          boolean forceHit, boolean resetHit, boolean mute,
+                                          @Nullable List<Entity> exclude) {
         List<Entity> founds = Lists.newArrayList();
         
         if (!playerIn.level().isClientSide()) {
@@ -261,13 +269,15 @@ public class AttackManager {
     }
     
     public static <E extends Entity & IShootable> List<Entity> areaAttack(E owner, Consumer<LivingEntity> beforeHit,
-                                                                          double reach, boolean forceHit, boolean resetHit, List<Entity> exclude) {
+                                                                          double reach, boolean forceHit, boolean resetHit,
+                                                                          @Nullable List<Entity> exclude) {
         
         return areaAttack(owner, beforeHit, reach, forceHit, resetHit, 1.0F, exclude);
     }
     
     public static <E extends Entity & IShootable> List<Entity> areaAttack(E owner, Consumer<LivingEntity> beforeHit,
-                                                                          double reach, boolean forceHit, boolean resetHit, float comboRatio, List<Entity> exclude) {
+                                                                          double reach, boolean forceHit, boolean resetHit, float comboRatio,
+                                                                          @Nullable List<Entity> exclude) {
         List<Entity> founds = Lists.newArrayList();
         
         if (!owner.level().isClientSide()) {

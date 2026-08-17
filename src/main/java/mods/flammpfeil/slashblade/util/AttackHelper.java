@@ -111,15 +111,18 @@ public class AttackHelper {
     public static float getRankBonus(LivingEntity attacker) {
         IConcentrationRank rankData = attacker.getData(CapabilityConcentrationRank.RANK_POINT.get());
         IConcentrationRank.ConcentrationRanks rankBonus = rankData.getRank(attacker.level().getGameTime());
-        double rankDamageBonus = rankBonus.level / 2.0;
-        if (IConcentrationRank.ConcentrationRanks.S.level <= rankBonus.level) {
-            int refine = BladeStateAccess.of(attacker.getMainHandItem())
-                .map(ISlashBladeState::getRefine).orElse(0);
-            int level = 0;
-            if (attacker instanceof Player player) {
-                level = player.experienceLevel;
+        double rankDamageBonus = 0;
+        if (rankBonus != null) {
+            rankDamageBonus = rankBonus.level / 2.0;
+            if (IConcentrationRank.ConcentrationRanks.S.level <= rankBonus.level) {
+                int refine = BladeStateAccess.of(attacker.getMainHandItem())
+                    .map(ISlashBladeState::getRefine).orElse(0);
+                int level = 0;
+                if (attacker instanceof Player player) {
+                    level = player.experienceLevel;
+                }
+                rankDamageBonus = Math.max(rankDamageBonus, Math.min(level, refine) * REFINE_DAMAGE_MULTIPLIER.get());
             }
-            rankDamageBonus = Math.max(rankDamageBonus, Math.min(level, refine) * REFINE_DAMAGE_MULTIPLIER.get());
         }
         return (float) rankDamageBonus;
     }

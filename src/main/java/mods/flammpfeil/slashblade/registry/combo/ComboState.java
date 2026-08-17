@@ -12,17 +12,14 @@ import mods.flammpfeil.slashblade.util.AdvancementHelper;
 import mods.flammpfeil.slashblade.util.TimeValueHelper;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
-import java.util.Objects;
 import java.util.TreeMap;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -32,7 +29,6 @@ import java.util.function.Function;
 public class ComboState {
     public static final ResourceKey<Registry<ComboState>> REGISTRY_KEY = ResourceKey
         .createRegistryKey(ResourceLocation.fromNamespaceAndPath(SlashBlade.MODID, "combo_state"));
-    public static final TimeLineTickAction EMPTY_TICK_ACTION = TimeLineTickAction.getBuilder().build();
     
     private final ResourceLocation motionLoc;
     
@@ -234,7 +230,6 @@ public class ComboState {
         }
         
         private final Map<Integer, Consumer<LivingEntity>> timeLine;
-        public static final String LAST_PROCESSED_TICK_KEY = SlashBlade.MODID + ".lastProcessedTick";
         
         TimeLineTickAction(Map<Integer, Consumer<LivingEntity>> timeLine) {
             this.timeLine = Maps.newHashMap(timeLine);
@@ -243,29 +238,10 @@ public class ComboState {
         @Override
         public void accept(LivingEntity livingEntity) {
             int elapsed = (int) getElapsed(livingEntity);
-            CompoundTag persistentData = livingEntity.getPersistentData();
-            
-            if (persistentData.getInt(LAST_PROCESSED_TICK_KEY) == elapsed) {
-                return;
-            }
-            persistentData.putInt(LAST_PROCESSED_TICK_KEY, elapsed);
-            
             Consumer<LivingEntity> action = timeLine.get(elapsed);
             if (action != null) {
                 action.accept(livingEntity);
             }
-        }
-        
-        @Override
-        public @NotNull Consumer<LivingEntity> andThen(@NotNull Consumer<? super LivingEntity> after) {
-            Objects.requireNonNull(after);
-            return (LivingEntity livingEntity) -> {
-                CompoundTag persistentData = livingEntity.getPersistentData();
-                int lastProcessedTick = persistentData.getInt(LAST_PROCESSED_TICK_KEY);
-                accept(livingEntity);
-                persistentData.putInt(LAST_PROCESSED_TICK_KEY, lastProcessedTick);
-                after.accept(livingEntity);
-            };
         }
     }
     
@@ -303,9 +279,10 @@ public class ComboState {
             this.loop = false;
             this.aerial = false;
             this.next = entity -> SlashBlade.prefix("none");
-            this.tickAction = EMPTY_TICK_ACTION.andThen(ArrowReflector::doTicks);
+            this.tickAction = ArrowReflector::doTicks;
             this.releaseAction = (u, e) -> SlashArts.ArtsType.Fail;
-            this.holdAction = EMPTY_TICK_ACTION;
+            this.holdAction = (a) -> {
+            };
             this.hitEffect = (a, b) -> {
             };
             this.clickAction = (user) -> {

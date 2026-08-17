@@ -24,7 +24,6 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.SmithingRecipe;
 import net.minecraft.world.item.crafting.SmithingRecipeInput;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -77,7 +76,7 @@ public class SlashBladeSmithingRecipe implements SmithingRecipe {
     }
     
     @Override
-    public @NotNull ItemStack getResultItem(@NotNull HolderLookup.Provider access) {
+    public ItemStack getResultItem(HolderLookup.Provider access) {
         ItemStack result = SlashBladeSmithingRecipe.getResultBlade(this.getOutputBlade());
         
         if (!Objects.equals(BuiltInRegistries.ITEM.getKey(result.getItem()), getOutputBlade())) {
@@ -90,19 +89,19 @@ public class SlashBladeSmithingRecipe implements SmithingRecipe {
         return result;
     }
     
-    public @NotNull ItemStack getResultItem(@NotNull RegistryAccess access) {
+    public ItemStack getResultItem(RegistryAccess access) {
         return this.getResultItem((HolderLookup.Provider) access);
     }
     
     @Override
-    public boolean matches(SmithingRecipeInput input, @NotNull Level level) {
+    public boolean matches(SmithingRecipeInput input, Level level) {
         return this.template.test(input.template())
             && this.base.test(input.base())
             && this.addition.test(input.addition());
     }
     
     @Override
-    public @NotNull ItemStack assemble(@NotNull SmithingRecipeInput input, @NotNull HolderLookup.Provider access) {
+    public ItemStack assemble(SmithingRecipeInput input, HolderLookup.Provider access) {
         var result = this.getResultItem(access);
         if (!(result.getItem() instanceof ItemSlashBlade)) {
             result = new ItemStack(SlashBladeItems.SLASHBLADE.get());
@@ -128,7 +127,7 @@ public class SlashBladeSmithingRecipe implements SmithingRecipe {
         return result;
     }
     
-    public @NotNull ItemStack assemble(@NotNull Container container, @NotNull RegistryAccess access) {
+    public ItemStack assemble(Container container, RegistryAccess access) {
         return this.assemble(new SmithingRecipeInput(
             container.getItem(0),
             container.getItem(1),
@@ -137,12 +136,12 @@ public class SlashBladeSmithingRecipe implements SmithingRecipe {
     }
     
     
-    public @NotNull ResourceLocation getId() {
+    public ResourceLocation getId() {
         return this.id;
     }
     
     @Override
-    public @NotNull RecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<?> getSerializer() {
         return SlashBladeSmithingRecipe.SERIALIZER;
     }
     
@@ -152,17 +151,17 @@ public class SlashBladeSmithingRecipe implements SmithingRecipe {
     }
     
     @Override
-    public boolean isTemplateIngredient(@NotNull ItemStack stack) {
+    public boolean isTemplateIngredient(ItemStack stack) {
         return this.template.test(stack);
     }
     
     @Override
-    public boolean isBaseIngredient(@NotNull ItemStack stack) {
+    public boolean isBaseIngredient(ItemStack stack) {
         return this.base.test(stack);
     }
     
     @Override
-    public boolean isAdditionIngredient(@NotNull ItemStack stack) {
+    public boolean isAdditionIngredient(ItemStack stack) {
         return this.addition.test(stack);
     }
     
@@ -182,12 +181,12 @@ public class SlashBladeSmithingRecipe implements SmithingRecipe {
             ByteBufCodecs.fromCodecWithRegistries(CODEC.codec());
         
         @Override
-        public @NotNull MapCodec<SlashBladeSmithingRecipe> codec() {
+        public MapCodec<SlashBladeSmithingRecipe> codec() {
             return CODEC;
         }
         
         @Override
-        public @NotNull StreamCodec<RegistryFriendlyByteBuf, SlashBladeSmithingRecipe> streamCodec() {
+        public StreamCodec<RegistryFriendlyByteBuf, SlashBladeSmithingRecipe> streamCodec() {
             return STREAM_CODEC;
         }
     }

@@ -15,7 +15,6 @@ import mods.flammpfeil.slashblade.util.BladeRegisterManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -30,12 +29,12 @@ public record SpecialBladeDescRecipeCategory(IDrawable icon) implements IRecipeC
     }
     
     @Override
-    public @NotNull RecipeType<SpecialBladeDescData> getRecipeType() {
+    public RecipeType<SpecialBladeDescData> getRecipeType() {
         return DESC_TYPE;
     }
     
     @Override
-    public @NotNull Component getTitle() {
+    public Component getTitle() {
         return Component.translatable("jei.category.slashblade.special_blade_desc_data");
     }
     
@@ -55,14 +54,14 @@ public record SpecialBladeDescRecipeCategory(IDrawable icon) implements IRecipeC
     }
     
     @Override
-    public void setRecipe(IRecipeLayoutBuilder builder, SpecialBladeDescData specialBladeDescData, @NotNull IFocusGroup iFocusGroup) {
+    public void setRecipe(IRecipeLayoutBuilder builder, SpecialBladeDescData specialBladeDescData, IFocusGroup iFocusGroup) {
         builder.addOutputSlot(5, 2)
             .setStandardSlotBackground()
             .addItemStack(BladeRegisterManager.getBlade(specialBladeDescData.bladeName()));
     }
     
     @Override
-    public void createRecipeExtras(IRecipeExtrasBuilder builder, SpecialBladeDescData recipe, @NotNull IFocusGroup focuses) {
+    public void createRecipeExtras(IRecipeExtrasBuilder builder, SpecialBladeDescData recipe, IFocusGroup focuses) {
         ItemStack blade = BladeRegisterManager.getBlade(recipe.bladeName());
         builder.addText(((MutableComponent) blade.getHoverName()).withStyle(blade.getRarity().getStyleModifier()), getWidth() - 42, 10)
             .setTextAlignment(HorizontalAlignment.CENTER)

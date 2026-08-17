@@ -30,13 +30,5 @@
       "translation": [ 2, 3, 0 ],
       "scale": [ 0.65, 0.65, 0.65 ]
     }
-  },
-  "overrides": [
-    {
-      "predicate": {
-        "slashblade:user": "exist"
-      },
-      "model": "slashblade:eproudsoul"
-    }
-  ]
+  }
 }

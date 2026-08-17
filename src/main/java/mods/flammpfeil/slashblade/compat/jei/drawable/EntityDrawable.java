@@ -9,7 +9,6 @@ import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.AABB;
-import org.jetbrains.annotations.NotNull;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -47,7 +46,7 @@ public class EntityDrawable implements IDrawable {
     }
     
     @Override
-    public void draw(@NotNull GuiGraphics guiGraphics, int xOffset, int yOffset) {
+    public void draw(GuiGraphics guiGraphics, int xOffset, int yOffset) {
         if (renderEntity != null) {
             AABB box = renderEntity.getBoundingBox();
             

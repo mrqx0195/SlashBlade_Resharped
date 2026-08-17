@@ -12,6 +12,7 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
+import javax.annotation.Nullable;
 import java.util.function.BiFunction;
 
 public class Face {
@@ -39,11 +40,16 @@ public class Face {
         Face.uvOperator = uvDefaultOperator;
     }
     
-    public Vertex[] vertices;
+    public Vertex[] vertices = new Vertex[]{};
+    @Nullable
     public Vertex[] vertexNormals;
+    @Nullable
     public Vertex faceNormal;
+    @Nullable
     public TextureCoordinate[] textureCoordinates;
+    @Nullable
     public boolean[] texUSign;
+    @Nullable
     public boolean[] texVSign;
     
     private static final ThreadLocal<Vector3f> NORMAL_TMP = ThreadLocal.withInitial(Vector3f::new);
@@ -134,13 +140,17 @@ public class Face {
         if (vertexNormals != null) {
             Vertex normal = vertexNormals[i];
             vecNormal = NORMAL_TMP.get().set(normal.x, normal.y, normal.z);
-        } else {
+        } else if (faceNormal != null) {
             vecNormal = NORMAL_TMP.get().set(faceNormal.x, faceNormal.y, faceNormal.z);
+        } else {
+            vecNormal = null;
         }
         
-        vecNormal.mul(normalTransform);
-        vecNormal.normalize();
-        wr.setNormal(vecNormal.x(), vecNormal.y(), vecNormal.z());
+        if (vecNormal != null) {
+            vecNormal.mul(normalTransform);
+            vecNormal.normalize();
+            wr.setNormal(vecNormal.x(), vecNormal.y(), vecNormal.z());
+        }
     }
     
     public Vertex calculateFaceNormal() {

@@ -12,7 +12,6 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.EntityType;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.Map;
@@ -33,7 +32,7 @@ public class ShowEntityListener extends SimpleJsonResourceReloadListener {
     }
     
     @Override
-    protected void apply(Map<ResourceLocation, JsonElement> map, @NotNull ResourceManager resourceManager, @NotNull ProfilerFiller profilerFiller) {
+    protected void apply(Map<ResourceLocation, JsonElement> map, ResourceManager resourceManager, ProfilerFiller profilerFiller) {
         SHOW_DATA.clear();
         for (JsonElement value : map.values()) {
             ShowEntityData.CODEC.parse(JsonOps.INSTANCE, value).result().ifPresent(specialBladeDescData -> SHOW_DATA.put(specialBladeDescData.entityType(), specialBladeDescData));

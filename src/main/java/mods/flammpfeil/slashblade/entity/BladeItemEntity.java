@@ -40,7 +40,7 @@ public class BladeItemEntity extends ItemEntity {
     }
     
     public ResourceLocation getModel() {
-        return ResourceLocation.tryParse(this.getEntityData().get(DATA_MODEL));
+        return ResourceLocation.parse(this.getEntityData().get(DATA_MODEL));
     }
     
     public void setModel(ResourceLocation model) {
@@ -48,7 +48,7 @@ public class BladeItemEntity extends ItemEntity {
     }
     
     public ResourceLocation getTexture() {
-        return ResourceLocation.tryParse(this.getEntityData().get(DATA_TEXTURE));
+        return ResourceLocation.parse(this.getEntityData().get(DATA_TEXTURE));
     }
     
     public void setTexture(ResourceLocation texture) {
@@ -68,7 +68,7 @@ public class BladeItemEntity extends ItemEntity {
     }
     
     @Override
-    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket(@NotNull ServerEntity serverEntity) {
+    public Packet<ClientGamePacketListener> getAddEntityPacket(ServerEntity serverEntity) {
         return super.getAddEntityPacket(serverEntity);
     }
     
@@ -109,7 +109,7 @@ public class BladeItemEntity extends ItemEntity {
     }
     
     @Override
-    public boolean causeFallDamage(float distance, float damageMultiplier, @NotNull DamageSource ds) {
+    public boolean causeFallDamage(float distance, float damageMultiplier, DamageSource ds) {
         super.causeFallDamage(distance, damageMultiplier, ds);
         
         int i = Mth.ceil(distance);

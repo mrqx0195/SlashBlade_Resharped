@@ -249,18 +249,19 @@ public class BlandStandEventHandler {
             spawnSucceedEffects(world, bladeStand, random);
             
             ItemEntity itemEntity = player.drop(orb, true);
-            
-            if (pe.isRemovable()) {
-                state.removeSpecialEffect(se);
+            if (itemEntity != null) {
+                if (pe.isRemovable()) {
+                    state.removeSpecialEffect(se);
+                }
+                
+                CopySpecialEffectFromBladeEvent e = new CopySpecialEffectFromBladeEvent(
+                    pe, orb, itemEntity);
+                
+                NeoForge.EVENT_BUS.post(e);
+                
+                event.setCanceled(true);
+                return;
             }
-            
-            CopySpecialEffectFromBladeEvent e = new CopySpecialEffectFromBladeEvent(
-                pe, orb, itemEntity);
-            
-            NeoForge.EVENT_BUS.post(e);
-            
-            event.setCanceled(true);
-            return;
         }
     }
     
@@ -286,7 +287,7 @@ public class BlandStandEventHandler {
         var state = event.getSlashBladeState();
         var bladeStand = event.getBladeStand();
         ResourceLocation SA = state.getSlashArtsKey();
-        if (SA != null && !SA.equals(SlashArtsRegistry.NONE.getId())) {
+        if (!SA.equals(SlashArtsRegistry.NONE.getId())) {
             
             PreCopySpecialAttackFromBladeEvent pe = new PreCopySpecialAttackFromBladeEvent(
                 blade, state, SA, event);
@@ -317,12 +318,14 @@ public class BlandStandEventHandler {
             
             ItemEntity itemEntity = player.drop(orb, true);
             
-            CopySpecialAttackFromBladeEvent e = new CopySpecialAttackFromBladeEvent(
-                pe, orb, itemEntity);
-            
-            NeoForge.EVENT_BUS.post(e);
-            
-            event.setCanceled(true);
+            if (itemEntity != null) {
+                CopySpecialAttackFromBladeEvent e = new CopySpecialAttackFromBladeEvent(
+                    pe, orb, itemEntity);
+                
+                NeoForge.EVENT_BUS.post(e);
+                
+                event.setCanceled(true);
+            }
         }
     }
     
@@ -422,9 +425,6 @@ public class BlandStandEventHandler {
     @SubscribeEvent
     public static void copySAEnchantmentCheck(PreCopySpecialAttackFromBladeEvent event) {
         SlashBladeEvent.BladeStandAttackEvent oriEvent = event.getOriginalEvent();
-        if (oriEvent == null) {
-            return;
-        }
         if (oriEvent.getDamageSource().getEntity() instanceof Player player) {
             ItemStack stack = player.getItemInHand(InteractionHand.MAIN_HAND);
             ItemStack blade = event.getBlade();

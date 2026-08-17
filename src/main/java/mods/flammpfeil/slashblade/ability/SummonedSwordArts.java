@@ -29,8 +29,10 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.NeoForge;
 
+import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -148,7 +150,7 @@ public class SummonedSwordArts {
         }
     }
     
-    public Optional<Entity> findTarget(ServerPlayer sender, Entity lockedT) {
+    public Optional<Entity> findTarget(ServerPlayer sender, @Nullable Entity lockedT) {
         return Stream.of(Optional.ofNullable(lockedT),
                 RayTraceHelper
                     .rayTrace(sender.level(), sender, sender.getEyePosition(1.0f), sender.getLookAngle(),
@@ -163,7 +165,7 @@ public class SummonedSwordArts {
                         }
                         
                         if (target instanceof IShootable) {
-                            isMatch = !((IShootable) target).getShooter().equals(sender);
+                            isMatch = !Objects.equals(((IShootable) target).getShooter(), sender);
                         }
                         
                         return isMatch;
@@ -216,7 +218,11 @@ public class SummonedSwordArts {
                 
                 Level worldIn = entity.level();
                 
-                int rank = entity.getData(CapabilityConcentrationRank.RANK_POINT.get()).getRank(worldIn.getGameTime()).level;
+                IConcentrationRank.ConcentrationRanks ranks = entity.getData(CapabilityConcentrationRank.RANK_POINT.get()).getRank(worldIn.getGameTime());
+                int rank = 0;
+                if (ranks != null) {
+                    rank = ranks.level;
+                }
                 
                 int count = 6;
                 
@@ -279,7 +285,11 @@ public class SummonedSwordArts {
             //烈风环影剑
             AdvancementHelper.grantCriterion(entity, ADVANCEMENT_STORM_SWORDS);
             
-            int rank = entity.getData(CapabilityConcentrationRank.RANK_POINT.get()).getRank(worldIn.getGameTime()).level;
+            IConcentrationRank.ConcentrationRanks ranks = entity.getData(CapabilityConcentrationRank.RANK_POINT.get()).getRank(worldIn.getGameTime());
+            int rank = 0;
+            if (ranks != null) {
+                rank = ranks.level;
+            }
             
             int count = 6;
             
@@ -336,7 +346,11 @@ public class SummonedSwordArts {
             //急袭幻影剑
             AdvancementHelper.grantCriterion(entity, ADVANCEMENT_BLISTERING_SWORDS);
             
-            int rank = entity.getData(CapabilityConcentrationRank.RANK_POINT.get()).getRank(worldIn.getGameTime()).level;
+            IConcentrationRank.ConcentrationRanks ranks = entity.getData(CapabilityConcentrationRank.RANK_POINT.get()).getRank(worldIn.getGameTime());
+            int rank = 0;
+            if (ranks != null) {
+                rank = ranks.level;
+            }
             
             int count = 6;
             
@@ -396,7 +410,11 @@ public class SummonedSwordArts {
             //五月雨
             AdvancementHelper.grantCriterion(entity, ADVANCEMENT_HEAVY_RAIN_SWORDS);
             
-            int rank = entity.getData(CapabilityConcentrationRank.RANK_POINT.get()).getRank(worldIn.getGameTime()).level;
+            IConcentrationRank.ConcentrationRanks ranks = entity.getData(CapabilityConcentrationRank.RANK_POINT.get()).getRank(worldIn.getGameTime());
+            int rank = 0;
+            if (ranks != null) {
+                rank = ranks.level;
+            }
             
             Vec3 basePos;
             

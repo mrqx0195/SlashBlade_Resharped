@@ -40,11 +40,11 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.fml.ModList;
 
-import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
@@ -55,9 +55,12 @@ public class LayerMainBlade<T extends LivingEntity, M extends EntityModel<T>> ex
         super(entityRendererIn);
     }
     
+    @Nullable
     private MmdPmdModelMc cachedBladeholder;
+    @Nullable
     private MmdMotionPlayerGL2 cachedMotionPlayer;
     
+    @Nullable
     private MmdPmdModelMc getBladeholder() {
         if (cachedBladeholder == null) {
             try {
@@ -209,7 +212,7 @@ public class LayerMainBlade<T extends LivingEntity, M extends EntityModel<T>> ex
     }
     
     @Override
-    public void render(@NotNull PoseStack matrixStack, @NotNull MultiBufferSource bufferIn, int lightIn, @NotNull T entity, float limbSwing,
+    public void render(PoseStack matrixStack, MultiBufferSource bufferIn, int lightIn, T entity, float limbSwing,
                        float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
         
         this.renderOffhandItem(matrixStack, bufferIn, lightIn, entity);
@@ -231,9 +234,6 @@ public class LayerMainBlade<T extends LivingEntity, M extends EntityModel<T>> ex
         var state = BladeStateAccess.of(stack);
         state.ifPresent(s -> {
             MmdMotionPlayerGL2 mmp = getMotionPlayer();
-            if (mmp == null) {
-                return;
-            }
             Map.Entry<Integer, ResourceLocation> comboStateTicks = s.peekCurrentComboStateTicks(entity);
             ComboState combo = Objects.requireNonNullElse(
                 ComboStateRegistry.REGISTRY.get(comboStateTicks.getValue()),

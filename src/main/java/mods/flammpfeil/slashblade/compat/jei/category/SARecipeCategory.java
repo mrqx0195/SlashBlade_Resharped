@@ -18,7 +18,6 @@ import mods.flammpfeil.slashblade.util.BladeRegisterManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -33,12 +32,12 @@ public record SARecipeCategory(IDrawable icon) implements IRecipeCategory<SlashA
     }
     
     @Override
-    public @NotNull RecipeType<SlashArts> getRecipeType() {
+    public RecipeType<SlashArts> getRecipeType() {
         return SA_TYPE;
     }
     
     @Override
-    public @NotNull Component getTitle() {
+    public Component getTitle() {
         return Component.translatable("jei.category.slashblade.slash_arts");
     }
     
@@ -58,7 +57,7 @@ public record SARecipeCategory(IDrawable icon) implements IRecipeCategory<SlashA
     }
     
     @Override
-    public void setRecipe(IRecipeLayoutBuilder builder, @NotNull SlashArts slashArts, @NotNull IFocusGroup iFocusGroup) {
+    public void setRecipe(IRecipeLayoutBuilder builder, SlashArts slashArts, IFocusGroup iFocusGroup) {
         builder.addInvisibleIngredients(RecipeIngredientRole.INPUT)
             .addIngredient(SAIngredient.INSTANCE, slashArts);
         builder.addInvisibleIngredients(RecipeIngredientRole.OUTPUT)
@@ -75,7 +74,7 @@ public record SARecipeCategory(IDrawable icon) implements IRecipeCategory<SlashA
     }
     
     @Override
-    public void createRecipeExtras(IRecipeExtrasBuilder builder, SlashArts recipe, @NotNull IFocusGroup focuses) {
+    public void createRecipeExtras(IRecipeExtrasBuilder builder, SlashArts recipe, IFocusGroup focuses) {
         builder.addText(recipe.getDescription(), getWidth() - 20, 10)
             .setPosition(25, 7);
         builder.addScrollBoxWidget(getWidth() - 10, getHeight() - 30, 5, 25)
@@ -83,7 +82,7 @@ public record SARecipeCategory(IDrawable icon) implements IRecipeCategory<SlashA
     }
     
     @Override
-    public ResourceLocation getRegistryName(@NotNull SlashArts recipe) {
+    public ResourceLocation getRegistryName(SlashArts recipe) {
         ResourceLocation key = SlashArtsRegistry.REGISTRY.getKey(recipe);
         if (key == null) {
             throw new NullPointerException("Key of SlashArts " + recipe + " is null!");

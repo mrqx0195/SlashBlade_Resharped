@@ -32,7 +32,6 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import org.jetbrains.annotations.NotNull;
 import org.joml.Vector4f;
 
 import javax.annotation.Nullable;
@@ -111,7 +110,7 @@ public class EntitySlashEffect extends Projectile implements IShootable {
     }
     
     @Override
-    protected void addAdditionalSaveData(@NotNull CompoundTag compound) {
+    protected void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         
         NBTHelper.getNBTCoupler(compound).put("RotationOffset", this.getRotationOffset())
@@ -122,7 +121,7 @@ public class EntitySlashEffect extends Projectile implements IShootable {
     }
     
     @Override
-    protected void readAdditionalSaveData(@NotNull CompoundTag compound) {
+    protected void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         
         NBTHelper.getNBTCoupler(compound).get("RotationOffset", this::setRotationOffset)
@@ -134,7 +133,7 @@ public class EntitySlashEffect extends Projectile implements IShootable {
     }
     
     @Override
-    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket(@NotNull ServerEntity entity) {
+    public Packet<ClientGamePacketListener> getAddEntityPacket(ServerEntity entity) {
         return super.getAddEntityPacket(entity);
     }
     
@@ -313,7 +312,8 @@ public class EntitySlashEffect extends Projectile implements IShootable {
                 FallHandler.spawnLandingParticle(this, rayResult.getLocation(), normal3d, 3);
             }
             
-            if (IConcentrationRank.ConcentrationRanks.S.level < getRankCode().level) {
+            IConcentrationRank.ConcentrationRanks rank = getRankCode();
+            if (rank != null && IConcentrationRank.ConcentrationRanks.S.level < rank.level) {
                 Vec3 vec3 = start.add(normal3d.scale(this.getBaseSize() * 2.5));
                 this.level().addParticle(ParticleTypes.CRIT, vec3.x(), vec3.y(), vec3.z(), dir.x() + normal.x(),
                     dir.y() + normal.y(), dir.z() + normal.z());
@@ -365,7 +365,7 @@ public class EntitySlashEffect extends Projectile implements IShootable {
     }
     
     @Override
-    public void remove(@NotNull RemovalReason reason) {
+    public void remove(RemovalReason reason) {
         super.remove(reason);
         alreadyHits.clear();
     }
@@ -386,6 +386,7 @@ public class EntitySlashEffect extends Projectile implements IShootable {
         this.getEntityData().set(RANK, value);
     }
     
+    @Nullable
     public IConcentrationRank.ConcentrationRanks getRankCode() {
         return IConcentrationRank.ConcentrationRanks.getRankFromLevel(getRank());
     }

@@ -14,12 +14,14 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 
+import javax.annotation.Nullable;
 import java.util.function.Function;
 
 public class SlashArts {
     public static final ResourceKey<Registry<SlashArts>> REGISTRY_KEY = ResourceKey
         .createRegistryKey(SlashBlade.prefix("slash_arts"));
     
+    @Nullable
     public static ResourceLocation getRegistryKey(SlashArts state) {
         return SlashArtsRegistry.REGISTRY.getKey(state);
     }
@@ -106,6 +108,7 @@ public class SlashArts {
         return slashArts.toString();
     }
     
+    @Nullable
     private String descriptionId;
     
     protected String getOrCreateDescriptionId() {

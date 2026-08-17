@@ -14,25 +14,29 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumSet;
 
-public record MoveCommandMessage(int command) implements CustomPacketPayload {
+public record MoveCommandMessage(EnumSet<InputCommand> command) implements CustomPacketPayload {
     public static final Type<MoveCommandMessage> TYPE = new Type<>(SlashBlade.prefix("move_command"));
     public static final StreamCodec<RegistryFriendlyByteBuf, MoveCommandMessage> STREAM_CODEC = CustomPacketPayload
         .codec(MoveCommandMessage::write, MoveCommandMessage::new);
     
+    @Deprecated
+    public MoveCommandMessage(int command) {
+        this(EnumSetConverter.convertToEnumSet(InputCommand.class, command));
+    }
+    
     private MoveCommandMessage(RegistryFriendlyByteBuf buf) {
-        this(buf.readInt());
+        this(buf.readEnumSet(InputCommand.class));
     }
     
     private void write(RegistryFriendlyByteBuf buf) {
-        buf.writeInt(this.command);
+        buf.writeEnumSet(this.command, InputCommand.class);
     }
     
     @Override
-    public @NotNull Type<MoveCommandMessage> type() {
+    public Type<MoveCommandMessage> type() {
         return TYPE;
     }
     
@@ -50,7 +54,7 @@ public record MoveCommandMessage(int command) implements CustomPacketPayload {
         EnumSet<InputCommand> old = state.getCommands().clone();
         
         state.getCommands().clear();
-        state.getCommands().addAll(EnumSetConverter.convertToEnumSet(InputCommand.class, msg.command()));
+        state.getCommands().addAll(msg.command());
         
         EnumSet<InputCommand> current = state.getCommands().clone();
         long currentTime = sender.level().getGameTime();

@@ -8,7 +8,6 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-import org.jetbrains.annotations.NotNull;
 
 public record RankSyncMessage(long rawPoint) implements CustomPacketPayload {
     public static final Type<RankSyncMessage> TYPE = new Type<>(SlashBlade.prefix("rank_sync"));
@@ -24,7 +23,7 @@ public record RankSyncMessage(long rawPoint) implements CustomPacketPayload {
     }
     
     @Override
-    public @NotNull Type<RankSyncMessage> type() {
+    public Type<RankSyncMessage> type() {
         return TYPE;
     }
     
@@ -38,7 +37,8 @@ public record RankSyncMessage(long rawPoint) implements CustomPacketPayload {
         cr.setRawRankPoint(msg.rawPoint());
         cr.setLastUpdte(time);
         
-        if (oldRank.level < cr.getRank(time).level) {
+        IConcentrationRank.ConcentrationRanks newRank = cr.getRank(time);
+        if (oldRank == null || newRank != null && oldRank.level < newRank.level) {
             cr.setLastRankRise(time);
         }
     }

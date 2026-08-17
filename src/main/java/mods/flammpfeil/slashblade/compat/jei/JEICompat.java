@@ -31,14 +31,13 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.stream.Stream;
 
 @JeiPlugin
 public class JEICompat implements IModPlugin {
     @Override
-    public @NotNull ResourceLocation getPluginUid() {
+    public ResourceLocation getPluginUid() {
         return SlashBlade.prefix(SlashBlade.MODID);
     }
     

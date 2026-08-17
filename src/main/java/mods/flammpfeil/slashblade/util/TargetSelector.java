@@ -47,7 +47,7 @@ public class TargetSelector {
     
     static final String AttackableTag = "RevengeAttacker";
     
-    static boolean isAttackable(Entity revengeTarget, Entity attacker) {
+    static boolean isAttackable(@Nullable Entity revengeTarget, @Nullable Entity attacker) {
         return revengeTarget != null && attacker != null
             && (revengeTarget.equals(attacker) || revengeTarget.isAlliedTo(attacker));
     }
@@ -104,7 +104,7 @@ public class TargetSelector {
         Level world = attacker.level();
         return world.getEntitiesOfClass(Projectile.class, aabb).stream()
             .filter(e -> ((e.getOwner() == null || !e.getOwner().equals(attacker))
-                && (!(e instanceof IShootable) || !((IShootable) e).getShooter().equals(attacker))))
+                && (!(e instanceof IShootable) || !Objects.equals(((IShootable) e).getShooter(), attacker))))
             .filter(e -> (distanceSqrBetweenEntity(e, attacker) < (reach * reach)))
             .collect(Collectors.toList());
     }

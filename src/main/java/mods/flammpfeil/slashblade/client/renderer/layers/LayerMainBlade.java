@@ -11,6 +11,7 @@ import jp.nyatla.nymmd.MmdPmdModelMc;
 import jp.nyatla.nymmd.MmdVmdMotionMc;
 import mods.flammpfeil.slashblade.SlashBlade;
 import mods.flammpfeil.slashblade.capability.slashblade.BladeStateAccess;
+import mods.flammpfeil.slashblade.capability.slashblade.ISlashBladeState;
 import mods.flammpfeil.slashblade.client.renderer.model.BladeModelManager;
 import mods.flammpfeil.slashblade.client.renderer.model.BladeMotionManager;
 import mods.flammpfeil.slashblade.client.renderer.model.obj.WavefrontObject;
@@ -60,6 +61,24 @@ public class LayerMainBlade<T extends LivingEntity, M extends EntityModel<T>> ex
     @Nullable
     private MmdMotionPlayerGL2 cachedMotionPlayer;
     
+    private static final Quaternionf CARRY_ROTATION_PSO2 =
+        new Quaternionf().rotateZYX(-0.122173F, 0, 0);
+    private static final Quaternionf CARRY_ROTATION_KATANA =
+        new Quaternionf().rotateZYX(3.1415927F, 1.570796f, 0.261799F);
+    private static final Quaternionf CARRY_ROTATION_DEFAULT =
+        new Quaternionf().rotateZYX(0F, 1.570796f, 0.261799F);
+    private static final Quaternionf CARRY_ROTATION_NINJA =
+        new Quaternionf().rotateZYX(-2.094395F, 0f, 3.1415927F);
+    private static final Quaternionf CARRY_ROTATION_RNINJA =
+        new Quaternionf().rotateZYX(-1.047198F, 0, 0);
+
+    private static final String BLADE_LUMINOUS = "blade_luminous";
+    private static final String BLADE_DAMAGED_LUMINOUS = "blade_damaged_luminous";
+    private static final String SHEATH_LUMINOUS = "sheath_luminous";
+
+    private final float[] boneMatrixBuf = new float[16];
+    private final Matrix3f normalMatrixTmp = new Matrix3f();
+
     @Nullable
     private MmdPmdModelMc getBladeholder() {
         if (cachedBladeholder == null) {
@@ -148,7 +167,7 @@ public class LayerMainBlade<T extends LivingEntity, M extends EntityModel<T>> ex
                 switch (carrytype) {
                     case PSO2:
                         matrixStack.translate(1F, -1.125f, 0.20f);
-                        matrixStack.mulPose(new Quaternionf().rotateZYX(-0.122173F, 0, 0));
+                        matrixStack.mulPose(CARRY_ROTATION_PSO2);
                         if (mcinstance.options.getCameraType() == CameraType.FIRST_PERSON
                             && entity.equals(mcinstance.player)) {
                             return;
@@ -157,17 +176,17 @@ public class LayerMainBlade<T extends LivingEntity, M extends EntityModel<T>> ex
                     
                     case KATANA:
                         matrixStack.translate(0.25F, -0.875f, -0.55f);
-                        matrixStack.mulPose(new Quaternionf().rotateZYX(3.1415927F, 1.570796f, 0.261799F));
+                        matrixStack.mulPose(CARRY_ROTATION_KATANA);
                         break;
                     
                     case DEFAULT:
                         matrixStack.translate(0.25F, -0.875f, -0.55f);
-                        matrixStack.mulPose(new Quaternionf().rotateZYX(0F, 1.570796f, 0.261799F));
+                        matrixStack.mulPose(CARRY_ROTATION_DEFAULT);
                         break;
                     
                     case NINJA:
                         matrixStack.translate(-0.5F, -2f, 0.20f);
-                        matrixStack.mulPose(new Quaternionf().rotateZYX(-2.094395F, 0f, 3.1415927F));
+                        matrixStack.mulPose(CARRY_ROTATION_NINJA);
                         if (mcinstance.options.getCameraType() == CameraType.FIRST_PERSON
                             && entity.equals(mcinstance.player)) {
                             return;
@@ -176,7 +195,7 @@ public class LayerMainBlade<T extends LivingEntity, M extends EntityModel<T>> ex
                     
                     case RNINJA:
                         matrixStack.translate(0.5F, -2f, 0.20f);
-                        matrixStack.mulPose(new Quaternionf().rotateZYX(-1.047198F, 0, 0));
+                        matrixStack.mulPose(CARRY_ROTATION_RNINJA);
                         if (mcinstance.options.getCameraType() == CameraType.FIRST_PERSON
                             && entity.equals(mcinstance.player)) {
                             return;
@@ -200,11 +219,12 @@ public class LayerMainBlade<T extends LivingEntity, M extends EntityModel<T>> ex
                     
                     BladeRenderState.renderOverrided(blade, obj, part, textureLocation, matrixStack, bufferIn,
                         lightIn);
-                    BladeRenderState.renderOverridedLuminous(blade, obj, part + "_luminous", textureLocation,
+                    BladeRenderState.renderOverridedLuminous(blade, obj,
+                        s.isBroken() ? BLADE_DAMAGED_LUMINOUS : BLADE_LUMINOUS, textureLocation,
                         matrixStack, bufferIn, lightIn);
                     BladeRenderState.renderOverrided(blade, obj, "sheath", textureLocation, matrixStack, bufferIn,
                         lightIn);
-                    BladeRenderState.renderOverridedLuminous(blade, obj, "sheath_luminous", textureLocation,
+                    BladeRenderState.renderOverridedLuminous(blade, obj, SHEATH_LUMINOUS, textureLocation,
                         matrixStack, bufferIn, lightIn);
                 }
             }
@@ -250,14 +270,18 @@ public class LayerMainBlade<T extends LivingEntity, M extends EntityModel<T>> ex
                 motion = BladeMotionManager.getInstance().getMotion(combo.getMotionLoc());
             }
             
+            if (motion == null && !mmp.hasVmdMotion()) {
+                return;
+            }
+
             double maxSeconds = 0;
-            try {
-                mmp.setVmd(motion);
-                if (motion != null) {
+            if (motion != null) {
+                try {
+                    mmp.setVmd(motion);
                     maxSeconds = TimeValueHelper.getMSecFromFrames(motion.getMaxFrame());
+                } catch (Exception e) {
+                    SlashBlade.LOGGER.warn(e);
                 }
-            } catch (Exception e) {
-                SlashBlade.LOGGER.warn(e);
             }
             
             double start = 0;
@@ -280,14 +304,14 @@ public class LayerMainBlade<T extends LivingEntity, M extends EntityModel<T>> ex
             time = start + time;
             
             try {
-                mmp.updateMotion((float) time);
+                mmp.updateMotionBonesAndSkinning((float) time);
             } catch (MmdException e) {
                 SlashBlade.LOGGER.warn(e);
             }
             
             try (MSAutoCloser ignored = MSAutoCloser.pushMatrix(matrixStack)) {
                 
-                setUserPose(matrixStack, entity, partialTicks);
+                setUserPose(matrixStack, entity, partialTicks, s);
                 
                 // minecraft model neckPoint height = 1.5f
                 // mmd model neckPoint height = 12.0f
@@ -307,15 +331,14 @@ public class LayerMainBlade<T extends LivingEntity, M extends EntityModel<T>> ex
                     int idx = mmp.getBoneIndexByName("hardpointA");
                     
                     if (0 <= idx) {
-                        float[] buf = new float[16];
-                        mmp._skinning_mat[idx].getValue(buf);
+                        mmp._skinning_mat[idx].getValue(boneMatrixBuf);
                         
-                        Matrix4f mat = VectorHelper.matrix4fFromArray(buf);
+                        Matrix4f mat = VectorHelper.matrix4fFromArray(boneMatrixBuf);
                         
                         matrixStack.scale(-1, 1, 1);
                         PoseStack.Pose entry = matrixStack.last();
                         entry.pose().mul(mat);
-                        entry.normal().mul(new Matrix3f(mat).invert().transpose());
+                        entry.normal().mul(normalMatrixTmp.set(mat).invert().transpose());
                         matrixStack.scale(-1, 1, 1);
                     }
                     
@@ -331,7 +354,8 @@ public class LayerMainBlade<T extends LivingEntity, M extends EntityModel<T>> ex
                     
                     BladeRenderState.renderOverrided(stack, obj, part, textureLocation, matrixStack, bufferIn,
                         lightIn);
-                    BladeRenderState.renderOverridedLuminous(stack, obj, part + "_luminous", textureLocation,
+                    BladeRenderState.renderOverridedLuminous(stack, obj,
+                        s.isBroken() ? BLADE_DAMAGED_LUMINOUS : BLADE_LUMINOUS, textureLocation,
                         matrixStack, bufferIn, lightIn);
                 }
                 
@@ -339,15 +363,14 @@ public class LayerMainBlade<T extends LivingEntity, M extends EntityModel<T>> ex
                     int idx = mmp.getBoneIndexByName("hardpointB");
                     
                     if (0 <= idx) {
-                        float[] buf = new float[16];
-                        mmp._skinning_mat[idx].getValue(buf);
+                        mmp._skinning_mat[idx].getValue(boneMatrixBuf);
                         
-                        Matrix4f mat = VectorHelper.matrix4fFromArray(buf);
+                        Matrix4f mat = VectorHelper.matrix4fFromArray(boneMatrixBuf);
                         
                         matrixStack.scale(-1, 1, 1);
                         PoseStack.Pose entry = matrixStack.last();
                         entry.pose().mul(mat);
-                        entry.normal().mul(new Matrix3f(mat).invert().transpose());
+                        entry.normal().mul(normalMatrixTmp.set(mat).invert().transpose());
                         matrixStack.scale(-1, 1, 1);
                     }
                     
@@ -355,7 +378,7 @@ public class LayerMainBlade<T extends LivingEntity, M extends EntityModel<T>> ex
                     matrixStack.scale(modelScale, modelScale, modelScale);
                     BladeRenderState.renderOverrided(stack, obj, "sheath", textureLocation, matrixStack, bufferIn,
                         lightIn);
-                    BladeRenderState.renderOverridedLuminous(stack, obj, "sheath_luminous", textureLocation,
+                    BladeRenderState.renderOverridedLuminous(stack, obj, SHEATH_LUMINOUS, textureLocation,
                         matrixStack, bufferIn, lightIn);
                     
                     if (s.isCharged(entity)) {
@@ -373,6 +396,10 @@ public class LayerMainBlade<T extends LivingEntity, M extends EntityModel<T>> ex
     }
     
     public void setUserPose(PoseStack matrixStack, T entity, float partialTicks) {
+        setUserPose(matrixStack, entity, partialTicks, null);
+    }
+
+    public void setUserPose(PoseStack matrixStack, T entity, float partialTicks, @Nullable ISlashBladeState state) {
         if (ModList.get().isLoaded("playeranimator") && entity instanceof AbstractClientPlayer) {
             var animationPlayer = ((IAnimatedPlayer) entity).playerAnimator_getAnimation();
             animationPlayer.setTickDelta(partialTicks);
@@ -388,7 +415,9 @@ public class LayerMainBlade<T extends LivingEntity, M extends EntityModel<T>> ex
             }
         }
         
-        float comboRot = UserPoseOverrider.getInterpolatedComboRotation(entity, partialTicks);
+        float comboRot = state != null
+            ? UserPoseOverrider.getInterpolatedComboRotation(state, entity, partialTicks)
+            : UserPoseOverrider.getInterpolatedComboRotation(entity, partialTicks);
         if (comboRot != 0f) {
             matrixStack.mulPose(Axis.YP.rotationDegrees(comboRot));
         }

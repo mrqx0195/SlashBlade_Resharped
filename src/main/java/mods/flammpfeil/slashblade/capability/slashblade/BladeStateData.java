@@ -35,6 +35,10 @@ public record BladeStateData(
     Optional<ResourceLocation> model,
     List<ResourceLocation> specialEffects
 ) {
+    public BladeStateData {
+        specialEffects = List.copyOf(specialEffects);
+    }
+
     static final ResourceLocation DEFAULT_SLASH_ARTS = ResourceLocation.fromNamespaceAndPath("slashblade", "judgement_cut");
     static final ResourceLocation DEFAULT_COMBO_ROOT = ResourceLocation.fromNamespaceAndPath("slashblade", "standby");
     

@@ -3,6 +3,7 @@ package mods.flammpfeil.slashblade.event.client;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import mods.flammpfeil.slashblade.capability.slashblade.BladeStateAccess;
+import mods.flammpfeil.slashblade.capability.slashblade.ISlashBladeState;
 import mods.flammpfeil.slashblade.item.ItemSlashBlade;
 import mods.flammpfeil.slashblade.registry.ComboStateRegistry;
 import mods.flammpfeil.slashblade.registry.combo.ComboState;
@@ -46,8 +47,13 @@ public class UserPoseOverrider {
         LivingEntity entity = event.getEntity();
         float partialTicks = event.getPartialTick();
         
-        float prevRot = getComboRotation(entity, -1);
-        float currRot = getComboRotation(entity, 0);
+        ISlashBladeState state = BladeStateAccess.of(stack).orElse(null);
+        if (state == null) {
+            return;
+        }
+
+        float prevRot = getComboRotation(state, entity, -1);
+        float currRot = getComboRotation(state, entity, 0);
         
         boolean hasSwimFly = entity.isFallFlying() || entity.getSwimAmount(partialTicks) > 0f;
         if (prevRot == 0f && currRot == 0f && !hasSwimFly) {
@@ -65,8 +71,14 @@ public class UserPoseOverrider {
         poseStack.mulPose(Axis.YN.rotationDegrees(180.0F - f));
     }
     
+    public static float getInterpolatedComboRotation(ISlashBladeState state, LivingEntity entity, float partialTicks) {
+        return getInterpolatedRotation(getComboRotation(state, entity, 0), getComboRotation(state, entity, -1), partialTicks);
+    }
+
     public static float getInterpolatedComboRotation(LivingEntity entity, float partialTicks) {
-        return getInterpolatedRotation(getComboRotation(entity, 0), getComboRotation(entity, -1), partialTicks);
+        return BladeStateAccess.of(entity.getMainHandItem())
+            .map(state -> getInterpolatedComboRotation(state, entity, partialTicks))
+            .orElse(0f);
     }
     
     private static float getInterpolatedRotation(float currRot, float prevRot, float partialTicks) {
@@ -136,17 +148,21 @@ public class UserPoseOverrider {
         }
     }
     
+    public static float getComboRotation(ISlashBladeState state, LivingEntity entity, int tickOffset) {
+        ComboState cs = ComboStateRegistry.REGISTRY.get(state.getComboSeq());
+        if (cs == null) {
+            return 0f;
+        }
+        long elapsed = state.getElapsedTime(entity);
+        if (entity.level().isClientSide()) {
+            elapsed = Math.max(0, elapsed - 1);
+        }
+        return cs.getRotationYaw((int) elapsed + tickOffset);
+    }
+
     public static float getComboRotation(LivingEntity entity, int tickOffset) {
-        return BladeStateAccess.of(entity.getMainHandItem()).map(state -> {
-            ComboState cs = ComboStateRegistry.REGISTRY.get(state.getComboSeq());
-            if (cs == null) {
-                return 0f;
-            }
-            long elapsed = state.getElapsedTime(entity);
-            if (entity.level().isClientSide()) {
-                elapsed = Math.max(0, elapsed - 1);
-            }
-            return cs.getRotationYaw((int) elapsed + tickOffset);
-        }).orElse(0f);
+        return BladeStateAccess.of(entity.getMainHandItem())
+            .map(state -> getComboRotation(state, entity, tickOffset))
+            .orElse(0f);
     }
 }

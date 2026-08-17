@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import mods.flammpfeil.slashblade.capability.slashblade.BladeStateAccess;
 import mods.flammpfeil.slashblade.capability.slashblade.BladeStateData;
+import mods.flammpfeil.slashblade.capability.slashblade.ISlashBladeState;
 import mods.flammpfeil.slashblade.client.renderer.model.BladeFirstPersonRender;
 import mods.flammpfeil.slashblade.client.renderer.model.BladeModel;
 import mods.flammpfeil.slashblade.client.renderer.model.BladeModelManager;
@@ -145,12 +146,13 @@ public class SlashBladeTEISR extends BlockEntityWithoutLevelRenderer {
         
         EnumSet<SwordType> types = SwordType.from(stack);
         
-        ResourceLocation modelLocation = BladeStateAccess.of(stack)
-            .filter(s -> s.getModel().isPresent()).map(s -> s.getModel().orElseGet(() -> stackDefaultModel(stack)))
+        var state = BladeStateAccess.of(stack);
+        ResourceLocation modelLocation = state
+            .flatMap(ISlashBladeState::getModel)
             .orElseGet(() -> stackDefaultModel(stack));
         WavefrontObject model = BladeModelManager.getInstance().getModel(modelLocation);
-        ResourceLocation textureLocation = BladeStateAccess.of(stack)
-            .filter(s -> s.getTexture().isPresent()).map(s -> s.getTexture().orElseGet(() -> stackDefaultTexture(stack)))
+        ResourceLocation textureLocation = state
+            .flatMap(ISlashBladeState::getTexture)
             .orElseGet(() -> stackDefaultTexture(stack));
         
         String renderTarget;
@@ -194,7 +196,6 @@ public class SlashBladeTEISR extends BlockEntityWithoutLevelRenderer {
     }
     
     public ResourceLocation stackDefaultModel(ItemStack stack) {
-        BladeStateAccess.of(stack);
         BladeStateData data = BladeStateAccess.getDataOrDefault(stack);
         String name = data.model().map(ResourceLocation::toString).orElse(null);
         
@@ -224,7 +225,6 @@ public class SlashBladeTEISR extends BlockEntityWithoutLevelRenderer {
     }
     
     public ResourceLocation stackDefaultTexture(ItemStack stack) {
-        BladeStateAccess.of(stack);
         BladeStateData data = BladeStateAccess.getDataOrDefault(stack);
         String name = data.texture().map(ResourceLocation::toString).orElse(null);
         
@@ -262,12 +262,13 @@ public class SlashBladeTEISR extends BlockEntityWithoutLevelRenderer {
         EnumSet<SwordType> types = SwordType.from(stack);
         // BladeModel.itemBlade.getModelLocation(itemStackIn)
         
-        ResourceLocation modelLocation = BladeStateAccess.of(stack)
-            .filter(s -> s.getModel().isPresent()).map(s -> s.getModel().orElseGet(() -> stackDefaultModel(stack)))
+        var state = BladeStateAccess.of(stack);
+        ResourceLocation modelLocation = state
+            .flatMap(ISlashBladeState::getModel)
             .orElseGet(() -> stackDefaultModel(stack));
         WavefrontObject model = BladeModelManager.getInstance().getModel(modelLocation);
-        ResourceLocation textureLocation = BladeStateAccess.of(stack)
-            .filter(s -> s.getTexture().isPresent()).map(s -> s.getTexture().orElseGet(() -> stackDefaultTexture(stack)))
+        ResourceLocation textureLocation = state
+            .flatMap(ISlashBladeState::getTexture)
             .orElseGet(() -> stackDefaultTexture(stack));
         
         Vec3 bladeOffset = Vec3.ZERO;

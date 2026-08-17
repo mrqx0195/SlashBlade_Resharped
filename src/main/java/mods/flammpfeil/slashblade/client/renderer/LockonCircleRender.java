@@ -21,7 +21,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -70,10 +69,11 @@ public class LockonCircleRender {
         Entity target = BladeStateAccess.of(stack)
             .map(s -> s.getTargetEntity(player.level()))
             .orElse(null);
-        cachedLockOnTarget = target;
         if (target == null || !target.isAlive()) {
+            cachedLockOnTarget = null;
             return;
         }
+        cachedLockOnTarget = target;
         
         float partialTicks = mcinstance.getTimer().getGameTimeDeltaPartialTick(true);
         
@@ -117,12 +117,13 @@ public class LockonCircleRender {
             return;
         }
         
-        ItemStack stack = player.getMainHandItem();
-        Level level = player.level();
-        Optional<Color> effectColor = BladeStateAccess.of(stack)
-            .filter(s -> event.getEntity().equals(s.getTargetEntity(level)))
-            .map(ISlashBladeState::getEffectColor);
+        if (cachedLockOnTarget == null || !cachedLockOnTarget.isAlive()
+            || event.getEntity() != cachedLockOnTarget) {
+            return;
+        }
         
+        ItemStack stack = player.getMainHandItem();
+        Optional<Color> effectColor = BladeStateAccess.of(stack).map(ISlashBladeState::getEffectColor);
         if (effectColor.isEmpty()) {
             return;
         }

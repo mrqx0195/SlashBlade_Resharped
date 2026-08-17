@@ -253,6 +253,11 @@ public class BladeStateAccess {
         }
         
         @Override
+        public int getColorCode() {
+            return data().effectColor();
+        }
+
+        @Override
         public void setEffectColor(@Nullable Color effectColor) {
             update(d -> new BladeStateData(d.translationKey(), d.baseAttackModifier(),
                 d.proudSoul(), d.killCount(), d.refine(), d.broken(), d.sealed(),

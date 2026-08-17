@@ -44,6 +44,7 @@ public class BladeModelManager {
         defaultModel = new WavefrontObject(DefaultResources.resourceDefaultModel);
         
         cache = CacheBuilder.newBuilder()
+            .maximumSize(256)
             .build(CacheLoader.asyncReloading(new CacheLoader<>() {
                 @Override
                 public WavefrontObject load(ResourceLocation key) {
@@ -54,7 +55,7 @@ public class BladeModelManager {
                     }
                 }
                 
-            }, Executors.newCachedThreadPool()));
+            }, Executors.newFixedThreadPool(2)));
     }
     
     public WavefrontObject getModel(@Nullable ResourceLocation loc) {

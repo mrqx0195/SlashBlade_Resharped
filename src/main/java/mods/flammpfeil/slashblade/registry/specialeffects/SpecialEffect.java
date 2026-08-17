@@ -8,6 +8,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 
+import javax.annotation.Nullable;
+
 public class SpecialEffect {
     public static final ResourceKey<Registry<SpecialEffect>> REGISTRY_KEY = ResourceKey
         .createRegistryKey(SlashBlade.prefix("special_effect"));
@@ -45,7 +47,7 @@ public class SpecialEffect {
     public static boolean isEffective(ResourceLocation id, int level) {
         SpecialEffect specialEffect = SpecialEffectsRegistry.REGISTRY.get(id);
         if (specialEffect == null) {
-            throw new NullPointerException("SpecialEffect with id " + id.toString() + " not found!");
+            throw new NullPointerException("SpecialEffect with id " + id + " not found!");
         }
         return specialEffect.getRequestLevel() <= level;
     }
@@ -53,7 +55,7 @@ public class SpecialEffect {
     public static Component getDescription(ResourceLocation id) {
         SpecialEffect specialEffect = SpecialEffectsRegistry.REGISTRY.get(id);
         if (specialEffect == null) {
-            throw new NullPointerException("SpecialEffect with id " + id.toString() + " hasn't registered!");
+            throw new NullPointerException("SpecialEffect with id " + id + " hasn't registered!");
         }
         return specialEffect.getDescription();
     }
@@ -61,7 +63,7 @@ public class SpecialEffect {
     public static int getRequestLevel(ResourceLocation id) {
         SpecialEffect specialEffect = SpecialEffectsRegistry.REGISTRY.get(id);
         if (specialEffect == null) {
-            throw new NullPointerException("SpecialEffect with id " + id.toString() + " hasn't registered!");
+            throw new NullPointerException("SpecialEffect with id " + id + " hasn't registered!");
         }
         return specialEffect.getRequestLevel();
     }
@@ -79,6 +81,7 @@ public class SpecialEffect {
         return specialEffect.toString();
     }
     
+    @Nullable
     private String descriptionId;
     
     protected String getOrCreateDescriptionId() {

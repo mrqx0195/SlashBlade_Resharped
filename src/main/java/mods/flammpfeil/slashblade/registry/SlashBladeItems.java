@@ -21,7 +21,6 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Objects;
@@ -34,33 +33,33 @@ public class SlashBladeItems {
     public static final DeferredHolder<Item, Item> PROUDSOUL = ITEMS.register("proudsoul", () ->
         new ItemProudSoul(new Item.Properties()) {
             @Override
-            public int getEnchantmentValue(@NotNull ItemStack stack) {
+            public int getEnchantmentValue(ItemStack stack) {
                 return 50;
             }
         });
     public static final DeferredHolder<Item, Item> PROUDSOUL_INGOT = ITEMS.register("proudsoul_ingot", () ->
         new ItemProudSoul((new Item.Properties())) {
             @Override
-            public int getEnchantmentValue(@NotNull ItemStack stack) {
+            public int getEnchantmentValue(ItemStack stack) {
                 return 100;
             }
         });
     public static final DeferredHolder<Item, Item> PROUDSOUL_TINY = ITEMS.register("proudsoul_tiny", () ->
         new ItemProudSoul((new Item.Properties())) {
             @Override
-            public int getEnchantmentValue(@NotNull ItemStack stack) {
+            public int getEnchantmentValue(ItemStack stack) {
                 return 10;
             }
         });
     public static final DeferredHolder<Item, Item> PROUDSOUL_SPHERE = ITEMS.register("proudsoul_sphere", () ->
         new ItemProudSoul((new Item.Properties()).rarity(Rarity.UNCOMMON)) {
             @Override
-            public int getEnchantmentValue(@NotNull ItemStack stack) {
+            public int getEnchantmentValue(ItemStack stack) {
                 return 150;
             }
             
             @Override
-            public void appendHoverText(@NotNull ItemStack stack, @NotNull Item.TooltipContext context, @NotNull List<Component> components, @NotNull TooltipFlag flag) {
+            public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> components, TooltipFlag flag) {
                 CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
                 if (tag.contains("SpecialAttackType")) {
                     ResourceLocation SA = ResourceLocation.tryParse(tag.getString("SpecialAttackType"));
@@ -78,13 +77,13 @@ public class SlashBladeItems {
     public static final DeferredHolder<Item, Item> PROUDSOUL_CRYSTAL = ITEMS.register("proudsoul_crystal", () ->
         new ItemProudSoul((new Item.Properties()).rarity(Rarity.RARE)) {
             @Override
-            public int getEnchantmentValue(@NotNull ItemStack stack) {
+            public int getEnchantmentValue(ItemStack stack) {
                 return 200;
             }
             
             @Override
             @OnlyIn(Dist.CLIENT)
-            public void appendHoverText(@NotNull ItemStack stack, @NotNull Item.TooltipContext context, @NotNull List<Component> components, @NotNull TooltipFlag flag) {
+            public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> components, TooltipFlag flag) {
                 CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
                 if (tag.contains("SpecialEffectType")) {
                     Minecraft mcinstance = Minecraft.getInstance();
@@ -109,7 +108,7 @@ public class SlashBladeItems {
     public static final DeferredHolder<Item, Item> PROUDSOUL_TRAPEZOHEDRON = ITEMS.register("proudsoul_trapezohedron", () ->
         new ItemProudSoul((new Item.Properties()).rarity(Rarity.EPIC)) {
             @Override
-            public int getEnchantmentValue(@NotNull ItemStack stack) {
+            public int getEnchantmentValue(ItemStack stack) {
                 return TRAPEZOHEDRON_MAX_REFINE.get();
             }
         });

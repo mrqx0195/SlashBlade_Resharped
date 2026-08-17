@@ -15,7 +15,6 @@ import mods.flammpfeil.slashblade.SlashBlade;
 import mods.flammpfeil.slashblade.client.renderer.model.BladeMotionManager;
 import mods.flammpfeil.slashblade.util.TimeValueHelper;
 import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.NotNull;
 import org.joml.Quaterniond;
 import org.joml.Vector3d;
 import org.joml.Vector3f;
@@ -145,8 +144,8 @@ public class VmdAnimation implements IAnimation {
     }
     
     @Override
-    public @NotNull Vec3f get3DTransform(@NotNull String modelName, @NotNull TransformType type, float tickDelta,
-                                         @NotNull Vec3f value0) {
+    public Vec3f get3DTransform(String modelName, TransformType type, float tickDelta,
+                                Vec3f value0) {
         this.setupAnim(tickDelta);
         
         double motionScale = 1.0 / 16.0;
@@ -296,11 +295,13 @@ public class VmdAnimation implements IAnimation {
         
         double eofTime = 0;
         MmdVmdMotionMc motion = BladeMotionManager.getInstance().getMotion(loc);
-        try {
-            mmp.setVmd(motion);
-            eofTime = TimeValueHelper.getMSecFromFrames(motion.getMaxFrame());
-        } catch (Exception e) {
-            SlashBlade.LOGGER.warn(e);
+        if (motion != null) {
+            try {
+                mmp.setVmd(motion);
+                eofTime = TimeValueHelper.getMSecFromFrames(motion.getMaxFrame());
+            } catch (Exception e) {
+                SlashBlade.LOGGER.warn(e);
+            }
         }
         
         double time = TimeValueHelper.getMSecFromTicks((float) (currentTick + (double) tickDelta));

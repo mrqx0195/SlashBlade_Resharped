@@ -15,7 +15,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,8 +45,8 @@ public class BladeStateAccess {
                 "", detune.getBaseAttackModifier(), 0, 0, 0, false, false,
                 BladeStateData.DEFAULT_SLASH_ARTS, false, BladeStateData.DEFAULT_COMBO_ROOT,
                 CarryType.PSO2, 0xFF3333FF, false, Vec3.ZERO,
-                Optional.ofNullable(detune.getTexture()),
-                Optional.ofNullable(detune.getModel()),
+                Optional.of(detune.getTexture()),
+                Optional.of(detune.getModel()),
                 java.util.Collections.emptyList()
             );
         }
@@ -78,6 +78,7 @@ public class BladeStateAccess {
         }
     }
     
+    @SuppressWarnings("deprecation")
     static class ComponentBackedState implements ISlashBladeState {
         private final ItemStack stack;
         
@@ -105,13 +106,12 @@ public class BladeStateAccess {
         // ========== Persistent fields (BladeStateData) ==========
         
         @Override
-        @Nonnull
         public String getTranslationKey() {
             return data().translationKey();
         }
         
         @Override
-        public void setTranslationKey(String translationKey) {
+        public void setTranslationKey(@Nullable String translationKey) {
             update(d -> new BladeStateData(
                 Optional.ofNullable(translationKey).orElse(""), d.baseAttackModifier(),
                 d.proudSoul(), d.killCount(), d.refine(), d.broken(), d.sealed(),
@@ -210,7 +210,7 @@ public class BladeStateAccess {
         }
         
         @Override
-        public void setSlashArtsKey(ResourceLocation key) {
+        public void setSlashArtsKey(@Nullable ResourceLocation key) {
             update(d -> new BladeStateData(d.translationKey(), d.baseAttackModifier(),
                 d.proudSoul(), d.killCount(), d.refine(), d.broken(), d.sealed(),
                 key != null ? key : BladeStateData.DEFAULT_SLASH_ARTS, d.defaultBewitched(), d.comboRoot(),
@@ -233,13 +233,12 @@ public class BladeStateAccess {
         }
         
         @Override
-        @Nonnull
         public CarryType getCarryType() {
             return data().carryType();
         }
         
         @Override
-        public void setCarryType(CarryType carryType) {
+        public void setCarryType(@Nullable CarryType carryType) {
             update(d -> new BladeStateData(d.translationKey(), d.baseAttackModifier(),
                 d.proudSoul(), d.killCount(), d.refine(), d.broken(), d.sealed(),
                 d.slashArtsKey(), d.defaultBewitched(), d.comboRoot(),
@@ -249,13 +248,12 @@ public class BladeStateAccess {
         }
         
         @Override
-        @Nonnull
         public Color getEffectColor() {
             return new Color(data().effectColor());
         }
         
         @Override
-        public void setEffectColor(Color effectColor) {
+        public void setEffectColor(@Nullable Color effectColor) {
             update(d -> new BladeStateData(d.translationKey(), d.baseAttackModifier(),
                 d.proudSoul(), d.killCount(), d.refine(), d.broken(), d.sealed(),
                 d.slashArtsKey(), d.defaultBewitched(), d.comboRoot(),
@@ -279,13 +277,12 @@ public class BladeStateAccess {
         }
         
         @Override
-        @Nonnull
         public Vec3 getAdjust() {
             return data().adjust();
         }
         
         @Override
-        public void setAdjust(Vec3 adjust) {
+        public void setAdjust(@Nullable Vec3 adjust) {
             update(d -> new BladeStateData(d.translationKey(), d.baseAttackModifier(),
                 d.proudSoul(), d.killCount(), d.refine(), d.broken(), d.sealed(),
                 d.slashArtsKey(), d.defaultBewitched(), d.comboRoot(),
@@ -295,13 +292,12 @@ public class BladeStateAccess {
         }
         
         @Override
-        @Nonnull
         public Optional<ResourceLocation> getTexture() {
             return data().texture();
         }
         
         @Override
-        public void setTexture(ResourceLocation texture) {
+        public void setTexture(@Nullable ResourceLocation texture) {
             update(d -> new BladeStateData(d.translationKey(), d.baseAttackModifier(),
                 d.proudSoul(), d.killCount(), d.refine(), d.broken(), d.sealed(),
                 d.slashArtsKey(), d.defaultBewitched(), d.comboRoot(),
@@ -310,13 +306,12 @@ public class BladeStateAccess {
         }
         
         @Override
-        @Nonnull
         public Optional<ResourceLocation> getModel() {
             return data().model();
         }
         
         @Override
-        public void setModel(ResourceLocation model) {
+        public void setModel(@Nullable ResourceLocation model) {
             update(d -> new BladeStateData(d.translationKey(), d.baseAttackModifier(),
                 d.proudSoul(), d.killCount(), d.refine(), d.broken(), d.sealed(),
                 d.slashArtsKey(), d.defaultBewitched(), d.comboRoot(),
@@ -327,7 +322,7 @@ public class BladeStateAccess {
         @Override
         public ResourceLocation getComboRoot() {
             ResourceLocation root = data().comboRoot();
-            if (root == null || !ComboStateRegistry.REGISTRY.containsKey(root)) {
+            if (!ComboStateRegistry.REGISTRY.containsKey(root)) {
                 return ComboStateRegistry.STANDBY.getId();
             }
             return root;
@@ -350,7 +345,7 @@ public class BladeStateAccess {
         }
         
         @Override
-        public void setSpecialEffects(ListTag list) {
+        public void setSpecialEffects(@Nullable ListTag list) {
             List<ResourceLocation> result = new ArrayList<>();
             if (list != null) {
                 list.forEach(tag -> {
@@ -474,12 +469,11 @@ public class BladeStateAccess {
         
         @Override
         public ResourceLocation getComboSeq() {
-            ResourceLocation seq = runtime().comboSeq();
-            return seq != null ? seq : ComboStateRegistry.NONE.getId();
+            return runtime().comboSeq();
         }
         
         @Override
-        public void setComboSeq(ResourceLocation comboSeq) {
+        public void setComboSeq(@Nullable ResourceLocation comboSeq) {
             ResourceLocation resolved = comboSeq != null ? comboSeq : ComboStateRegistry.NONE.getId();
             updateRuntime(r -> new BladeRuntimeStateData(resolved, r.lastActionTime(), -1L, r.targetEntityId(), r.onClick(), r.fallDecreaseRate(), r.attackAmplifier()));
         }
@@ -566,7 +560,7 @@ public class BladeStateAccess {
         }
         
         @Override
-        public void deserializeNBT(CompoundTag tag) {
+        public void deserializeNBT(@Nullable CompoundTag tag) {
             if (tag == null) {
                 return;
             }

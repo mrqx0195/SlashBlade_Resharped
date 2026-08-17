@@ -19,11 +19,13 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.LoadingModList;
 import net.neoforged.neoforge.common.NeoForge;
 import org.apache.logging.log4j.LogManager;
@@ -60,7 +62,7 @@ public class SlashBlade {
         SpecialEffectsRegistry.SPECIAL_EFFECT.register(modEventBus);
         SlashBladeDataComponents.COMPONENTS.register(modEventBus);
         
-        if (LoadingModList.get().getModFileById("jei") != null) {
+        if (FMLEnvironment.dist == Dist.CLIENT && LoadingModList.get().getModFileById("jei") != null) {
             modEventBus.addListener(JEICompat::registerClientReloadListener);
         }
     }

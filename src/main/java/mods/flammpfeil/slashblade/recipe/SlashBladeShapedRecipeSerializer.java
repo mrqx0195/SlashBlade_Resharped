@@ -12,7 +12,6 @@ import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.item.crafting.ShapedRecipePattern;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
@@ -30,12 +29,12 @@ public record SlashBladeShapedRecipeSerializer() implements RecipeSerializer<Sla
         ByteBufCodecs.fromCodecWithRegistries(CODEC.codec());
     
     @Override
-    public @NotNull MapCodec<SlashBladeShapedRecipe> codec() {
+    public MapCodec<SlashBladeShapedRecipe> codec() {
         return CODEC;
     }
     
     @Override
-    public @NotNull StreamCodec<RegistryFriendlyByteBuf, SlashBladeShapedRecipe> streamCodec() {
+    public StreamCodec<RegistryFriendlyByteBuf, SlashBladeShapedRecipe> streamCodec() {
         return STREAM_CODEC;
     }
 }

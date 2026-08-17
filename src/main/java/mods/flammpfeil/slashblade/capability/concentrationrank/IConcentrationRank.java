@@ -12,6 +12,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.PacketDistributor;
 
+import javax.annotation.Nullable;
 import java.util.Optional;
 
 public interface IConcentrationRank {
@@ -32,6 +33,7 @@ public interface IConcentrationRank {
             this.level = level;
         }
         
+        @Nullable
         public static ConcentrationRanks getRankFromLevel(float point) {
             return concentrationRanksMap.get(point);
         }
@@ -65,6 +67,7 @@ public interface IConcentrationRank {
         return (long) (ConcentrationRanks.MAX_LEVEL * getUnitCapacity()) - 1;
     }
     
+    @Nullable
     default ConcentrationRanks getRank(long time) {
         return ConcentrationRanks.getRankFromLevel(getRankLevel(time));
     }
@@ -82,15 +85,19 @@ public interface IConcentrationRank {
     default float getRankProgress(long currentTime) {
         float level = getRankLevel(currentTime);
         
-        Range<Float> range = getRank(currentTime).pointRange;
-        
-        double bottom = range.hasLowerBound() ? range.lowerEndpoint() : 0;
-        
-        double top = range.hasUpperBound() ? range.upperEndpoint() : Math.floor(bottom + 1.0f);
-        
-        double len = top - bottom;
-        
-        return (float) ((level - bottom) / len);
+        ConcentrationRanks ranks = getRank(currentTime);
+        if (ranks != null) {
+            Range<Float> range = ranks.pointRange;
+            
+            double bottom = range.hasLowerBound() ? range.lowerEndpoint() : 0;
+            
+            double top = range.hasUpperBound() ? range.upperEndpoint() : Math.floor(bottom + 1.0f);
+            
+            double len = top - bottom;
+            
+            return (float) ((level - bottom) / len);
+        }
+        return 0;
     }
     
     default long getRankPoint(long time) {
@@ -106,7 +113,8 @@ public interface IConcentrationRank {
         this.setRawRankPoint(Math.clamp(point + getRankPoint(time), 0, getMaxCapacity()));
         this.setLastUpdte(time);
         
-        if (oldRank.level < getRank(time).level) {
+        ConcentrationRanks newRank = getRank(time);
+        if (oldRank == null || newRank != null && oldRank.level < newRank.level) {
             this.setLastRankRise(time);
         }
         

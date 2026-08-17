@@ -18,6 +18,7 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 
@@ -84,7 +85,7 @@ public class JudgementCut {
         doJudgementCutSuper(owner, null);
     }
     
-    public static void doJudgementCutSuper(LivingEntity owner, List<Entity> exclude) {
+    public static void doJudgementCutSuper(LivingEntity owner, @Nullable List<Entity> exclude) {
         Level level = owner.level();
         ItemStack stack = owner.getMainHandItem();
         

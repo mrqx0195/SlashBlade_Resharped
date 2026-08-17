@@ -9,7 +9,6 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.SmithingRecipeInput;
-import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("NonExtendableApiUsage")
 public class SlashBladeSmithingCategoryExtension implements ISmithingCategoryExtension<SlashBladeSmithingRecipe> {
@@ -32,7 +31,7 @@ public class SlashBladeSmithingCategoryExtension implements ISmithingCategoryExt
     }
     
     @Override
-    public <T extends IIngredientAcceptor<T>> void setOutput(SlashBladeSmithingRecipe recipe, @NotNull T ingredientAcceptor) {
+    public <T extends IIngredientAcceptor<T>> void setOutput(SlashBladeSmithingRecipe recipe, T ingredientAcceptor) {
         Ingredient templateIngredient = recipe.getTemplate();
         Ingredient baseIngredient = recipe.getBase();
         Ingredient additionIngredient = recipe.getAddition();

@@ -6,7 +6,6 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Block;
-import org.jetbrains.annotations.NotNull;
 
 public class ItemTierSlashBlade implements Tier {
     
@@ -39,12 +38,12 @@ public class ItemTierSlashBlade implements Tier {
     }
     
     @Override
-    public @NotNull TagKey<Block> getIncorrectBlocksForDrops() {
+    public TagKey<Block> getIncorrectBlocksForDrops() {
         return BlockTags.INCORRECT_FOR_IRON_TOOL;
     }
     
     @Override
-    public @NotNull Ingredient getRepairIngredient() {
+    public Ingredient getRepairIngredient() {
         return Ingredient.of(SlashBladeItemTags.PROUD_SOULS);
     }
 }

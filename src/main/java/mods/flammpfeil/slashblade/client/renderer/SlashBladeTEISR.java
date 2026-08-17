@@ -30,7 +30,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 import java.util.EnumSet;
@@ -44,8 +43,8 @@ public class SlashBladeTEISR extends BlockEntityWithoutLevelRenderer {
     }
     
     @Override
-    public void renderByItem(ItemStack itemStackIn, @NotNull ItemDisplayContext type, @NotNull PoseStack matrixStack,
-                             @NotNull MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
+    public void renderByItem(ItemStack itemStackIn, ItemDisplayContext type, PoseStack matrixStack,
+                             MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
         // public void render(ItemStack itemStackIn, MatrixStack matrixStack,
         // IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
         if (!(itemStackIn.getItem() instanceof ItemSlashBlade)) {
@@ -56,8 +55,11 @@ public class SlashBladeTEISR extends BlockEntityWithoutLevelRenderer {
     }
     
     boolean checkRenderNaked() {
-        ItemStack mainHand = BladeModel.user.getMainHandItem();
-        return !(mainHand.getItem() instanceof ItemSlashBlade);
+        if (BladeModel.user != null) {
+            ItemStack mainHand = BladeModel.user.getMainHandItem();
+            return !(mainHand.getItem() instanceof ItemSlashBlade);
+        }
+        return false;
         /*
          * if(ItemSlashBlade.hasScabbardInOffhand(BladeModel.user)) return true;
          *
@@ -198,7 +200,7 @@ public class SlashBladeTEISR extends BlockEntityWithoutLevelRenderer {
         
         if (!(stack.getItem() instanceof ItemSlashBladeDetune)) {
             String key = data.translationKey();
-            if (key != null && !key.isBlank()) {
+            if (!key.isBlank()) {
                 try {
                     ResourceLocation bladeName =
                         ResourceLocation.parse(key.substring(5).replaceFirst(Pattern.quote("."), Matcher.quoteReplacement(":")));
@@ -213,7 +215,10 @@ public class SlashBladeTEISR extends BlockEntityWithoutLevelRenderer {
             }
         }
         if (name != null && !name.isBlank()) {
-            return ResourceLocation.tryParse(name);
+            ResourceLocation resourceLocation = ResourceLocation.tryParse(name);
+            if (resourceLocation != null) {
+                return resourceLocation;
+            }
         }
         return DefaultResources.resourceDefaultModel;
     }
@@ -225,7 +230,7 @@ public class SlashBladeTEISR extends BlockEntityWithoutLevelRenderer {
         
         if (!(stack.getItem() instanceof ItemSlashBladeDetune)) {
             String key = data.translationKey();
-            if (key != null && !key.isBlank()) {
+            if (!key.isBlank()) {
                 try {
                     ResourceLocation bladeName =
                         ResourceLocation.parse(key.substring(5).replaceFirst(Pattern.quote("."), Matcher.quoteReplacement(":")));
@@ -239,7 +244,10 @@ public class SlashBladeTEISR extends BlockEntityWithoutLevelRenderer {
             }
         }
         if (name != null && !name.isBlank()) {
-            return ResourceLocation.tryParse(name);
+            ResourceLocation resourceLocation = ResourceLocation.tryParse(name);
+            if (resourceLocation != null) {
+                return resourceLocation;
+            }
         }
         return DefaultResources.resourceDefaultTexture;
     }
@@ -299,36 +307,38 @@ public class SlashBladeTEISR extends BlockEntityWithoutLevelRenderer {
                         break;
                 }
                 
-                if (type.equals(SlashBladeItems.BLADESTAND_2.get())) {
-                    bladeOffset = new Vec3(0, 21.5f, 0);
-                    if (hFlip) {
-                        sheathOffset = new Vec3(-40, -27, 0);
-                    } else {
-                        sheathOffset = new Vec3(40, -27, 0);
+                if (type != null) {
+                    if (type.equals(SlashBladeItems.BLADESTAND_2.get())) {
+                        bladeOffset = new Vec3(0, 21.5f, 0);
+                        if (hFlip) {
+                            sheathOffset = new Vec3(-40, -27, 0);
+                        } else {
+                            sheathOffset = new Vec3(40, -27, 0);
+                        }
+                        sheathOffsetBaseRot = -4;
+                    } else if (type.equals(SlashBladeItems.BLADESTAND_V.get())) {
+                        bladeOffset = new Vec3(-100, 230, 0);
+                        sheathOffset = new Vec3(-100, 230, 0);
+                        bladeOffsetRot = 80;
+                        sheathOffsetRot = 80;
+                    } else if (type.equals(SlashBladeItems.BLADESTAND_S.get())) {
+                        if (hFlip) {
+                            bladeOffset = new Vec3(60, -25, 0);
+                            sheathOffset = new Vec3(60, -25, 0);
+                        } else {
+                            bladeOffset = new Vec3(-60, -25, 0);
+                            sheathOffset = new Vec3(-60, -25, 0);
+                        }
+                    } else if (type.equals(SlashBladeItems.BLADESTAND_1_W.get())) {
+                    } else if (type.equals(SlashBladeItems.BLADESTAND_2_W.get())) {
+                        bladeOffset = new Vec3(0, 21.5f, 0);
+                        if (hFlip) {
+                            sheathOffset = new Vec3(-40, -27, 0);
+                        } else {
+                            sheathOffset = new Vec3(40, -27, 0);
+                        }
+                        sheathOffsetBaseRot = -4;
                     }
-                    sheathOffsetBaseRot = -4;
-                } else if (type.equals(SlashBladeItems.BLADESTAND_V.get())) {
-                    bladeOffset = new Vec3(-100, 230, 0);
-                    sheathOffset = new Vec3(-100, 230, 0);
-                    bladeOffsetRot = 80;
-                    sheathOffsetRot = 80;
-                } else if (type.equals(SlashBladeItems.BLADESTAND_S.get())) {
-                    if (hFlip) {
-                        bladeOffset = new Vec3(60, -25, 0);
-                        sheathOffset = new Vec3(60, -25, 0);
-                    } else {
-                        bladeOffset = new Vec3(-60, -25, 0);
-                        sheathOffset = new Vec3(-60, -25, 0);
-                    }
-                } else if (type.equals(SlashBladeItems.BLADESTAND_1_W.get())) {
-                } else if (type.equals(SlashBladeItems.BLADESTAND_2_W.get())) {
-                    bladeOffset = new Vec3(0, 21.5f, 0);
-                    if (hFlip) {
-                        sheathOffset = new Vec3(-40, -27, 0);
-                    } else {
-                        sheathOffset = new Vec3(40, -27, 0);
-                    }
-                    sheathOffsetBaseRot = -4;
                 }
             }
         }

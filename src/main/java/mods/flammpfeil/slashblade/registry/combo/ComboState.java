@@ -12,6 +12,7 @@ import mods.flammpfeil.slashblade.util.AdvancementHelper;
 import mods.flammpfeil.slashblade.util.TimeValueHelper;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
@@ -29,6 +30,8 @@ import java.util.function.Function;
 public class ComboState {
     public static final ResourceKey<Registry<ComboState>> REGISTRY_KEY = ResourceKey
         .createRegistryKey(ResourceLocation.fromNamespaceAndPath(SlashBlade.MODID, "combo_state"));
+    public static final TimeLineTickAction EMPTY_TICK_ACTION = TimeLineTickAction.getBuilder().build();
+    public static final String LAST_PROCESSED_TICK_KEY = SlashBlade.MODID + ".lastProcessedTick";
     
     private final ResourceLocation motionLoc;
     
@@ -107,6 +110,7 @@ public class ComboState {
         return this.releaseAction.apply(user, elapsed);
     }
     
+    @Nullable
     public static ResourceLocation getRegistryKey(ComboState state) {
         return ComboStateRegistry.REGISTRY.getKey(state);
     }
@@ -211,7 +215,7 @@ public class ComboState {
         }
     }
     
-    public static class TimeLineTickAction implements Consumer<LivingEntity> {
+    public static class TimeLineTickAction implements TickAction {
         public static TimeLineTickActionBuilder getBuilder() {
             return new TimeLineTickActionBuilder();
         }
@@ -238,9 +242,20 @@ public class ComboState {
         @Override
         public void accept(LivingEntity livingEntity) {
             int elapsed = (int) getElapsed(livingEntity);
-            Consumer<LivingEntity> action = timeLine.get(elapsed);
-            if (action != null) {
-                action.accept(livingEntity);
+            CompoundTag persistentData = livingEntity.getPersistentData();
+            
+            int lastProcessedTick = persistentData.getInt(LAST_PROCESSED_TICK_KEY);
+            if (lastProcessedTick > elapsed) {
+                return;
+            }
+            
+            while (lastProcessedTick <= elapsed) {
+                Consumer<LivingEntity> action = timeLine.get(lastProcessedTick);
+                if (action != null) {
+                    action.accept(livingEntity);
+                    persistentData.putInt(LAST_PROCESSED_TICK_KEY, elapsed + 1);
+                }
+                lastProcessedTick++;
             }
         }
     }
@@ -279,10 +294,10 @@ public class ComboState {
             this.loop = false;
             this.aerial = false;
             this.next = entity -> SlashBlade.prefix("none");
-            this.tickAction = ArrowReflector::doTicks;
+            this.nextOfTimeout = entity -> SlashBlade.prefix("none");
+            this.tickAction = EMPTY_TICK_ACTION.andThen(ArrowReflector::doTicks);
             this.releaseAction = (u, e) -> SlashArts.ArtsType.Fail;
-            this.holdAction = (a) -> {
-            };
+            this.holdAction = EMPTY_TICK_ACTION;
             this.hitEffect = (a, b) -> {
             };
             this.clickAction = (user) -> {
@@ -372,6 +387,22 @@ public class ComboState {
             this.rotationKeyframes.put(tick, yawDegrees);
             return this;
         }
-        
+    }
+    
+    public interface TickAction extends Consumer<LivingEntity> {
+        @Override
+        default TickAction andThen(Consumer<? super LivingEntity> after) {
+            return (LivingEntity livingEntity) -> {
+                if (after instanceof TimeLineTickAction) {
+                    CompoundTag persistentData = livingEntity.getPersistentData();
+                    int lastProcessedTick = persistentData.getInt(LAST_PROCESSED_TICK_KEY);
+                    accept(livingEntity);
+                    persistentData.putInt(LAST_PROCESSED_TICK_KEY, lastProcessedTick);
+                } else {
+                    accept(livingEntity);
+                }
+                after.accept(livingEntity);
+            };
+        }
     }
 }

@@ -16,7 +16,6 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.List;
@@ -41,12 +40,12 @@ public class ProudsoulShapelessRecipe extends ShapelessRecipe {
     public static final RecipeSerializer<ProudsoulShapelessRecipe> SERIALIZER = new ProudsoulShapelessRecipe.Serializer();
     
     @Override
-    public @NotNull RecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<?> getSerializer() {
         return SERIALIZER;
     }
     
     @Override
-    public @NotNull ItemStack assemble(@NotNull CraftingInput input, @NotNull HolderLookup.Provider access) {
+    public ItemStack assemble(CraftingInput input, HolderLookup.Provider access) {
         ItemStack result = super.assemble(input, access);
         HolderLookup.RegistryLookup<Enchantment> lookup = access.lookupOrThrow(Registries.ENCHANTMENT);
         ItemEnchantments.Mutable all = new ItemEnchantments.Mutable(ItemEnchantments.EMPTY);
@@ -71,7 +70,7 @@ public class ProudsoulShapelessRecipe extends ShapelessRecipe {
     }
     
     @Override
-    public boolean matches(@NotNull CraftingInput input, @NotNull Level level) {
+    public boolean matches(CraftingInput input, Level level) {
         boolean result = super.matches(input, level);
         
         if (result) {
@@ -125,12 +124,12 @@ public class ProudsoulShapelessRecipe extends ShapelessRecipe {
             ByteBufCodecs.fromCodecWithRegistries(CODEC.codec());
         
         @Override
-        public @NotNull MapCodec<ProudsoulShapelessRecipe> codec() {
+        public MapCodec<ProudsoulShapelessRecipe> codec() {
             return CODEC;
         }
         
         @Override
-        public @NotNull StreamCodec<RegistryFriendlyByteBuf, ProudsoulShapelessRecipe> streamCodec() {
+        public StreamCodec<RegistryFriendlyByteBuf, ProudsoulShapelessRecipe> streamCodec() {
             return STREAM_CODEC;
         }
     }

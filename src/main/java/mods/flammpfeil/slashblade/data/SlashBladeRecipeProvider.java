@@ -28,7 +28,6 @@ import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.conditions.IConditionBuilder;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -41,7 +40,7 @@ public class SlashBladeRecipeProvider extends RecipeProvider implements IConditi
     }
     
     @Override
-    protected void buildRecipes(@NotNull RecipeOutput output) {
+    protected void buildRecipes(RecipeOutput output) {
         SlashBladeSmithingRecipeBuilder
             .smithing(Ingredient.of(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE),
                 SlashBladeIngredient.of(RequestDefinition.Builder.newInstance()

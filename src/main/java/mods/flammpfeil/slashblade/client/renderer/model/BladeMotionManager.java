@@ -7,7 +7,7 @@ import jp.nyatla.nymmd.MmdException;
 import jp.nyatla.nymmd.MmdVmdMotionMc;
 import mods.flammpfeil.slashblade.SlashBlade;
 import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.concurrent.Executors;
@@ -18,52 +18,55 @@ import static mods.flammpfeil.slashblade.init.DefaultResources.ExMotionLocation;
  * Created by Furia on 2016/02/06.
  */
 public class BladeMotionManager {
-
+    
     private static final class SingletonHolder {
         private static final BladeMotionManager instance = new BladeMotionManager();
     }
-
+    
     public static BladeMotionManager getInstance() {
         return SingletonHolder.instance;
     }
-
+    
+    @Nullable
     MmdVmdMotionMc defaultMotion;
-
+    
     LoadingCache<ResourceLocation, MmdVmdMotionMc> cache;
-
+    
     private BladeMotionManager() {
         try {
             defaultMotion = new MmdVmdMotionMc(ExMotionLocation);
         } catch (IOException | MmdException e) {
             SlashBlade.LOGGER.warn(e);
         }
-
+        
         cache = CacheBuilder.newBuilder()
-                .build(CacheLoader.asyncReloading(new CacheLoader<>() {
-                    @Override
-                    public @NotNull MmdVmdMotionMc load(@NotNull ResourceLocation key) {
-                        try {
-                            return new MmdVmdMotionMc(key);
-                        } catch (Exception e) {
-                            SlashBlade.LOGGER.warn(e);
-                            return defaultMotion;
-                        }
+            .build(CacheLoader.asyncReloading(new CacheLoader<>() {
+                @SuppressWarnings("DataFlowIssue")
+                @Override
+                public MmdVmdMotionMc load(ResourceLocation key) {
+                    try {
+                        return new MmdVmdMotionMc(key);
+                    } catch (Exception e) {
+                        SlashBlade.LOGGER.warn(e);
+                        return defaultMotion;
                     }
-
-                }, Executors.newCachedThreadPool()));
+                }
+                
+            }, Executors.newCachedThreadPool()));
     }
-
+    
     public void reload() {
         cache.invalidateAll();
-
+        
         try {
             defaultMotion = new MmdVmdMotionMc(ExMotionLocation);
         } catch (IOException | MmdException e) {
             SlashBlade.LOGGER.warn(e);
         }
     }
-
-    public MmdVmdMotionMc getMotion(ResourceLocation loc) {
+    
+    @Nullable
+    public MmdVmdMotionMc getMotion(@Nullable ResourceLocation loc) {
         if (loc != null) {
             try {
                 return cache.get(loc);
@@ -73,5 +76,5 @@ public class BladeMotionManager {
         }
         return defaultMotion;
     }
-
+    
 }

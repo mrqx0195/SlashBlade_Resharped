@@ -14,7 +14,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.neoforged.neoforge.common.util.Lazy;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -27,23 +26,23 @@ public class SAIngredient implements IIngredientType<SlashArts>, IIngredientHelp
     public static final Lazy<ItemStack> RENDER_ITEM = Lazy.of(() -> SlashBladeItems.PROUDSOUL_SPHERE.get().getDefaultInstance());
     
     @Override
-    public @NotNull IIngredientType<SlashArts> getIngredientType() {
+    public IIngredientType<SlashArts> getIngredientType() {
         return INSTANCE;
     }
     
     @Override
-    public @NotNull String getDisplayName(SlashArts slashArts) {
+    public String getDisplayName(SlashArts slashArts) {
         return slashArts.getDescription().getString();
     }
     
     @Override
-    public boolean hasSubtypes(@NotNull SlashArts ingredient) {
+    public boolean hasSubtypes(SlashArts ingredient) {
         return true;
     }
     
     @SuppressWarnings("removal")
     @Override
-    public @NotNull String getUniqueId(@NotNull SlashArts slashArts, @NotNull UidContext uidContext) {
+    public String getUniqueId(SlashArts slashArts, UidContext uidContext) {
         ResourceLocation key = SlashArtsRegistry.REGISTRY.getKey(slashArts);
         if (key == null) {
             throw new NullPointerException("Key of SlashArts " + slashArts + " is null!");
@@ -52,7 +51,7 @@ public class SAIngredient implements IIngredientType<SlashArts>, IIngredientHelp
     }
     
     @Override
-    public @NotNull ResourceLocation getResourceLocation(@NotNull SlashArts slashArts) {
+    public ResourceLocation getResourceLocation(SlashArts slashArts) {
         ResourceLocation key = SlashArtsRegistry.REGISTRY.getKey(slashArts);
         if (key == null) {
             throw new NullPointerException("Key of SlashArts " + slashArts + " is null!");
@@ -61,28 +60,28 @@ public class SAIngredient implements IIngredientType<SlashArts>, IIngredientHelp
     }
     
     @Override
-    public @NotNull SlashArts copyIngredient(@NotNull SlashArts slashArts) {
+    public SlashArts copyIngredient(SlashArts slashArts) {
         return slashArts;
     }
     
     @Override
-    public @NotNull String getErrorInfo(@Nullable SlashArts slashArts) {
+    public String getErrorInfo(@Nullable SlashArts slashArts) {
         return "SA Ingredient Error";
     }
     
     @Override
-    public void render(GuiGraphics guiGraphics, @NotNull SlashArts slashArts) {
+    public void render(GuiGraphics guiGraphics, SlashArts slashArts) {
         guiGraphics.renderItem(RENDER_ITEM.get(), 0, 0);
         Decoration.renderSADecorator(guiGraphics, Minecraft.getInstance().font, slashArts);
     }
     
     @Override
-    public @NotNull List<Component> getTooltip(SlashArts slashArts, @NotNull TooltipFlag tooltipFlag) {
+    public List<Component> getTooltip(SlashArts slashArts, TooltipFlag tooltipFlag) {
         return List.of(slashArts.getDescription());
     }
     
     @Override
-    public @NotNull Class<? extends SlashArts> getIngredientClass() {
+    public Class<? extends SlashArts> getIngredientClass() {
         return SlashArts.class;
     }
 }

@@ -13,13 +13,17 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
+import org.jetbrains.annotations.Nullable;
 
 public class SakuraEnd {
+    @Nullable
     public static EntitySlashEffect doSlash(LivingEntity playerIn, float roll, Vec3 centerOffset, boolean mute,
                                             boolean critical, double damage) {
         return doSlash(playerIn, roll, centerOffset, mute, critical, damage, KnockBacks.cancel);
     }
     
+    
+    @Nullable
     public static EntitySlashEffect doSlash(LivingEntity playerIn, float roll, Vec3 centerOffset, boolean mute,
                                             boolean critical, double damage, KnockBacks knockback) {
         
@@ -29,6 +33,8 @@ public class SakuraEnd {
         return doSlash(playerIn, roll, colorCode, centerOffset, mute, critical, damage, knockback);
     }
     
+    
+    @Nullable
     public static EntitySlashEffect doSlash(LivingEntity playerIn, float roll, int colorCode, Vec3 centerOffset,
                                             boolean mute, boolean critical, double damage, KnockBacks knockback) {
         

@@ -138,7 +138,10 @@ dependencies {
     compileOnly           "org.projectlombok:lombok:1.18.38"
     annotationProcessor   "org.projectlombok:lombok:1.18.38"
 
-    implementation "curse.maven:accelerated-rendering-1314021:7342942"
+    // 1.0.8 加速渲染
+    compileOnly "curse.maven:accelerated-rendering-1314021:7342942"
+    // 1.8.12 iris
+    compileOnly "curse.maven:irisshaders-455508:6661598"
 
     implementation "dev.kosmx.player-anim:player-animation-lib-forge:${project.player_anim}"
 
@@ -187,22 +190,16 @@ java {
     withSourcesJar()
 }
 
-def hasCustomLoc = project.hasProperty('maven_loc')
-def hasDefaultLoc = project.hasProperty('default_maven_loc')
-def defaultFolder = hasDefaultLoc ? file(project.property('default_maven_loc').toString()) : null
-
-if (hasCustomLoc || (defaultFolder != null && defaultFolder.exists())) {
-    publishing {
-        publications {
-            register('mavenJava', MavenPublication) {
-                artifact jar
-            }
+publishing {
+    publications {
+        register('mavenJava', MavenPublication) {
+            artifact jar
         }
+    }
 
-        repositories {
-            maven {
-                url = hasCustomLoc ? "file://${project.property('maven_loc')}" : defaultFolder.toURI()
-            }
+    repositories {
+        maven {
+            url "file://${maven_loc}"
         }
     }
 }

@@ -2,9 +2,11 @@ package mods.flammpfeil.slashblade.client.renderer.model;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import mods.flammpfeil.slashblade.SlashBlade;
 import mods.flammpfeil.slashblade.capability.slashblade.BladeStateAccess;
 import mods.flammpfeil.slashblade.client.renderer.layers.LayerMainBlade;
 import mods.flammpfeil.slashblade.client.renderer.util.MSAutoCloser;
+import net.irisshaders.iris.Iris;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -15,13 +17,17 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModList;
 
 import javax.annotation.Nullable;
 
 public class BladeFirstPersonRender {
     @Nullable
     private LayerMainBlade<LocalPlayer, ?> layer = null;
-    
+
+    private final boolean isIrisLoaded = ModList.get().isLoaded("iris");
+
     private BladeFirstPersonRender() {
         initLayer();
     }
@@ -80,7 +86,15 @@ public class BladeFirstPersonRender {
             me.normal().identity();
             
             float partialTicks = mc.getTimer().getGameTimeDeltaPartialTick(false);
-            matrixStack.mulPose(Axis.YP.rotationDegrees(180.0F - Mth.lerp(partialTicks, player.yRotO, player.getYRot())));
+            float yaw = Mth.lerp(partialTicks, player.yRotO, player.getYRot());
+            
+            // 这里顺序不要乱动，Java的“短路与”检测机制在不加载iris时isIrisLoaded为false，后续的Iris.isPackInUseQuick()直接不会被调用，从而避免了NoClassDefFoundError
+            if (isIrisLoaded && Iris.isPackInUseQuick()) {
+                matrixStack.mulPose(Axis.XP.rotationDegrees(player.getXRot()));
+                matrixStack.mulPose(Axis.YP.rotationDegrees(yaw + 180.0F));
+            }
+            
+            matrixStack.mulPose(Axis.YP.rotationDegrees(180.0F - yaw));
             
             matrixStack.translate(0.0f, 0.0f, -0.5f);
             matrixStack.mulPose(Axis.ZP.rotationDegrees(180.0f));

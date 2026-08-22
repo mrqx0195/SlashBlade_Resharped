@@ -24,7 +24,7 @@ public class EntityDrawable implements IDrawable {
     public final EntityType<?> entityType;
     @Nullable
     public final LivingEntity renderEntity;
-    
+
     public EntityDrawable(EntityType<?> entityType) {
         this.entityType = entityType;
         if (!ENTITY_CACHE.containsKey(entityType)) {
@@ -34,23 +34,24 @@ public class EntityDrawable implements IDrawable {
         }
         renderEntity = ENTITY_CACHE.get(entityType);
     }
-    
+
     @Override
     public int getWidth() {
         return 0;
     }
-    
+
     @Override
     public int getHeight() {
         return 0;
     }
-    
+
     @Override
     public void draw(GuiGraphics guiGraphics, int xOffset, int yOffset) {
         if (renderEntity != null) {
+            guiGraphics.pose().pushPose();
+
             AABB box = renderEntity.getBoundingBox();
-            
-            guiGraphics.pose().translate(35, 0, 0);
+
             var data = ShowEntityListener.getShowData(entityType);
             int scale;
             if (data != null) {
@@ -59,7 +60,7 @@ public class EntityDrawable implements IDrawable {
             } else {
                 scale = (int) Math.min(120 / box.getXsize(), 50 / box.getYsize());
             }
-            
+
             Minecraft minecraft = Minecraft.getInstance();
             Window window = minecraft.getWindow();
             float xMouse = (float) minecraft.mouseHandler.xpos() * window.getGuiScaledWidth() / window.getScreenWidth();
@@ -82,12 +83,16 @@ public class EntityDrawable implements IDrawable {
             float f9 = renderEntity.getScale();
             Vector3f vector3f = new Vector3f(0.0F, renderEntity.getBbHeight() / 2.0F, 0.0F);
             float f10 = (float) scale / f9;
-            InventoryScreen.renderEntityInInventory(guiGraphics, 0, 60, f10, vector3f, quaternionf, quaternionf1, renderEntity);
+
+            InventoryScreen.renderEntityInInventory(guiGraphics, xOffset, yOffset, f10, vector3f, quaternionf, quaternionf1, renderEntity);
+
             renderEntity.yBodyRot = f4;
             renderEntity.setYRot(f5);
             renderEntity.setXRot(f6);
             renderEntity.yHeadRotO = f7;
             renderEntity.yHeadRot = f8;
+
+            guiGraphics.pose().popPose();
         }
     }
 }

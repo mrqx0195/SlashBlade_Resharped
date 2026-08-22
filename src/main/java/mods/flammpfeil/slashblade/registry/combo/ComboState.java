@@ -249,19 +249,14 @@ public class ComboState {
                 return;
             }
             
-            if (timeLine.isEmpty()) {
-                persistentData.putInt(LAST_PROCESSED_TICK_KEY, elapsed + 1);
-                return;
-            }
-            
             while (lastProcessedTick <= elapsed) {
                 Consumer<LivingEntity> action = timeLine.get(lastProcessedTick);
                 if (action != null) {
                     action.accept(livingEntity);
+                    persistentData.putInt(LAST_PROCESSED_TICK_KEY, elapsed + 1);
                 }
                 lastProcessedTick++;
             }
-            persistentData.putInt(LAST_PROCESSED_TICK_KEY, elapsed + 1);
         }
     }
     
@@ -363,13 +358,28 @@ public class ComboState {
             return this;
         }
         
+        public Builder setHoldAction(Consumer<LivingEntity> holdAction) {
+            this.holdAction = holdAction;
+            return this;
+        }
+        
         public Builder addHoldAction(Consumer<LivingEntity> holdAction) {
             this.holdAction = this.holdAction.andThen(holdAction);
             return this;
         }
         
+        public Builder setTickAction(Consumer<LivingEntity> tickAction) {
+            this.tickAction = tickAction;
+            return this;
+        }
+        
         public Builder addTickAction(Consumer<LivingEntity> tickAction) {
             this.tickAction = this.tickAction.andThen(tickAction);
+            return this;
+        }
+        
+        public Builder setHitEffect(BiConsumer<LivingEntity, LivingEntity> hitEffect) {
+            this.hitEffect = hitEffect;
             return this;
         }
         
@@ -383,8 +393,13 @@ public class ComboState {
             return this;
         }
         
-        public Builder releaseAction(BiFunction<LivingEntity, Integer, SlashArts.ArtsType> clickAction) {
-            this.releaseAction = clickAction;
+        public Builder addClickAction(Consumer<LivingEntity> clickAction) {
+            this.clickAction = this.clickAction.andThen(clickAction);
+            return this;
+        }
+        
+        public Builder releaseAction(BiFunction<LivingEntity, Integer, SlashArts.ArtsType> releaseAction) {
+            this.releaseAction = releaseAction;
             return this;
         }
         

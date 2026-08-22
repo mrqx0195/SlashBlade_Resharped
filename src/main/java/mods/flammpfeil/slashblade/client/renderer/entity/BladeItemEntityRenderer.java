@@ -46,10 +46,11 @@ public class BladeItemEntityRenderer extends ItemEntityRenderer {
                 
                 EnumSet<SwordType> types = SwordType.from(current);
                 itemIn.getPersistentData();
-                ResourceLocation modelLocation = BladeStateAccess.of(current)
-                    .map((state) -> state.getModel().orElseGet(bladeItem::getModel)).orElseGet(bladeItem::getModel);
-                ResourceLocation textureLocation = BladeStateAccess.of(current)
-                    .map((state) -> state.getTexture().orElseGet(bladeItem::getTexture))
+                var state = BladeStateAccess.of(current);
+                ResourceLocation modelLocation = state
+                    .map((s) -> s.getModel().orElseGet(bladeItem::getModel)).orElseGet(bladeItem::getModel);
+                ResourceLocation textureLocation = state
+                    .map((s) -> s.getTexture().orElseGet(bladeItem::getTexture))
                     .orElseGet(bladeItem::getTexture);
                 
                 WavefrontObject model = BladeModelManager.getInstance().getModel(modelLocation);

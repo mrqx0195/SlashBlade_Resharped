@@ -452,12 +452,13 @@ public interface ISlashBladeState {
             while (!current.equals(ComboStateRegistry.NONE.getId()) && currentCS.getTimeoutMS() < time) {
                 time -= currentCS.getTimeoutMS();
                 
-                var event = new SlashBladeEvent.NextOfTimeOutComboEvent(user.getMainHandItem(), this, user, currentCS.getNextOfTimeout(user));
-                NeoForge.EVENT_BUS.post(event);
-                current = event.getNextCombo();
-                
                 if (updateState) {
+                    var event = new SlashBladeEvent.NextOfTimeOutComboEvent(user.getMainHandItem(), this, user, currentCS.getNextOfTimeout(user));
+                    NeoForge.EVENT_BUS.post(event);
+                    current = event.getNextCombo();
                     this.updateComboSeq(user, current);
+                } else {
+                    current = currentCS.getNextOfTimeout(user);
                 }
                 currentCS = ComboStateRegistry.REGISTRY.get(current);
                 if (currentCS == null) {

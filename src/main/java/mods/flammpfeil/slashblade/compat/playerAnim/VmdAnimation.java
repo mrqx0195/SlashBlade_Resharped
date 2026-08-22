@@ -53,6 +53,8 @@ public class VmdAnimation implements IAnimation {
     }
     
     int currentTick;
+    private int lastCachedTick = -1;
+    private float lastCachedPartial = -1.0f;
     
     final ResourceLocation loc;
     double start;
@@ -291,6 +293,13 @@ public class VmdAnimation implements IAnimation {
             return;
         }
         
+        if (this.currentTick == this.lastCachedTick
+            && Float.floatToIntBits(tickDelta) == Float.floatToIntBits(this.lastCachedPartial)) {
+            return;
+        }
+        this.lastCachedTick = this.currentTick;
+        this.lastCachedPartial = tickDelta;
+
         MmdMotionPlayerGL2 mmp = motionPlayer;
         
         double eofTime = 0;
@@ -302,6 +311,8 @@ public class VmdAnimation implements IAnimation {
             } catch (Exception e) {
                 SlashBlade.LOGGER.warn(e);
             }
+        } else if (!mmp.hasVmdMotion()) {
+            return;
         }
         
         double time = TimeValueHelper.getMSecFromTicks((float) (currentTick + (double) tickDelta));
@@ -309,7 +320,7 @@ public class VmdAnimation implements IAnimation {
         time = TimeValueHelper.getMSecFromFrames((float) start) + time;
         
         try {
-            mmp.updateMotion((float) time);
+            mmp.updateMotionBonesOnly((float) time);
         } catch (MmdException e) {
             SlashBlade.LOGGER.warn(e);
         }

@@ -228,7 +228,7 @@
   "slash_art.slashblade.drive_horizontal.desc": "在面朝方向上使用斩击，并释放一道幻影刃，对路径上的敌人造成一次魔法伤害。",
   "slash_art.slashblade.wave_edge.desc": "在面朝方向上使用居合斩，并中释放多道幻影刃，对路径上的敌人造成多次魔法伤害。",
   "slash_art.slashblade.piercing.desc": "短暂蓄力后，向前突刺，对路径上的敌人造成一次物理伤害；通过剑技‘快速释放’释放时，会直接向前进行一次短距离突刺",
-  "se.slashblade.wither_edge.desc": "如果玩家当前经验等级未达到需求经验等级，`会给予自身 5 秒的凋零 II。\n如果玩家当前经验等级达到了需求经验等级，则会给予攻击的目标 5 秒的凋零 II。",
+  "se.slashblade.wither_edge.desc": "如果玩家当前经验等级未达到需求经验等级，会给予自身 5 秒的凋零 II。\n如果玩家当前经验等级达到了需求经验等级，则会给予攻击的目标 5 秒的凋零 II。",
 
   "slashblade.koseki.desc": "将无铭「无名」放置在刀挂台上,让其被凋灵生成的爆炸波及，无铭即可转换成枯石大刀。"
 }

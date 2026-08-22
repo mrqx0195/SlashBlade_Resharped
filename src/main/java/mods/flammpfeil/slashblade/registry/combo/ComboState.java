@@ -393,15 +393,20 @@ public class ComboState {
         @Override
         default TickAction andThen(Consumer<? super LivingEntity> after) {
             return (LivingEntity livingEntity) -> {
+                CompoundTag persistentData = livingEntity.getPersistentData();
+                int lastProcessedTick = persistentData.getInt(LAST_PROCESSED_TICK_KEY);
+                int lastProcessedTick2 = lastProcessedTick;
                 if (after instanceof TimeLineTickAction) {
-                    CompoundTag persistentData = livingEntity.getPersistentData();
-                    int lastProcessedTick = persistentData.getInt(LAST_PROCESSED_TICK_KEY);
                     accept(livingEntity);
+                    lastProcessedTick2 = persistentData.getInt(LAST_PROCESSED_TICK_KEY);
                     persistentData.putInt(LAST_PROCESSED_TICK_KEY, lastProcessedTick);
                 } else {
                     accept(livingEntity);
                 }
                 after.accept(livingEntity);
+                if (persistentData.getInt(LAST_PROCESSED_TICK_KEY) == lastProcessedTick) {
+                    persistentData.putInt(LAST_PROCESSED_TICK_KEY, lastProcessedTick2);
+                }
             };
         }
     }

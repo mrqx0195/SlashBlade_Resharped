@@ -358,8 +358,8 @@ public class BlandStandEventHandler {
         var bladeStand = event.getBladeStand();
         var enchantmentLookup = player.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
         ItemEnchantments.Mutable enchantments = new ItemEnchantments.Mutable(EnchantmentHelper.getEnchantmentsForCrafting(blade));
-        boolean[] hasEnchantmentChanges = {false};
-        
+        boolean hasEnchantmentChanges = false;
+
         AtomicInteger totalShrinkCount = new AtomicInteger(0);
         if (!player.isCreative()) {
             totalShrinkCount.set(1);
@@ -398,9 +398,11 @@ public class BlandStandEventHandler {
             }
             
             totalShrinkCount.set(e.getTotalShrinkCount());
-            
-            enchantments.set(e.getEnchantment(), e.getEnchantLevel());
-            hasEnchantmentChanges[0] = true;
+
+            if (random.nextFloat() <= e.getProbability()) {
+                enchantments.set(e.getEnchantment(), e.getEnchantLevel());
+                hasEnchantmentChanges = true;
+            }
             
             if (!e.willTryNextEnchant()) {
                 event.setCanceled(true);
@@ -412,9 +414,9 @@ public class BlandStandEventHandler {
             return;
         }
         stack.shrink(totalShrinkCount.get());
-        
+
         EnchantmentHelper.setEnchantments(blade, enchantments.toImmutable());
-        if (hasEnchantmentChanges[0]) {
+        if (hasEnchantmentChanges) {
             spawnSucceedEffects(world, bladeStand, random);
         }
         
@@ -439,23 +441,6 @@ public class BlandStandEventHandler {
                 }
             }
             if (!flag) {
-                event.setCanceled(true);
-            }
-        }
-    }
-    
-    @SubscribeEvent
-    public static void proudSoulEnchantmentProbabilityCheck(ProudSoulEnchantmentEvent event) {
-        SlashBladeEvent.BladeStandAttackEvent oriEvent = event.getOriginalEvent();
-        if (oriEvent == null) {
-            return;
-        }
-        Player player = (Player) oriEvent.getDamageSource().getEntity();
-        if (player != null) {
-            Level world = player.level();
-            RandomSource random = world.getRandom();
-            
-            if (random.nextFloat() > event.getProbability()) {
                 event.setCanceled(true);
             }
         }

@@ -50,7 +50,7 @@ neoForge {
         gameTestServer {
             type = "gameTestServer"
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
-            
+
         }
 
         data {
@@ -150,7 +150,7 @@ dependencies {
     runtimeOnly "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
 
     compileOnly "dev.emi:emi-neoforge:${emi_version}"
-    runtimeOnly "dev.emi:emi-neoforge:${emi_version}"
+    //runtimeOnly "dev.emi:emi-neoforge:${emi_version}"
 
     implementation "curse.maven:the-twilight-forest-227639:7797302"
     
@@ -160,7 +160,7 @@ dependencies {
 tasks.named('processResources', ProcessResources).configure {
     var replaceProperties = [
             minecraft_version: minecraft_version, minecraft_version_range: minecraft_version_range,
-            loader_version_range:loader_version_range, 
+            loader_version_range:loader_version_range,
             neo_version: neo_version, neo_version_range: neo_version_range,
             mod_id: mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: mod_version,
             mod_authors: mod_authors, mod_description: mod_description,
@@ -190,16 +190,22 @@ java {
     withSourcesJar()
 }
 
-publishing {
-    publications {
-        register('mavenJava', MavenPublication) {
-            artifact jar
-        }
-    }
+def hasCustomLoc = project.hasProperty('maven_loc')
+def hasDefaultLoc = project.hasProperty('default_maven_loc')
+def defaultFolder = hasDefaultLoc ? file(project.property('default_maven_loc').toString()) : null
 
-    repositories {
-        maven {
-            url "file://${maven_loc}"
+if (hasCustomLoc || (defaultFolder != null && defaultFolder.exists())) {
+    publishing {
+        publications {
+            register('mavenJava', MavenPublication) {
+                artifact jar
+            }
+        }
+
+        repositories {
+            maven {
+                url = hasCustomLoc ? "file://${project.property('maven_loc')}" : defaultFolder.toURI()
+            }
         }
     }
 }

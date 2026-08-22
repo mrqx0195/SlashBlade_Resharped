@@ -9,13 +9,13 @@ package mods.flammpfeil.slashblade.event.ability;
 import lombok.Getter;
 import mods.flammpfeil.slashblade.util.InputCommand;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
+
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.ICancellableEvent;
 
 import java.util.EnumSet;
 
-@Cancelable
-public class SprintMoveEvent extends Event {
+public class SprintMoveEvent extends Event implements ICancellableEvent {
 	@Getter
 	private final ServerPlayer player;
 	private final EnumSet<InputCommand> currentCommands;

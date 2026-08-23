@@ -63,7 +63,12 @@ public class AttackHelper {
         } else {
             damageSource = attacker.damageSources().mobAttack(attacker);
         }
-        
+
+        if (attacker.level() instanceof ServerLevel serverLevel) {
+            baseDamage = EnchantmentHelper.modifyDamage(serverLevel, attacker.getMainHandItem(), target, damageSource,
+		            (float) baseDamage);
+        }
+
         boolean damageSuccess = target.hurt(damageSource, (float) baseDamage);
         
         if (damageSuccess) {
@@ -85,7 +90,6 @@ public class AttackHelper {
         
         baseDamage += getSweepingBonus(attacker);
         baseDamage += getRankBonus(attacker);
-        baseDamage += getEnchantmentBonus(attacker, target);
         baseDamage *= comboRatio * getSlashBladeDamageScale(attacker) * SLASHBLADE_DAMAGE_MULTIPLIER.get();
         
         if (attacker instanceof Player player) {
@@ -125,24 +129,6 @@ public class AttackHelper {
             }
         }
         return (float) rankDamageBonus;
-    }
-    
-    /**
-     * 杀手类附魔加成(杀死类附魔攻击对应的生物加成2.5 * 附魔等级)
-     */
-    public static float getEnchantmentBonus(LivingEntity attacker, Entity target) {
-        float bonus = 0;
-        var enchLookup = attacker.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
-        var sharpness = enchLookup.getOrThrow(Enchantments.SHARPNESS);
-        var smite = enchLookup.getOrThrow(Enchantments.SMITE);
-        var baneOfArthropods = enchLookup.getOrThrow(Enchantments.BANE_OF_ARTHROPODS);
-        ItemStack held = attacker.getMainHandItem();
-        bonus += EnchantmentHelper.getTagEnchantmentLevel(sharpness, held) * 1.25F;
-        if (target instanceof LivingEntity) {
-            bonus += EnchantmentHelper.getTagEnchantmentLevel(smite, held) * 2.5F;
-            bonus += EnchantmentHelper.getTagEnchantmentLevel(baneOfArthropods, held) * 2.5F;
-        }
-        return bonus;
     }
     
     /**

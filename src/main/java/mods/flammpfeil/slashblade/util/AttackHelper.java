@@ -65,8 +65,9 @@ public class AttackHelper {
         }
 
         if (attacker.level() instanceof ServerLevel serverLevel) {
-            baseDamage = EnchantmentHelper.modifyDamage(serverLevel, attacker.getMainHandItem(), target, damageSource,
-		            (float) baseDamage);
+            // 用去基础面板计算而不是最终伤害去计算
+            baseDamage += EnchantmentHelper.modifyDamage(serverLevel, attacker.getMainHandItem(), target, damageSource,
+		            (float) attacker.getAttributeValue(Attributes.ATTACK_DAMAGE)) - attacker.getAttributeValue(Attributes.ATTACK_DAMAGE);
         }
 
         boolean damageSuccess = target.hurt(damageSource, (float) baseDamage);

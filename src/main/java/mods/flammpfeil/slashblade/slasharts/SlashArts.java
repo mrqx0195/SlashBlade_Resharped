@@ -36,7 +36,7 @@ public class SlashArts {
     
     static public int getJustReceptionSpan(LivingEntity user) {
         return Math.min(ChargeJustTicksMax,
-            ChargeJustTicks + EnchantmentHelper.getEnchantmentLevel(soulSpeedHolder(user), user));
+            ChargeJustTicks + EnchantmentHelper.getTagEnchantmentLevel(soulSpeedHolder(user), user.getMainHandItem()));
     }
     
     public enum ArtsType {

@@ -177,7 +177,7 @@ public class ComboState {
     static public SlashArts.ArtsType releaseActionQuickCharge(LivingEntity user, Integer elapsed) {
         var enchLookup = user.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
         var soulSpeed = enchLookup.getOrThrow(Enchantments.SOUL_SPEED);
-        int level = EnchantmentHelper.getEnchantmentLevel(soulSpeed, user);
+        int level = EnchantmentHelper.getTagEnchantmentLevel(soulSpeed, user.getMainHandItem());
         if (elapsed <= 3 + level) {
             AdvancementHelper.grantedIf(soulSpeed.value(), user);
             AdvancementHelper.grantCriterion(user, AdvancementHelper.ADVANCEMENT_QUICK_CHARGE);

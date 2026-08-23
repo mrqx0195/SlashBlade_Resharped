@@ -26,6 +26,7 @@ public record BladeStateData(
     boolean sealed,
     ResourceLocation slashArtsKey,
     boolean defaultBewitched,
+    boolean destructable,
     ResourceLocation comboRoot,
     CarryType carryType,
     int effectColor,
@@ -46,6 +47,7 @@ public record BladeStateData(
         "", 4.0F, 0, 0, 0,
         false, false,
         DEFAULT_SLASH_ARTS,
+        false,
         false,
         DEFAULT_COMBO_ROOT,
         CarryType.PSO2,
@@ -76,7 +78,8 @@ public record BladeStateData(
         boolean broken,
         boolean sealed,
         ResourceLocation slashArtsKey,
-        boolean defaultBewitched
+        boolean defaultBewitched,
+        boolean destructable
     ) {
     }
     
@@ -101,7 +104,8 @@ public record BladeStateData(
         Codec.BOOL.fieldOf("broken").forGetter(CoreFields::broken),
         Codec.BOOL.fieldOf("sealed").forGetter(CoreFields::sealed),
         ResourceLocation.CODEC.fieldOf("slashArtsKey").forGetter(CoreFields::slashArtsKey),
-        Codec.BOOL.fieldOf("defaultBewitched").forGetter(CoreFields::defaultBewitched)
+        Codec.BOOL.fieldOf("defaultBewitched").forGetter(CoreFields::defaultBewitched),
+        Codec.BOOL.fieldOf("destructable").forGetter(CoreFields::destructable)
     ).apply(instance, CoreFields::new));
     
     private static final MapCodec<RenderFields> RENDER_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
@@ -127,6 +131,7 @@ public record BladeStateData(
                 pair.getFirst().sealed(),
                 pair.getFirst().slashArtsKey(),
                 pair.getFirst().defaultBewitched(),
+                pair.getFirst().destructable(),
                 pair.getSecond().comboRoot(),
                 pair.getSecond().carryType(),
                 pair.getSecond().effectColor(),
@@ -146,7 +151,8 @@ public record BladeStateData(
                     data.broken(),
                     data.sealed(),
                     data.slashArtsKey(),
-                    data.defaultBewitched()
+                    data.defaultBewitched(),
+                    data.destructable()
                 ),
                 new RenderFields(
                     data.comboRoot(),
@@ -167,7 +173,7 @@ public record BladeStateData(
     
     public BladeStateData withSpecialEffects(@Nullable List<ResourceLocation> effects) {
         return new BladeStateData(translationKey, baseAttackModifier, proudSoul, killCount, refine,
-            broken, sealed, slashArtsKey, defaultBewitched, comboRoot, carryType,
+            broken, sealed, slashArtsKey, defaultBewitched, destructable, comboRoot, carryType,
             effectColor, effectColorInverse, adjust, texture, model,
             effects != null ? effects : Collections.emptyList());
     }

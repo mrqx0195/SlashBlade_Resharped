@@ -25,7 +25,9 @@ public class PropertiesDefinition {
                             ResourceLocation.CODEC.listOf().optionalFieldOf("special_effects", Lists.newArrayList())
                                     .forGetter(PropertiesDefinition::getSpecialEffects),
                             Codec.BOOL.optionalFieldOf("unbreakable", false)
-                                    .forGetter(PropertiesDefinition::isUnbreakable)
+                                    .forGetter(PropertiesDefinition::isUnbreakable),
+                            Codec.BOOL.optionalFieldOf("destructable", false)
+                                    .forGetter(PropertiesDefinition::isDestructable)
                     )
                     .apply(instance, PropertiesDefinition::new));
 
@@ -36,9 +38,10 @@ public class PropertiesDefinition {
     private final List<SwordType> defaultType;
     private final List<ResourceLocation> specialEffects;
     private final boolean unbreakable;
+    private final boolean destructable;
 
     private PropertiesDefinition(ResourceLocation comboRoot, ResourceLocation specialAttackType,
-                                 float baseAttackModifier, int damage, List<SwordType> defaultType, List<ResourceLocation> specialEffects, boolean unbreakable) {
+                                 float baseAttackModifier, int damage, List<SwordType> defaultType, List<ResourceLocation> specialEffects, boolean unbreakable, boolean destructable) {
         this.comboRoot = comboRoot;
         this.specialAttackType = specialAttackType;
         this.baseAttackModifier = baseAttackModifier;
@@ -46,6 +49,7 @@ public class PropertiesDefinition {
         this.defaultType = defaultType;
         this.specialEffects = specialEffects;
         this.unbreakable = unbreakable;
+        this.destructable = destructable;
     }
 
     public List<ResourceLocation> getSpecialEffects() {
@@ -76,6 +80,10 @@ public class PropertiesDefinition {
         return unbreakable;
     }
 
+    public boolean isDestructable() {
+        return destructable;
+    }
+
     public static class Builder {
         private ResourceLocation comboRoot;
         private ResourceLocation specialAttackType;
@@ -84,6 +92,7 @@ public class PropertiesDefinition {
         private List<SwordType> defaultType;
         private final List<ResourceLocation> specialEffects;
         private boolean unbreakable;
+        private boolean destructable;
 
         private Builder() {
             this.comboRoot = ComboStateRegistry.STANDBY.getId();
@@ -93,6 +102,7 @@ public class PropertiesDefinition {
             this.defaultType = Lists.newArrayList();
             this.specialEffects = Lists.newArrayList();
             this.unbreakable = false;
+            this.destructable = false;
         }
 
         public static Builder newInstance() {
@@ -134,8 +144,13 @@ public class PropertiesDefinition {
             return this;
         }
 
+        public Builder setDestructable(boolean destructable) {
+            this.destructable = destructable;
+            return this;
+        }
+
         public PropertiesDefinition build() {
-            return new PropertiesDefinition(comboRoot, specialAttackType, baseAttackModifier, maxDamage, defaultType, specialEffects, unbreakable);
+            return new PropertiesDefinition(comboRoot, specialAttackType, baseAttackModifier, maxDamage, defaultType, specialEffects, unbreakable, destructable);
         }
     }
 

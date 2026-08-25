@@ -241,6 +241,11 @@ public class ComboState {
         
         @Override
         public void accept(LivingEntity livingEntity) {
+            if (BladeStateAccess.of(livingEntity.getMainHandItem())
+                .map(state -> state.getComboSeq().equals(ComboStateRegistry.NONE.getId()))
+                .orElse(false)) {
+                return;
+            }
             int elapsed = (int) getElapsed(livingEntity);
             CompoundTag persistentData = livingEntity.getPersistentData();
             

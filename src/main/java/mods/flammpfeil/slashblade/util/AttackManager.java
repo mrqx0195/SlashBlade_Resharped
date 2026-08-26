@@ -196,7 +196,7 @@ public class AttackManager {
                                     Math.cos(yRot * (float) Math.PI / 180.0F) * 0.5));
                                 double baseAmount = living.getAttributeValue(Attributes.ATTACK_DAMAGE);
                                 var enchLookup = living.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
-                                int powerLevel = EnchantmentHelper.getTagEnchantmentLevel(enchLookup.getOrThrow(Enchantments.PIERCING), living.getMainHandItem());
+                                int powerLevel = EnchantmentHelper.getTagEnchantmentLevel(enchLookup.getOrThrow(Enchantments.POWER), living.getMainHandItem());
                                 baseAmount *= 1 + powerLevel * 0.1;
                                 baseAmount += AttackHelper.getRankBonus(living);
                                 if (this.getShooter() instanceof LivingEntity shooter) {
@@ -297,7 +297,7 @@ public class AttackManager {
                 if (owner.getShooter() instanceof LivingEntity living) {
                     if (!(owner instanceof EntitySlashEffect)) {
                         var enchLookup2 = living.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
-                        int powerLevel = EnchantmentHelper.getTagEnchantmentLevel(enchLookup2.getOrThrow(Enchantments.PIERCING), living.getMainHandItem());
+                        int powerLevel = EnchantmentHelper.getTagEnchantmentLevel(enchLookup2.getOrThrow(Enchantments.POWER), living.getMainHandItem());
                         baseAmount += powerLevel * 0.1;
                     }
                     baseAmount *= living.getAttributeValue(Attributes.ATTACK_DAMAGE);

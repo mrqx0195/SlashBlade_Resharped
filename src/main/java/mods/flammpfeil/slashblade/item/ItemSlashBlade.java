@@ -565,7 +565,7 @@ public class ItemSlashBlade extends SwordItem {
     }
     
     public boolean isDestructable(ItemStack stack) {
-        return false;
+        return BladeStateAccess.of(stack).map(ISlashBladeState::isDestructable).orElse(false);
     }
     
     @Override

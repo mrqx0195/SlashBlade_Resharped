@@ -123,6 +123,7 @@ public class SlashBladeDefinition {
         state.setMaxDamage(this.stateDefinition.getMaxDamage());
         state.setComboRoot(this.stateDefinition.getComboRoot());
         state.setSlashArtsKey(this.stateDefinition.getSpecialAttackType());
+        state.setDestructable(this.stateDefinition.isDestructable());
 
         this.stateDefinition.getSpecialEffects().forEach(state::addSpecialEffect);
 

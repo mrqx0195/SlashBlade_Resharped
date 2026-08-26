@@ -66,6 +66,7 @@ public interface ISlashBladeState {
         
         tag.putString("SpecialAttackType", Optional.of(this.getSlashArtsKey()).orElse(SlashArtsRegistry.JUDGEMENT_CUT.getId()).toString());
         tag.putBoolean("isDefaultBewitched", this.isDefaultBewitched());
+        tag.putBoolean("destructable", this.isDestructable());
         tag.putString("translationKey", this.getTranslationKey());
         
         // render info
@@ -117,6 +118,7 @@ public interface ISlashBladeState {
         
         this.setSlashArtsKey(ResourceLocation.parse(tag.getString("SpecialAttackType")));
         this.setDefaultBewitched(tag.getBoolean("isDefaultBewitched"));
+        this.setDestructable(tag.getBoolean("destructable"));
         
         this.setTranslationKey(tag.getString("translationKey"));
         
@@ -219,6 +221,10 @@ public interface ISlashBladeState {
     boolean isDefaultBewitched();
     
     void setDefaultBewitched(boolean defaultBewitched);
+
+    boolean isDestructable();
+
+    void setDestructable(boolean destructable);
     
     String getTranslationKey();
     
@@ -498,7 +504,7 @@ public interface ISlashBladeState {
     int getMaxDamage();
     
     void setMaxDamage(int damage);
-    
+
     Collection<ResourceLocation> getSpecialEffects();
     
     void setSpecialEffects(ListTag list);

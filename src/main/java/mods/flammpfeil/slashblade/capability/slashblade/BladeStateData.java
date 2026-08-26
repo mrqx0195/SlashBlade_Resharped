@@ -105,7 +105,7 @@ public record BladeStateData(
         Codec.BOOL.fieldOf("sealed").forGetter(CoreFields::sealed),
         ResourceLocation.CODEC.fieldOf("slashArtsKey").forGetter(CoreFields::slashArtsKey),
         Codec.BOOL.fieldOf("defaultBewitched").forGetter(CoreFields::defaultBewitched),
-        Codec.BOOL.fieldOf("destructable").forGetter(CoreFields::destructable)
+        Codec.BOOL.optionalFieldOf("destructable", false).forGetter(CoreFields::destructable)
     ).apply(instance, CoreFields::new));
     
     private static final MapCodec<RenderFields> RENDER_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(

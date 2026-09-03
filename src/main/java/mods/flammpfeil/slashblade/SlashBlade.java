@@ -61,6 +61,7 @@ public class SlashBlade {
         RecipeSerializerRegistry.INGREDIENT_TYPES.register(modEventBus);
         SpecialEffectsRegistry.SPECIAL_EFFECT.register(modEventBus);
         SlashBladeDataComponents.COMPONENTS.register(modEventBus);
+        SlashBladeCriteriaTriggerRegistry.CRITERION_TRIGGERS.register(modEventBus);
         
         if (FMLEnvironment.dist == Dist.CLIENT && LoadingModList.get().getModFileById("jei") != null) {
             modEventBus.addListener(JEICompat::registerClientReloadListener);

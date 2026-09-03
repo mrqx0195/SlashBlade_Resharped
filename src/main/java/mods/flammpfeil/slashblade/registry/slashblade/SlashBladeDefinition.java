@@ -9,6 +9,7 @@ import mods.flammpfeil.slashblade.capability.slashblade.BladeStateAccess;
 import mods.flammpfeil.slashblade.event.SlashBladeRegistryEvent;
 import mods.flammpfeil.slashblade.item.ItemSlashBlade;
 import mods.flammpfeil.slashblade.item.SwordType;
+import mods.flammpfeil.slashblade.recipe.RequestDefinition;
 import net.minecraft.Util;
 import net.minecraft.core.Holder.Reference;
 import net.minecraft.core.HolderLookup;
@@ -153,7 +154,7 @@ public class SlashBladeDefinition {
         state.setColorCode(this.renderDefinition.getSummonedSwordColor());
         state.setEffectColorInverse(this.renderDefinition.isSummonedSwordColorInverse());
         state.setCarryType(this.renderDefinition.getStandbyRenderType());
-        if (!this.getName().equals(SlashBlade.prefix("none"))) {
+        if (!this.getName().equals(RequestDefinition.EMPTY_NAME)) {
             state.setTranslationKey(this.getTranslationKey());
         }
         

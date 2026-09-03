@@ -10,6 +10,7 @@ import mods.flammpfeil.slashblade.item.ItemSlashBlade;
 import mods.flammpfeil.slashblade.item.SwordType;
 import mods.flammpfeil.slashblade.registry.ComboStateRegistry;
 import mods.flammpfeil.slashblade.registry.SlashArtsRegistry;
+import mods.flammpfeil.slashblade.registry.SlashBladeCriteriaTriggerRegistry;
 import mods.flammpfeil.slashblade.registry.combo.ComboState;
 import mods.flammpfeil.slashblade.slasharts.SlashArts;
 import mods.flammpfeil.slashblade.util.AdvancementHelper;
@@ -22,6 +23,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -419,6 +421,9 @@ public interface ISlashBladeState {
                 this.updateComboSeq(user, csloc);
             }
         }
+        if (user instanceof ServerPlayer serverPlayer) {
+            SlashBladeCriteriaTriggerRegistry.DO_SLASH_ARTS.get().trigger(serverPlayer, user.getMainHandItem(), elapsed, type);
+        }
         return csloc;
     }
     
@@ -495,6 +500,9 @@ public interface ISlashBladeState {
         this.setComboSeq(event.getCombo());
         this.setLastActionTime(event.getActionTime());
         entity.getPersistentData().remove(ComboState.LAST_PROCESSED_TICK_KEY);
+        if (entity instanceof ServerPlayer player) {
+            SlashBladeCriteriaTriggerRegistry.COMBO_STATE.get().trigger(player, loc, player.getMainHandItem());
+        }
         return true;
     }
     

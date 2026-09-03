@@ -19,9 +19,10 @@ import java.util.List;
 
 public record RequestDefinition(ResourceLocation name, int proudSoulCount, int killCount, int refineCount,
                                 List<EnchantmentDefinition> enchantments, List<SwordType> defaultType) {
+    public static final ResourceLocation EMPTY_NAME = SlashBlade.prefix("none");
     
     public static final Codec<RequestDefinition> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            ResourceLocation.CODEC.optionalFieldOf("name", SlashBlade.prefix("none"))
+            ResourceLocation.CODEC.optionalFieldOf("name", EMPTY_NAME)
                 .forGetter(RequestDefinition::name),
             Codec.INT.optionalFieldOf("proud_soul", 0).forGetter(RequestDefinition::proudSoulCount),
             Codec.INT.optionalFieldOf("kill", 0).forGetter(RequestDefinition::killCount),
@@ -35,7 +36,7 @@ public record RequestDefinition(ResourceLocation name, int proudSoulCount, int k
     public void initItemStack(ItemStack blade) {
         var state = BladeStateAccess.of(blade).orElseThrow();
         state.setNonEmpty();
-        if (!this.name.equals(SlashBlade.prefix("none"))) {
+        if (!this.name.equals(EMPTY_NAME)) {
             state.setTranslationKey(getTranslationKey());
         }
         state.setProudSoulCount(proudSoulCount());
@@ -70,7 +71,7 @@ public record RequestDefinition(ResourceLocation name, int proudSoulCount, int k
         }
         var state = BladeStateAccess.of(blade).orElseThrow();
         boolean nameCheck;
-        if (this.name.equals(SlashBlade.prefix("none"))) {
+        if (this.name.equals(EMPTY_NAME)) {
             nameCheck = state.getTranslationKey().isBlank();
         } else {
             nameCheck = state.getTranslationKey().equals(getTranslationKey());
@@ -107,7 +108,7 @@ public record RequestDefinition(ResourceLocation name, int proudSoulCount, int k
         private final List<SwordType> defaultType;
         
         private Builder() {
-            this.name = SlashBlade.prefix("none");
+            this.name = EMPTY_NAME;
             this.proudCount = 0;
             this.killCount = 0;
             this.refineCount = 0;

@@ -54,13 +54,14 @@ public record RequestDefinition(ResourceLocation name, int proudSoulCount, int k
                 }
             }
         });
+        state.setDefaultSwordTypes(defaultType);
         
         this.enchantments().forEach(ench -> blade.enchant(ench.getEnchantment(), ench.getEnchantmentLevel()));
         ItemSlashBlade.updateRarity(blade);
     }
     
     public boolean test(ItemStack blade) {
-        if (blade == null || blade.isEmpty()) {
+        if (blade.isEmpty()) {
             return false;
         }
         

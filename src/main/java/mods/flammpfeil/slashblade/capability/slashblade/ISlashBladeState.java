@@ -33,6 +33,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 public interface ISlashBladeState {
     
@@ -221,10 +222,14 @@ public interface ISlashBladeState {
     boolean isDefaultBewitched();
     
     void setDefaultBewitched(boolean defaultBewitched);
-
+    
     boolean isDestructable();
-
+    
     void setDestructable(boolean destructable);
+    
+    List<SwordType> getDefaultSwordTypes();
+    
+    void setDefaultSwordTypes(List<SwordType> defaultSwordTypes);
     
     String getTranslationKey();
     
@@ -504,7 +509,7 @@ public interface ISlashBladeState {
     int getMaxDamage();
     
     void setMaxDamage(int damage);
-
+    
     Collection<ResourceLocation> getSpecialEffects();
     
     void setSpecialEffects(ListTag list);

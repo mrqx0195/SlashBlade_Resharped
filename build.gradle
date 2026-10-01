@@ -194,7 +194,7 @@ tasks.named('jar', Jar).configure {
 java {
     withSourcesJar()
 }
-
+/*
 def hasCustomLoc = project.hasProperty('maven_loc')
 def hasDefaultLoc = project.hasProperty('default_maven_loc')
 def defaultFolder = hasDefaultLoc ? file(project.property('default_maven_loc').toString()) : null
@@ -213,7 +213,7 @@ if (hasCustomLoc || (defaultFolder != null && defaultFolder.exists())) {
             }
         }
     }
-}
+}*/
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'

@@ -1,5 +1,6 @@
 jdk:
-  - openjdk17
+  - openjdk21
 install:
   - chmod +x gradlew
+  - ./gradlew build
   - ./gradlew publishToMavenLocal
